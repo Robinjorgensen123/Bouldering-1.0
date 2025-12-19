@@ -20,12 +20,12 @@ jobs:
           node-version: "20"
           cache: "npm"
           # Berätta var package-lock.json finns (eftersom vi är i /backend)
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: Backend/package-lock.json
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./backend
+        working-directory: ./Backend
 
       - name: Run Vitest
         run: npm test
-        working-directory: ./backend
+        working-directory: ./Backend
