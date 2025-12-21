@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 export interface IUser extends Document {
   email: string;
   password: string;
+  comparePassword(password: string): Promise<boolean>;
 }
 
 const UserSchema = new mongoose.Schema({
@@ -11,17 +12,15 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-UserSchema.pre<IUser>("save", async function (next) {
-  const user = this;
-
+UserSchema.pre<IUser>("save", async function (this: IUser) {
   if (!this.isModified("password")) return;
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  } catch (error: any) {
-    throw error;
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
+
+UserSchema.methods.comparePassword = async function (password: string) {
+  return bcrypt.compare(password, this.password);
+};
 
 export const User = mongoose.model<IUser>("User", UserSchema);
