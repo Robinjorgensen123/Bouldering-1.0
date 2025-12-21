@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { app } from "../server.js";
 import { User } from "../models/User.js";
 
-describe("Auth API Test", () => {
+describe("Auth API Register", () => {
   it("should register a new user and return 201", async () => {
     const newUser = {
       email: "newuser@test.com",
@@ -79,5 +79,41 @@ describe("Auth API Test", () => {
     await user.save(); // Nu triggas pre-save, och isModified("password") blir false
 
     expect(user.password).toBe(initialHash);
+  });
+
+  describe("Auth API login", () => {
+    it("should login successfully and return a token", async () => {
+      const user = {
+        email: "login-successfully@test.com",
+        password: "validpassword",
+      };
+
+      await request(app).post("/api/auth/register").send(user);
+
+      const response = await request(app).post("/api/auth/login").send(user);
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body).toHaveProperty("token");
+      expect(response.body.message).toBe("Login successful");
+    });
+  });
+
+  it("should fail login with wrong password", async () => {
+    const response = await request(app).post("/api/auth/login").send({
+      email: "try@test.com",
+      password: "password123",
+    });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+  });
+
+  it("should fail login if user does not exist", async () => {
+    const response = await request(app).post("/api/auth/login").send({
+      email: "ghost@test.com",
+      password: "nooneknows",
+    });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
   });
 });
