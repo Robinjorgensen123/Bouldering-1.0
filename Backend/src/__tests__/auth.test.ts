@@ -80,23 +80,22 @@ describe("Auth API Register", () => {
 
     expect(user.password).toBe(initialHash);
   });
+});
+describe("Auth API login", () => {
+  it("should login successfully and return a token", async () => {
+    const user = {
+      email: "login-successfully@test.com",
+      password: "validpassword",
+    };
 
-  describe("Auth API login", () => {
-    it("should login successfully and return a token", async () => {
-      const user = {
-        email: "login-successfully@test.com",
-        password: "validpassword",
-      };
+    await request(app).post("/api/auth/register").send(user);
 
-      await request(app).post("/api/auth/register").send(user);
+    const response = await request(app).post("/api/auth/login").send(user);
 
-      const response = await request(app).post("/api/auth/login").send(user);
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(response.body).toHaveProperty("token");
-      expect(response.body.message).toBe("Login successful");
-    });
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body).toHaveProperty("token");
+    expect(response.body.message).toBe("Login successful");
   });
 
   it("should fail login with wrong password", async () => {
@@ -115,5 +114,20 @@ describe("Auth API Register", () => {
     });
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
+  });
+
+  it("should return an error if user tries to Login with the wrong password", async () => {
+    await request(app).post("/api/auth/register").send({
+      email: "loginAttempt@test.com",
+      password: "correctPassword",
+    });
+
+    const response = await request(app).post("/api/auth/login").send({
+      email: "loginAttempt@test.com",
+      password: "incorrectPassword",
+    });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toBe("Invalid email or password");
   });
 });
