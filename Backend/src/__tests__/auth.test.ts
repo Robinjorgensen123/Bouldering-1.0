@@ -2,6 +2,7 @@ import request from "supertest";
 import { describe, it, expect } from "vitest";
 import { app } from "../server.js";
 import { User } from "../models/User.js";
+import { response } from "express";
 
 describe("Auth API Register", () => {
   it("should register a new user and return 201", async () => {
@@ -129,5 +130,35 @@ describe("Auth API login", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.message).toBe("Invalid email or password");
+  });
+});
+
+describe("User Settings", () => {
+  it("should update user grading system preference", async () => {
+    const loginResponse = await request(app).post("/api/auth/login").send({
+      email: "login-successfylly@test.com",
+      password: "validpassword",
+    });
+    const token = loginResponse.body.token;
+
+    const response = await request(app)
+      .put("/api/user/settings")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ gradingSystem: "V-scale" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.gradingSystem).toBe("v-scale");
+
+    const user = await User.findOne({ email: "login-successfully@test.com" });
+    expect(user?.gradingSystem).toBe("v-scale");
+  });
+  it("should fail to update settings without a token", async () => {
+    const response = await request(app)
+      .put("/api/user/settings")
+      .send({ gradingSystem: "V-scale" });
+
+    expect(response.status).toBe(401);
+    expect(response.body.success).toBe(false);
   });
 });
