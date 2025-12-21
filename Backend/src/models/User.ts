@@ -4,12 +4,14 @@ import bcrypt from "bcrypt";
 export interface IUser extends Document {
   email: string;
   password: string;
+  gradingSystem: "font" | "v-scale";
   comparePassword(password: string): Promise<boolean>;
 }
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  gradingSystem: { type: String, enum: ["font", "v-scale"], default: "font" },
 });
 
 UserSchema.pre<IUser>("save", async function (this: IUser) {
