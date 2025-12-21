@@ -135,28 +135,33 @@ describe("Auth API login", () => {
 
 describe("User Settings", () => {
   it("should update user grading system preference", async () => {
+    const settingsUser = {
+      email: "settings-test@test.com",
+      password: "validpassword",
+    };
+    await request(app).post("/api/auth/register").send(settingsUser);
     const loginResponse = await request(app).post("/api/auth/login").send({
-      email: "login-successfylly@test.com",
+      email: "settings-test@test.com",
       password: "validpassword",
     });
     const token = loginResponse.body.token;
 
     const response = await request(app)
-      .put("/api/user/settings")
+      .put("/api/auth/settings")
       .set("Authorization", `Bearer ${token}`)
-      .send({ gradingSystem: "V-scale" });
+      .send({ gradingSystem: "v-scale" });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.gradingSystem).toBe("v-scale");
 
-    const user = await User.findOne({ email: "login-successfully@test.com" });
+    const user = await User.findOne({ email: "settings-test@test.com" });
     expect(user?.gradingSystem).toBe("v-scale");
   });
   it("should fail to update settings without a token", async () => {
     const response = await request(app)
-      .put("/api/user/settings")
-      .send({ gradingSystem: "V-scale" });
+      .put("/api/auth/settings")
+      .send({ gradingSystem: "v-scale" });
 
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);

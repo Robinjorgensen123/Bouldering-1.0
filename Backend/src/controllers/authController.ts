@@ -78,7 +78,11 @@ export const updateSetting = async (req: AuthRequest, res: Response) => {
     await user.save();
     res
       .status(200)
-      .json({ message: "Settings updated successfully", success: true });
+      .json({
+        message: "Settings updated successfully",
+        success: true,
+        gradingSystem: user.gradingSystem,
+      });
   } catch (error) {
     res.status(500).json({ message: "Server error", success: false });
   }
