@@ -3,6 +3,7 @@ import { User } from "../models/User.js";
 import jwt from "jsonwebtoken";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
 
+/// Login controller
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -38,6 +39,8 @@ export const login = async (req: Request, res: Response) => {
     });
   }
 };
+
+/// Register controller
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -55,7 +58,7 @@ export const register = async (req: Request, res: Response) => {
     });
   }
 };
-
+// Update user settings controller
 export const updateSetting = async (req: AuthRequest, res: Response) => {
   try {
     const { gradingSystem } = req.body;
@@ -76,13 +79,11 @@ export const updateSetting = async (req: AuthRequest, res: Response) => {
     }
     user.gradingSystem = gradingSystem;
     await user.save();
-    res
-      .status(200)
-      .json({
-        message: "Settings updated successfully",
-        success: true,
-        gradingSystem: user.gradingSystem,
-      });
+    res.status(200).json({
+      message: "Settings updated successfully",
+      success: true,
+      gradingSystem: user.gradingSystem,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", success: false });
   }
