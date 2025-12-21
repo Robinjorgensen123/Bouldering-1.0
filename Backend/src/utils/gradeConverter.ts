@@ -1,42 +1,42 @@
 const fontToVScaleMap: Record<string, string> = {
-  "4": "v0",
-  "5a": "v1",
-  "5b": "v1",
-  "5c": "v2",
-  "6a": "v3",
-  "6a+": "v3",
-  "6b": "v4",
-  "6b+": "v4",
-  "6c": "v5",
-  "6c+": "v5",
-  "7a": "v6",
-  "7a+": "v7",
-  "7b": "v8",
-  "7b+": "v8",
-  "7c": "v9",
-  "7c+": "v10",
-  "8a": "v11",
-  "8a+": "v12",
-  "8b": "v13",
-  "8b+": "v14",
-  "8c": "v15",
-  "8c+": "v16",
-  "9a": "v17",
-  "9a+": "v18",
-  "9b": "v19",
-  "9b+": "v20",
-  "9c": "v21",
-  "9c+": "v22",
+  "4": "V0",
+  "5A": "V1",
+  "5B": "V1",
+  "5C": "V2",
+  "6A": "V3",
+  "6A+": "V3",
+  "6B": "V4",
+  "6B+": "V4",
+  "6C": "V5",
+  "6C+": "V5",
+  "7A": "V6",
+  "7A+": "V7",
+  "7B": "V8",
+  "7B+": "V8",
+  "7C": "V9",
+  "7C+": "V10",
+  "8A": "V11",
+  "8A+": "V12",
+  "8B": "V13",
+  "8B+": "V14",
+  "8C": "V15",
+  "8C+": "V16",
+  "9A": "V17",
+  "9A+": "V18",
+  "9B": "V19",
+  "9B+": "V20",
+  "9C": "V21",
+  "9C+": "V22",
 };
 const vScaleToFontMap: Record<string, string> = {};
 for (const [font, v] of Object.entries(fontToVScaleMap)) {
   vScaleToFontMap[v] = font;
 }
 
-export const covertToVScale = (fontGrade: string): string => {
+export const convertToVScale = (fontGrade: string): string => {
   return fontToVScaleMap[fontGrade.toUpperCase()] || fontGrade;
 };
 
 export const convertToFont = (vGrade: string): string => {
-  return vScaleToFontMap[vGrade.toLowerCase()] || vGrade;
+  return vScaleToFontMap[vGrade.toUpperCase()] || vGrade;
 };
