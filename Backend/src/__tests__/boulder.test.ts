@@ -109,6 +109,7 @@ describe("Boulder API - Create", () => {
 
 describe("Boulder API - Get All", () => {
   let vScaleToken: string;
+  let currentUserId: string;
 
   beforeEach(async () => {
     // Setup för en specifik användare som gillar V-Scale
@@ -117,10 +118,13 @@ describe("Boulder API - Get All", () => {
     const login = await request(app).post("/api/auth/login").send(user);
     vScaleToken = login.body.token;
 
-    await User.findOneAndUpdate(
+    const userInDb = await User.findOneAndUpdate(
       { email: user.email },
-      { gradingSystem: "v-scale" }
+      { gradingSystem: "v-scale" },
+      { new: true }
     );
+
+    currentUserId = userInDb!._id.toString();
   });
 
   it("should get all boulders and convert grades to V-scale if user preference is set", async () => {
@@ -129,6 +133,7 @@ describe("Boulder API - Get All", () => {
       name: "GET Test Boulder",
       grade: "7A",
       location: { lat: 58.0, lng: 15.0 },
+      author: currentUserId,
       topoData: { linePoints: [], holds: [] },
     });
     await testBoulder.save();
@@ -143,6 +148,7 @@ describe("Boulder API - Get All", () => {
     const found = response.body.data.find(
       (b: any) => b.name === "GET Test Boulder"
     );
+    expect(found).toBeDefined();
     expect(found.grade).toBe("V6"); // 7A i DB ska bli V6 i API-svaret
   });
 });
