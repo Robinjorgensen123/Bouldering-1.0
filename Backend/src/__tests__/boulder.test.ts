@@ -106,3 +106,43 @@ describe("Boulder API - Create", () => {
     expect(boulderInDb?.topoData?.linePoints).toHaveLength(2);
   });
 });
+
+describe("Boulder API - Get All", () => {
+  let vScaleToken: string;
+
+  beforeEach(async () => {
+    // Setup för en specifik användare som gillar V-Scale
+    const user = { email: "get-test@test.com", password: "password123" };
+    await request(app).post("/api/auth/register").send(user);
+    const login = await request(app).post("/api/auth/login").send(user);
+    vScaleToken = login.body.token;
+
+    await User.findOneAndUpdate(
+      { email: user.email },
+      { gradingSystem: "v-scale" }
+    );
+  });
+
+  it("should get all boulders and convert grades to V-scale if user preference is set", async () => {
+    // Skapa en boulder som ligger i databasen som Font (7A)
+    const testBoulder = new Boulder({
+      name: "GET Test Boulder",
+      grade: "7A",
+      location: { lat: 58.0, lng: 15.0 },
+      topoData: { linePoints: [], holds: [] },
+    });
+    await testBoulder.save();
+
+    const response = await request(app)
+      .get("/api/boulders")
+      .set("Authorization", `Bearer ${vScaleToken}`);
+
+    expect(response.status).toBe(200);
+
+    // Verifiera att graden konverterats i svaret
+    const found = response.body.data.find(
+      (b: any) => b.name === "GET Test Boulder"
+    );
+    expect(found.grade).toBe("V6"); // 7A i DB ska bli V6 i API-svaret
+  });
+});
