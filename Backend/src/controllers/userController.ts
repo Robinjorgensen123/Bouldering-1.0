@@ -2,7 +2,7 @@ import { type Response } from "express";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
 import { User } from "../models/User.js";
 
-export const updateSetting = async (req: AuthRequest, res: Response) => {
+export const updateSettings = async (req: AuthRequest, res: Response) => {
   try {
     const { gradingSystem } = req.body;
     const userId = req.userId;
