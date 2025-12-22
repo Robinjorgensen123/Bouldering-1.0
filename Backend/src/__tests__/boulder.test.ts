@@ -152,3 +152,35 @@ describe("Boulder API - Get All", () => {
     expect(found.grade).toBe("V6"); // 7A i DB ska bli V6 i API-svaret
   });
 });
+
+describe("Boulder API - Delete", () => {
+  let userToken: string;
+  let boulderId: string;
+
+  beforeEach(async () => {
+    const user = { email: "delete-test@test.com", password: "password123" };
+    await request(app).post("/api/auth/register").send(user);
+    const login = await request(app).post("/api/auth/login").send(user);
+    userToken = login.body.token;
+
+    const boulder = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "Delete Me",
+        grade: "6A",
+        coordinates: { lat: 57.0, lng: 12.0 },
+        description: "Testing delete",
+      });
+
+    boulderId = boulder.body.data._id;
+  });
+
+  it("should delete a boulder and return 200", async () => {
+    const response = await request(app)
+      .delete(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(response.status).toBe(200);
+  });
+});

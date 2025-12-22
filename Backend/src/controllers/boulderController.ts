@@ -71,3 +71,34 @@ export const getBoulders = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: "Server error", success: false });
   }
 };
+
+export const deleteBoulder = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const boulder = await Boulder.findById(id);
+
+    if (!boulder) {
+      return res
+        .status(404)
+        .json({ message: "Boulder not found", success: false });
+    }
+
+    if (boulder.author.toString() !== userId) {
+      return res.status(403).json({
+        message: "Not authorized to delete this boulder",
+        success: false,
+      });
+    }
+
+    await Boulder.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Boulder deleted successfully",
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", success: false });
+  }
+};
