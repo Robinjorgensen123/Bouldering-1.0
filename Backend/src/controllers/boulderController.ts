@@ -102,3 +102,40 @@ export const deleteBoulder = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: "Server error", success: false });
   }
 };
+
+export const updateBoulder = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const boulder = await Boulder.findById(id);
+
+    if (!boulder) {
+      return res.status(404).json({
+        success: false,
+        message: "Could not find the specified boulder",
+      });
+    }
+    if (boulder.author.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to update this boulder",
+      });
+    }
+    const updatedBoulder = await Boulder.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Boulder updated successfully",
+      data: updatedBoulder,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error during update",
+    });
+  }
+};

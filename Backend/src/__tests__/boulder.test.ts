@@ -184,3 +184,35 @@ describe("Boulder API - Delete", () => {
     expect(response.status).toBe(200);
   });
 });
+
+describe("Boulder API - Update", () => {
+  let userToken: string;
+  let boulderId: string;
+
+  beforeEach(async () => {
+    const testUser = { email: "update-test@test.com", password: "password123" };
+    await request(app).post("/api/auth/register").send(testUser);
+    const login = await request(app).post("/api/auth/login").send(testUser);
+    userToken = login.body.token;
+
+    const boulder = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "Old Name",
+        grade: "6A",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
+    boulderId = boulder.body.data._id;
+  });
+
+  it("should update a boulder and return 200", async () => {
+    const response = await request(app)
+      .put(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({ name: "Updated Name", grade: "6B" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.name).toBe("Updated Name");
+  });
+});
