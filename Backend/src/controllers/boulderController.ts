@@ -20,6 +20,8 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
         .json({ message: "User not found", success: false });
     }
 
+    const finalImageUrl = req.file ? req.file.path : imagesUrl;
+
     let gradeToSave = grade;
 
     if (user.gradingSystem?.toLowerCase() === "v-scale") {
@@ -30,7 +32,7 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
       grade: gradeToSave.toUpperCase(),
       description,
       location: coordinates,
-      imagesUrl,
+      imagesUrl: finalImageUrl,
       topoData,
       author: userId,
     });
@@ -116,17 +118,38 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
         message: "Could not find the specified boulder",
       });
     }
+
     if (boulder.author.toString() !== userId) {
       return res.status(403).json({
         success: false,
         message: "Not authorized to update this boulder",
       });
     }
+
+    const updateFields: any = { ...req.body };
+
+    if (req.file) {
+      updateFields.imagesUrl = req.file.path;
+    }
+
+    if (req.body.coordinates) {
+      updateFields.location = req.body.coordinates;
+      delete updateFields.coordinates;
+    }
+
+    if (req.body.grade) {
+      const user = await User.findById(userId);
+      if (user?.gradingSystem?.toLowerCase() === "v-scale") {
+        updateFields.grade = convertToFont(req.body.grade.toUpperCase());
+      }
+    }
+
     const updatedBoulder = await Boulder.findByIdAndUpdate(
       id,
-      { $set: req.body },
+      { $set: updateFields },
       { new: true, runValidators: true }
     );
+
     res.status(200).json({
       success: true,
       message: "Boulder updated successfully",
