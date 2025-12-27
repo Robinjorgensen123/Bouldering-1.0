@@ -31,7 +31,7 @@ describe("Auth API Register", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("success", false);
-    expect(response.body).toHaveProperty("message", "Error registering user");
+    expect(response.body).toHaveProperty("message", '"password" is required');
   });
 
   it("should not re-hash password if it is not modified", async () => {

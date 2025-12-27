@@ -210,7 +210,11 @@ describe("Boulder API - Update", () => {
     const response = await request(app)
       .put(`/api/boulders/${boulderId}`)
       .set("Authorization", `Bearer ${userToken}`)
-      .send({ name: "Updated Name", grade: "6B" });
+      .send({
+        name: "Updated Name",
+        grade: "6B",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.data.name).toBe("Updated Name");
