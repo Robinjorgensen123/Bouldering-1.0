@@ -1,7 +1,14 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+/// <reference types="vitest" />
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig as defineVitestConfig } from "vitest/config";
 
-// https://vite.dev/config/
-export default defineConfig({
+// Vi använder Vitests version av defineConfig som inkluderar 'test'-fältet
+export default defineVitestConfig({
   plugins: [react()],
-})
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+  },
+});
