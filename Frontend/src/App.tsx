@@ -4,15 +4,18 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 
-const app = () => {
-  const isAuthenticated = !!localStorage.getItem("token");
+const App = () => {
   return (
-    <div className="min-h-screen bg-grey-50">
+    <Router>
       <Routes>
-        {/**Login Page */}
-        <Route path="login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
-    </div>
+    </Router>
   );
 };
+
+export default App;
