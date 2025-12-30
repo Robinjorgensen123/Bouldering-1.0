@@ -4,7 +4,6 @@ import api from "../../services/api";
 import "./Register.scss";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,7 +13,7 @@ const Register = () => {
     e.preventDefault();
     setEmail("");
     try {
-      await api.post("auth/register", { username, email, password });
+      await api.post("auth/register", { email, password });
       navigate("/login");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");
@@ -26,16 +25,6 @@ const Register = () => {
       <form onSubmit={handleSubmit} className="auth-card">
         <h2>Sign Up</h2>
         {error && <div className="error-banner">{error}</div>}
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
 
         <div className="form-group">
           <label htmlFor="email">Email</label>
