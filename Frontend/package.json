@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run --coverage --coverage.reporter=text --coverage.reporter=text-summary",
+    "test:watch": "vitest",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

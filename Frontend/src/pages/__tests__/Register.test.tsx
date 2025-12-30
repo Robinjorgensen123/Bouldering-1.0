@@ -32,7 +32,6 @@ describe("Register Page", () => {
       </BrowserRouter>
     );
 
-    await user.type(screen.getByLabelText(/username/i), "newuser");
     await user.type(screen.getByLabelText(/email/i), "test@test.com");
     await user.type(screen.getByLabelText(/password/i), "password123");
     await user.click(screen.getByRole("button", { name: /sign up/i }));
@@ -52,7 +51,6 @@ describe("Register Page", () => {
       </BrowserRouter>
     );
 
-    await user.type(screen.getByLabelText(/username/i), "climber");
     await user.type(screen.getByLabelText(/email/i), "climber@test.com");
     await user.type(screen.getByLabelText(/password/i), "securepassword");
     await user.click(screen.getByRole("button", { name: /sign up/i }));

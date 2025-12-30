@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test": "cross-env NODE_ENV=test vitest run --coverage --coverage.reporter=text --coverage.reporter=text-summary",
+    "test:watch": "NODE_ENV=test vitest",
     "dev": "nodemon --exec node --loader ts-node/esm src/server.ts"
   },
   "keywords": [],
@@ -33,6 +33,7 @@
     "@types/node": "^25.0.3",
     "@types/supertest": "^6.0.3",
     "@vitest/coverage-v8": "^4.0.16",
+    "cross-env": "^10.1.0",
     "mongodb-memory-server": "^11.0.0",
     "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
