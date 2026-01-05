@@ -17,9 +17,21 @@ describe("AddBoulder test", () => {
     globalThis.fetch = vi.fn();
     globalThis.URL.createObjectURL = vi.fn(() => "mock-url");
     storageMock();
+
+    const mockGeolocation = {
+      getCurrentPosition: vi.fn().mockImplementation((success) =>
+        success({
+          coords: {
+            latitude: 57.7089,
+            longitude: 11.9746,
+          },
+        })
+      ),
+    };
+    (globalThis.navigator as any).geolocation = mockGeolocation;
   });
 
-  it("should render all input fields required bu the backend controller", () => {
+  it("should render all input fields and get the coordinates button", () => {
     render(
       <BrowserRouter>
         <AddBoulder />
@@ -30,11 +42,30 @@ describe("AddBoulder test", () => {
     expect(screen.getByLabelText(/grade/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/select image/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /get coordinates/i })
+    ).toBeInTheDocument();
+  });
+
+  it("should fetch and display coordinates when the button is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <BrowserRouter>
+        <AddBoulder />
+      </BrowserRouter>
+    );
+
+    const getCoordsBtn = screen.getByRole("button", {
+      name: /get coordinates/i,
+    });
+    await user.click(getCoordsBtn);
+
+    expect(screen.getByText(/57.7089/)).toBeInTheDocument();
+    expect(screen.getByText(/11.9746/)).toBeInTheDocument();
   });
 
   it("should show a preview when an image is selected", async () => {
     const user = userEvent.setup();
-
     render(
       <BrowserRouter>
         <AddBoulder />
