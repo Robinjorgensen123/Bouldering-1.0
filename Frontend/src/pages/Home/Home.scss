@@ -1,4 +1,44 @@
 .home-page {
   padding: 2rem;
   max-width: 1200px;
+  margin: 0 auto;
+
+  .location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .location-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .info {
+      padding: 1rem;
+      h3 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #666;
+      }
+      p {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+    }
+  }
 }
