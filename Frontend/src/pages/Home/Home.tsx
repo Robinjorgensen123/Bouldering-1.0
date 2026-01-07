@@ -16,26 +16,41 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchBoulders = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/boulders");
-        const data: Boulder[] = await response.json();
+        const token = localStorage.getItem("token");
 
-        const map: { [key: string]: Boulder[] } = {};
-
-        data.forEach((boulder) => {
-          const key = `${boulder.coordinates.lat},${boulder.coordinates.lng}`;
-
-          if (!map[key]) {
-            map[key] = [];
-          }
-          map[key].push(boulder);
+        const response = await fetch("http://localhost:5000/api/boulders", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        const groupedArray = Object.keys(map).map((key) => ({
-          locationKey: key,
-          boulders: map[key],
-        }));
+        if (response.status === 401) {
+          console.error("Not logged in, or token expired");
+          return;
+        }
 
-        setGroups(groupedArray);
+        const data: Boulder[] = await response.json();
+
+        if (Array.isArray(data)) {
+          const map: { [key: string]: Boulder[] } = {};
+          data.forEach((boulder) => {
+            const key = `${boulder.coordinates.lat},${boulder.coordinates.lng}`;
+
+            if (!map[key]) {
+              map[key] = [];
+            }
+            map[key].push(boulder);
+          });
+
+          const groupedArray = Object.keys(map).map((key) => ({
+            locationKey: key,
+            boulders: map[key],
+          }));
+
+          setGroups(groupedArray);
+        }
       } catch (err) {
         console.error("Kunde inte hämta data:", err);
       }
