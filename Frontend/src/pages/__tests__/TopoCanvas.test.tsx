@@ -7,21 +7,29 @@ describe("TopoCanvas Unit Test", () => {
   const dummySrc = "mock-url";
 
   it("should render the image and the canvas with correct aria-label", () => {
-    render(<TopoCanvas imageSrc={dummySrc} onSavePoints={mockOnSavedPoints} />);
+    render(
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+    );
 
     expect(screen.getByAltText(/preview/i)).toBeInTheDocument();
     expect(screen.getByLabelText("topo-canvas")).toBeInTheDocument();
   });
 
   it("should start with no points and no reset button", () => {
-    render(<TopoCanvas imageSrc={dummySrc} onSavePoints={mockOnSavedPoints} />);
+    render(
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+    );
 
-    const resetBtn = screen.queryByRole("button", { name: /reset line/i });
+    const resetBtn = screen.queryByRole("button", {
+      name: /reset Line/i,
+    });
     expect(resetBtn).not.toBeInTheDocument();
   });
 
   it("should call onSavePoints when user draws with touch events", () => {
-    render(<TopoCanvas imageSrc={dummySrc} onSavePoints={mockOnSavedPoints} />);
+    render(
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+    );
     const canvas = screen.getByLabelText("topo-canvas");
 
     fireEvent.touchStart(canvas, { touches: [{ clientX: 10, clientY: 10 }] });
@@ -36,7 +44,9 @@ describe("TopoCanvas Unit Test", () => {
   });
 
   it("should show the reset button after drawing and clear everything on click", () => {
-    render(<TopoCanvas imageSrc={dummySrc} onSavePoints={mockOnSavedPoints} />);
+    render(
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+    );
     const canvas = screen.getByLabelText("topo-canvas");
 
     fireEvent.touchStart(canvas, { touches: [{ clientX: 50, clientY: 50 }] });

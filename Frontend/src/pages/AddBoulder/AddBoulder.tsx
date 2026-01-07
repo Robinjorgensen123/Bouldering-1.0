@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TopoCanvas from "./TopoCanvas";
 
 const AddBoulder: React.FC = () => {
   const [name, setName] = useState("");
@@ -8,6 +9,7 @@ const AddBoulder: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
+  const [topoPoints, setTopoPoints] = useState<{ x: Number; y: number }[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -39,7 +41,7 @@ const AddBoulder: React.FC = () => {
 
     if (file) formData.append("image", file);
 
-    formData.append("topoData", JSON.stringify({}));
+    formData.append("topoData", JSON.stringify({ points: topoPoints }));
 
     try {
       const response = await fetch("http://localhost:5000/api/boulders", {
@@ -115,9 +117,10 @@ const AddBoulder: React.FC = () => {
         </div>
 
         {preview && (
-          <div className="preview-container">
-            <img src={preview} alt="preview" />
-          </div>
+          <TopoCanvas
+            imageSrc={preview}
+            onSavedPoints={(points) => setTopoPoints(points)}
+          />
         )}
         <button type="submit">Upload</button>
       </form>
