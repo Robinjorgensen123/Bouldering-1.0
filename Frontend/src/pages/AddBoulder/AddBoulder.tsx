@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import TopoCanvas from "./TopoCanvas";
 import "./addBoulder.scss";
+import { useNavigate } from "react-router-dom";
 
 const AddBoulder: React.FC = () => {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
   const [description, setDescription] = useState("");
@@ -54,7 +57,7 @@ const AddBoulder: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Boulder created successfully!");
+        navigate("/");
       }
     } catch (err) {
       console.error("Submit error", err);

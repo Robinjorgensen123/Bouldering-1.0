@@ -1,10 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./TopoCanvas.scss";
-
-interface Point {
-  x: number;
-  y: number;
-}
+import { Point } from "../../types/Boulder.types";
 
 interface TopoCanvasProp {
   imageSrc: string;
