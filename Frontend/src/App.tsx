@@ -1,20 +1,12 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
-import AddBoulder from "./pages/AddBoulder/AddBoulder";
+import { BrowserRouter as Router } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      <div className="app-container">
+        <AppRoutes />
+      </div>
     </Router>
   );
 };
