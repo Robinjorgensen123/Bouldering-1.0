@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import TopoCanvas from "./TopoCanvas";
+import "./addBoulder.scss";
 
 const AddBoulder: React.FC = () => {
   const [name, setName] = useState("");
