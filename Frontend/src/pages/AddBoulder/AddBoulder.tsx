@@ -10,7 +10,7 @@ const AddBoulder: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
-  const [topoPoints, setTopoPoints] = useState<{ x: Number; y: number }[]>([]);
+  const [topoPoints, setTopoPoints] = useState<{ x: number; y: number }[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
