@@ -42,6 +42,7 @@ describe("Boulder API - Create", () => {
       name: "test V-Scale Boulder",
       grade: "V6",
       description: "Mountain",
+      location: "Hönö",
       coordinates: {
         lat: 57.7089,
         lng: 11.9746,
@@ -54,7 +55,7 @@ describe("Boulder API - Create", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.data.grade).toBe("7A");
-    expect(response.body.data.location.lat).toBe(57.7089);
+    expect(response.body.data.coordinates.lat).toBe(57.7089);
 
     const boulderInDb = await Boulder.findOne({ name: "test V-Scale Boulder" });
     expect(boulderInDb?.grade).toBe("7A");
@@ -74,6 +75,7 @@ describe("Boulder API - Create", () => {
       name: "The Highball",
       grade: "6C+",
       description: "A challenging highball boulder problem.",
+      location: "Gothenburg",
       coordinates: {
         lat: 59.3293,
         lng: 18.0683,
@@ -99,7 +101,7 @@ describe("Boulder API - Create", () => {
       .send(completeBoulder);
 
     expect(response.status).toBe(201);
-    expect(response.body.data.location.lat).toBe(59.3293);
+    expect(response.body.data.coordinates.lat).toBe(59.3293);
     expect(response.body.data.topoData.holds[0].type).toBe("start");
 
     const boulderInDb = await Boulder.findOne({ name: "The Highball" });
@@ -132,7 +134,8 @@ describe("Boulder API - Get All", () => {
     const testBoulder = new Boulder({
       name: "GET Test Boulder",
       grade: "7A",
-      location: { lat: 58.0, lng: 15.0 },
+      location: "Hönö",
+      coordinates: { lat: 58.0, lng: 15.0 },
       author: currentUserId,
       topoData: { linePoints: [], holds: [] },
     });
@@ -169,6 +172,7 @@ describe("Boulder API - Delete", () => {
       .send({
         name: "Delete Me",
         grade: "6A",
+        location: "Varberg",
         coordinates: { lat: 57.0, lng: 12.0 },
         description: "Testing delete",
       });
@@ -201,6 +205,7 @@ describe("Boulder API - Update", () => {
       .send({
         name: "Old Name",
         grade: "6A",
+        location: "Kjugekull",
         coordinates: { lat: 57.0, lng: 12.0 },
       });
     boulderId = boulder.body.data._id;
