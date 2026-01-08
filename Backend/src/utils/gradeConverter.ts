@@ -41,10 +41,14 @@ const vScaleToFontMap: Record<string, string> = {
   V17: "9A",
 };
 
-export const convertToVScale = (fontGrade: string): string => {
-  return fontToVScaleMap[fontGrade.toUpperCase()] || fontGrade;
+export const convertToVScale = (fontGrade: string | undefined): string => {
+  if (!fontGrade) return "";
+  const normalized = fontGrade.toUpperCase().trim();
+  return fontToVScaleMap[normalized] || fontGrade;
 };
 
-export const convertToFont = (vGrade: string): string => {
-  return vScaleToFontMap[vGrade.toUpperCase()] || vGrade;
+export const convertToFont = (vGrade: string | undefined): string => {
+  if (!vGrade) return "";
+  const normalized = vGrade.toUpperCase().trim();
+  return vScaleToFontMap[normalized] || vGrade;
 };

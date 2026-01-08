@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Boulder } from "../../types/Boulder.types";
+import { type IBoulder } from "../../types/Boulder.types";
 import "./Home.scss";
+import { Link } from "react-router-dom";
+
+interface ApiResponse {
+  success: boolean;
+  data: IBoulder[];
+}
 
 interface LocationGroup {
   locationKey: string;
-  boulders: Boulder[];
+  boulders: IBoulder[];
 }
 
 const Home: React.FC = () => {
@@ -31,12 +37,14 @@ const Home: React.FC = () => {
           return;
         }
 
-        const data: Boulder[] = await response.json();
+        const jsonResponse: ApiResponse = await response.json();
+        const boulderData = jsonResponse.data;
 
-        if (Array.isArray(data)) {
-          const map: { [key: string]: Boulder[] } = {};
-          data.forEach((boulder) => {
-            const key = `${boulder.coordinates.lat},${boulder.coordinates.lng}`;
+        if (Array.isArray(boulderData)) {
+          const map: { [key: string]: IBoulder[] } = {};
+
+          boulderData.forEach((boulder) => {
+            const key = boulder.location || "Unknown Location";
 
             if (!map[key]) {
               map[key] = [];
@@ -70,7 +78,11 @@ const Home: React.FC = () => {
             onClick={() => setSelectedGroup(group)}
           >
             <img
-              src={`http://localhost:5000${group.boulders[0].imageUrl}`}
+              src={
+                group.boulders[0]
+                  ? `http://localhost:5000${group.boulders[0].imagesUrl}`
+                  : ""
+              }
               alt="Area preview"
             />
             <div className="info">
@@ -87,11 +99,15 @@ const Home: React.FC = () => {
             <h2>Boulders at this spot</h2>
             <div className="boulder-list">
               {selectedGroup.boulders.map((b) => (
-                <div key={b._id} className="boulder-item">
+                <Link
+                  key={b._id}
+                  to={`/boulder/${b._id}`}
+                  className="boulder-item"
+                >
                   <h4>
                     {b.name} ({b.grade})
                   </h4>
-                </div>
+                </Link>
               ))}
             </div>
             <button onClick={() => setSelectedGroup(null)}>Close</button>

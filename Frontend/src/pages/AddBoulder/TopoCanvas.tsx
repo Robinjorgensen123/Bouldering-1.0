@@ -1,24 +1,26 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./TopoCanvas.scss";
-import { Point } from "../../types/Boulder.types";
+import { ILinePoint } from "../../types/Boulder.types";
 
 interface TopoCanvasProp {
   imageSrc: string;
-  onSavedPoints: (points: Point[]) => void;
+  onSavedPoints: (points: ILinePoint[]) => void;
 }
 
 const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [points, setPoints] = useState<Point[]>([]);
+  const [points, setPoints] = useState<ILinePoint[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  const getCoords = (e: any): Point => {
+  const getCoords = (e: React.MouseEvent | React.TouchEvent): ILinePoint => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
 
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const clientX =
+      "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY =
+      "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
 
     return {
       x: clientX - rect.left,
@@ -82,6 +84,8 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
         onMouseDown={handleStart}
         onMouseUp={handleEnd}
         onMouseMove={handleMove}
+        onMouseLeave={handleEnd}
+        style={{ touchAction: "none" }} // Prevents scroll on mobile while drawing
       />
 
       {points.length > 0 && (

@@ -1,6 +1,7 @@
 import { type Request, type Response } from "express";
 import { User } from "../models/User.js";
 import jwt from "jsonwebtoken";
+import { type AuthResponse } from "../types/User.types.js";
 
 /// Login controller
 export const login = async (req: Request, res: Response) => {
@@ -26,11 +27,17 @@ export const login = async (req: Request, res: Response) => {
       process.env.JWT_SECRET || "fallback_secret",
       { expiresIn: "1h" }
     );
-    res.status(200).json({
-      message: "Login successful",
-      success: true,
+
+    const responseData: AuthResponse = {
       token,
-    });
+      success: true,
+      user: {
+        _id: user._id.toString(),
+        email: user.email,
+        gradingSystem: user.gradingSystem,
+      },
+    };
+    res.status(200).json(responseData);
   } catch (error) {
     res.status(500).json({
       message: "Server error",

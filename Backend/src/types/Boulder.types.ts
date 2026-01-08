@@ -28,6 +28,6 @@ export interface IBoulder {
   imagesUrl?: string;
   topoData?: ITopoData;
   author: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

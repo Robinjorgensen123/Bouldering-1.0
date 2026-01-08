@@ -1,6 +1,8 @@
 import { type Response } from "express";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
 import { User } from "../models/User.js";
+import { type IUser } from "../types/User.types.js";
+import mongoose from "mongoose";
 
 export const updateSettings = async (req: AuthRequest, res: Response) => {
   try {
@@ -15,7 +17,7 @@ export const updateSettings = async (req: AuthRequest, res: Response) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      new mongoose.Types.ObjectId(userId as string),
       { gradingSystem: gradingSystem },
       { new: true, runValidators: true }
     ).select("-password");
@@ -27,10 +29,16 @@ export const updateSettings = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    const userData: IUser = {
+      _id: updatedUser._id.toString(),
+      email: updatedUser.email,
+      gradingSystem: updatedUser.gradingSystem as "font" | "v-scale",
+    };
+
     res.status(200).json({
       message: "User settings updated successfully",
       success: true,
-      data: updatedUser,
+      data: userData,
     });
   } catch (error) {
     res.status(500).json({

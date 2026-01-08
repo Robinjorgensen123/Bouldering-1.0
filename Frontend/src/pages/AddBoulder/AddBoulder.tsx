@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import TopoCanvas from "./TopoCanvas";
 import "./addBoulder.scss";
 import { useNavigate } from "react-router-dom";
+import { ILinePoint } from "../../types/Boulder.types";
 
 const AddBoulder: React.FC = () => {
   const navigate = useNavigate();
@@ -11,9 +12,10 @@ const AddBoulder: React.FC = () => {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [lat, setLat] = useState("");
-  const [lng, setLng] = useState("");
-  const [topoPoints, setTopoPoints] = useState<{ x: number; y: number }[]>([]);
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
+  const [topoPoints, setTopoPoints] = useState<ILinePoint[]>([]);
+  const [location, setLocation] = useState<string>("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -26,18 +28,24 @@ const AddBoulder: React.FC = () => {
   const handleGetCoordinates = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        setLat(position.coords.latitude.toString());
-        setLng(position.coords.longitude.toString());
+        setLat(position.coords.latitude);
+        setLng(position.coords.longitude);
       });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (lat == null || lng === null) {
+      alert("Please get the coordinates first!");
+      return;
+    }
     const token = localStorage.getItem("token");
     const formData = new FormData();
 
     formData.append("name", name);
+    formData.append("location", location);
     formData.append("grade", grade);
     formData.append("description", description);
 
@@ -45,7 +53,10 @@ const AddBoulder: React.FC = () => {
 
     if (file) formData.append("image", file);
 
-    formData.append("topoData", JSON.stringify({ points: topoPoints }));
+    formData.append(
+      "topoData",
+      JSON.stringify({ linePoints: topoPoints, holds: [] })
+    );
 
     try {
       const response = await fetch("http://localhost:5000/api/boulders", {
@@ -89,7 +100,7 @@ const AddBoulder: React.FC = () => {
           />
         </div>
 
-        <div className="input-groud">
+        <div className="input-group">
           <label htmlFor="description">Description</label>
           <textarea
             id="description"
@@ -117,6 +128,18 @@ const AddBoulder: React.FC = () => {
             type="file"
             accept="image/*"
             onChange={handleFileChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="location">Area / Sector</label>
+          <input
+            id="location"
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g Sektor B"
+            required
           />
         </div>
 

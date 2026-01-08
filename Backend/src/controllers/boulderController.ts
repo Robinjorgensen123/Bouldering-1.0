@@ -1,19 +1,31 @@
 import { type Response } from "express";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
+import { type IBoulder } from "../types/Boulder.types.js";
 import { Boulder } from "../models/Boulder.js";
 import { User } from "../models/User.js";
 import { convertToFont, convertToVScale } from "../utils/gradeConverter.js";
 
 export const createBoulder = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, grade, description, coordinates, imagesUrl, topoData } =
-      req.body;
+    let {
+      name,
+      grade,
+      description,
+      coordinates,
+      location,
+      imagesUrl,
+      topoData,
+    } = req.body;
     const userId = req.userId;
 
+    if (typeof coordinates === "string") {
+      coordinates = JSON.parse(coordinates);
+    }
+    if (typeof topoData === "string" && topoData !== "") {
+      topoData = JSON.parse(topoData);
+    }
+
     const user = await User.findById(userId);
-    console.log(
-      `DEBUG: User ${user?.email} has gradingSystem: ${user?.gradingSystem}`
-    );
     if (!user) {
       return res
         .status(404)
@@ -27,11 +39,13 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
     if (user.gradingSystem?.toLowerCase() === "v-scale") {
       gradeToSave = convertToFont(grade);
     }
+
     const newBoulder = new Boulder({
       name,
       grade: gradeToSave.toUpperCase(),
       description,
-      location: coordinates,
+      location,
+      coordinates,
       imagesUrl: finalImageUrl,
       topoData,
       author: userId,
@@ -56,8 +70,8 @@ export const getBoulders = async (req: AuthRequest, res: Response) => {
 
     const boulders = await Boulder.find();
 
-    const formattedBoulders = boulders.map((boulder) => {
-      const b = boulder.toObject();
+    const formattedBoulders: IBoulder[] = boulders.map((boulder) => {
+      const b = boulder.toObject() as unknown as IBoulder;
 
       if (user?.gradingSystem === "v-scale") {
         b.grade = convertToVScale(b.grade);
@@ -133,8 +147,14 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
     }
 
     if (req.body.coordinates) {
-      updateFields.location = req.body.coordinates;
-      delete updateFields.coordinates;
+      updateFields.coordinates =
+        typeof req.body.coordinates === "string"
+          ? JSON.parse(req.body.coordinates)
+          : req.body.coordinates;
+    }
+
+    if (req.body.location) {
+      updateFields.location = req.body.location;
     }
 
     if (req.body.grade) {
@@ -153,7 +173,7 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Boulder updated successfully",
-      data: updatedBoulder,
+      data: updatedBoulder as unknown as IBoulder,
     });
   } catch (error) {
     res.status(500).json({

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
 import "./Login.scss";
+import { AuthResponse } from "../../types/User.types";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,8 +14,16 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token);
+      const response = await api.post<AuthResponse>("/auth/login", {
+        email,
+        password,
+      });
+
+      const { token, user } = response.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("gradingSystem", user.gradingSystem);
+
       navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
