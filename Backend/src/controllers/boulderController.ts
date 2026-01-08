@@ -56,7 +56,7 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
     res.status(201).json({
       message: "Boulder created successfully",
       success: true,
-      data: newBoulder,
+      data: newBoulder.toObject() as unknown as IBoulder,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", success: false });
