@@ -12,22 +12,27 @@ describe("Home Page Grouping Test", () => {
   it("should group boulders with same coordinates", async () => {
     (globalThis.fetch as any).mockResolvedValue({
       ok: true,
-      json: async () => [
-        {
-          _id: "1",
-          name: "Boulder A",
-          grade: "6A",
-          imageUrl: "/img1.jpg",
-          coordinates: { lat: "59.3", lng: "18.0" },
-        },
-        {
-          _id: "2",
-          name: "Boulder B",
-          grade: "7A",
-          imageUrl: "/img2.jpg",
-          coordinates: { lat: "59.3", lng: "18.0" },
-        },
-      ],
+      json: async () => ({
+        success: true,
+        data: [
+          {
+            _id: "1",
+            name: "Boulder A",
+            grade: "6A",
+            imagesUrl: "/img1.jpg",
+            location: "Sektor A",
+            coordinates: { lat: 59.3, lng: 18.0 },
+          },
+          {
+            _id: "2",
+            name: "Boulder B",
+            grade: "7A",
+            imagesUrl: "/img2.jpg",
+            location: "Sektor A",
+            coordinates: { lat: 59.3, lng: 18.0 },
+          },
+        ],
+      }),
     });
 
     render(<Home />);

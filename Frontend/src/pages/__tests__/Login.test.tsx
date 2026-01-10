@@ -59,7 +59,14 @@ describe("Login Page", () => {
   it("should store token and navigate to home on success", async () => {
     const user = userEvent.setup();
     const fakeToken = "valid-jwt-token";
-    (api.post as any).mockResolvedValueOnce({ data: { token: fakeToken } });
+    (api.post as any).mockResolvedValueOnce({
+      data: {
+        success: true,
+        token: fakeToken,
+        user: { _id: "123", email: "user@test.com", gradingSystem: "font" },
+        message: "Login successful",
+      },
+    });
 
     render(
       <BrowserRouter>

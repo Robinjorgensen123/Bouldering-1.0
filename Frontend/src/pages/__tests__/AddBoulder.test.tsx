@@ -113,9 +113,15 @@ describe("AddBoulder test", () => {
     await user.type(screen.getByLabelText(/name/i), "Midnight Lightning");
     await user.type(screen.getByLabelText(/grade/i), "7B");
     await user.type(screen.getByLabelText(/description/i), "Classic");
+    await user.type(screen.getByLabelText(/area \/ sector/i), "Yosemite");
 
     const file = new File(["image"], "boulder.png", { type: "image/png" });
     await user.upload(screen.getByLabelText(/select image/i), file);
+
+    const getCoordsBtn = screen.getByRole("button", {
+      name: /get coordinates/i,
+    });
+    await user.click(getCoordsBtn);
 
     const canvas = screen.getByLabelText("topo-canvas");
     fireEvent.touchStart(canvas, { touches: [{ clientX: 50, clientY: 50 }] });
@@ -125,16 +131,26 @@ describe("AddBoulder test", () => {
     await user.click(submitBtn);
 
     await waitFor(() => {
-      const calls = (globalThis.fetch as any).mock.calls;
-      const formData = calls[0][1].body as FormData;
+      const fetchMock = globalThis.fetch as any;
+      expect(fetchMock).toHaveBeenCalled();
 
-      expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ method: "POST" })
-      );
+      const calls = fetchMock.mock.calls;
 
-      const topoData = JSON.parse(formData.get("topoData") as string);
-      expect(topoData.points.length).toBeGreaterThan(0);
+      const postCall = calls.find((call: any) => call[1]?.method === "POST");
+
+      expect(postCall).toBeDefined();
+
+      const formData = postCall[1].body as FormData;
+
+      expect(formData.get("name")).toBe("Midnight Lightning");
+      expect(formData.get("location")).toBe("Yosemite");
+
+      const topoDataRaw = formData.get("topoData");
+      expect(topoDataRaw).toBeDefined();
+
+      const topoData = JSON.parse(topoDataRaw as string);
+
+      expect(topoData.linePoints.length).toBeGreaterThan(0);
     });
   });
 });
