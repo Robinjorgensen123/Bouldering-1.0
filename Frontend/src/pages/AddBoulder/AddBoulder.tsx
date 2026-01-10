@@ -3,6 +3,7 @@ import TopoCanvas from "./TopoCanvas";
 import "./addBoulder.scss";
 import { useNavigate } from "react-router-dom";
 import { ILinePoint } from "../../types/Boulder.types";
+import { useGeolocation } from "../../hooks/useGeolocation";
 
 const AddBoulder: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ const AddBoulder: React.FC = () => {
   const [topoPoints, setTopoPoints] = useState<ILinePoint[]>([]);
   const [location, setLocation] = useState<string>("");
 
+  const { getLocation, loading: geoLoading } = useGeolocation();
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
@@ -25,12 +28,13 @@ const AddBoulder: React.FC = () => {
     }
   };
 
-  const handleGetCoordinates = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setLat(position.coords.latitude);
-        setLng(position.coords.longitude);
-      });
+  const handleGetCoordinates = async () => {
+    try {
+      const coords = await getLocation();
+      setLat(coords.lat);
+      setLng(coords.lng);
+    } catch (err) {
+      alert("could not retrieve location:" + err);
     }
   };
 
@@ -38,7 +42,7 @@ const AddBoulder: React.FC = () => {
     e.preventDefault();
 
     if (lat == null || lng === null) {
-      alert("Please get the coordinates first!");
+      alert("Pleace acquire coordinates before uploading!");
       return;
     }
     const token = localStorage.getItem("token");
@@ -71,7 +75,7 @@ const AddBoulder: React.FC = () => {
         navigate("/");
       }
     } catch (err) {
-      console.error("Submit error", err);
+      console.error("Upload failed", err);
     }
   };
 
@@ -85,6 +89,7 @@ const AddBoulder: React.FC = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="Boulder name"
             required
           />
         </div>
@@ -106,17 +111,22 @@ const AddBoulder: React.FC = () => {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe the route"
           />
         </div>
 
         <div className="coords-section">
-          <button type="button" onClick={handleGetCoordinates}>
-            Get Coordinates
+          <button
+            type="button"
+            onClick={handleGetCoordinates}
+            disabled={geoLoading}
+          >
+            {geoLoading ? "Acquiring location..." : "Get Coordinates"}
           </button>
           {lat && lng && (
             <div className="coords-display">
-              <p>Lat: {lat}</p>
-              <p>Lng: {lng}</p>
+              <p>Lat: {lat.toFixed(5)}</p>
+              <p>Lng: {lng.toFixed(5)}</p>
             </div>
           )}
         </div>
@@ -138,18 +148,21 @@ const AddBoulder: React.FC = () => {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g Sektor B"
+            placeholder="e.g Sector B"
             required
           />
         </div>
 
         {preview && (
-          <TopoCanvas
-            imageSrc={preview}
-            onSavedPoints={(points) => setTopoPoints(points)}
-          />
+          <div className="topo-container">
+            <label>Draw Topo Line:</label>
+            <TopoCanvas
+              imageSrc={preview}
+              onSavedPoints={(points) => setTopoPoints(points)}
+            />
+          </div>
         )}
-        <button type="submit">Upload</button>
+        <button type="submit">Upload Boulder</button>
       </form>
     </div>
   );

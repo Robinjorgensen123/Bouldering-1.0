@@ -15,12 +15,11 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 1rem; // Ökade gappet lite för bättre luftighet
+    gap: 1rem;
   }
 
   .input-group,
   .input-groud {
-    // Hanterar båda dina klassnamn
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
@@ -52,7 +51,6 @@
     resize: vertical;
   }
 
-  // Flyttade in dessa inuti containern
   .coords-section {
     background-color: #fff;
     padding: 1rem;
