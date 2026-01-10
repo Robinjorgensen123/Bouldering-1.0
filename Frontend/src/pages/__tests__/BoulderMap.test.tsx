@@ -1,6 +1,6 @@
-import { render, screen } from "testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import BoulderMap from "./BoulderMap";
+import BoulderMap from "../../components/BoulderMap/BoulderMap";
 import { IBoulder } from "../../types/Boulder.types";
 import { BrowserRouter } from "react-router-dom";
 
@@ -50,5 +50,16 @@ describe("BoulderMap Component", () => {
 
     const markers = container.querySelectorAll(".leaflet-marker-icon");
     expect(markers.length).toBe(mockBoulders.length);
+  });
+
+  it("should have the correct wrapper class for styling", () => {
+    render(
+      <BrowserRouter>
+        <BoulderMap boulders={mockBoulders} />
+      </BrowserRouter>
+    );
+
+    const wrapper = screen.getByTestId("map-wrapper");
+    expect(wrapper).toHaveClass("boulder-map-wrapper");
   });
 });
