@@ -25,9 +25,10 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 interface Props {
   boulders: IBoulder[];
+  isFullScreen?: boolean;
 }
 
-const BoulderMap = ({ boulders }: Props) => {
+const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
   //Default coordinates to Gothenburg
   const defaultCenter: [number, number] = [57.7089, 11.9746];
 
@@ -36,17 +37,25 @@ const BoulderMap = ({ boulders }: Props) => {
       ? [boulders[0].coordinates.lat, boulders[0].coordinates.lng]
       : defaultCenter;
 
+  const mapHeight = isFullScreen ? "100%" : "400px";
+  const marginBottom = isFullScreen ? "0" : "2rem";
+  const borderRadius = isFullScreen ? "0" : "10px";
+
   return (
     <div
-      className="boulder-map-wrapper"
-      style={{ height: "400px", width: "100%", marginBottom: "2rem" }}
+      className={`boulder-map-wrapper ${isFullScreen ? "full-screen" : ""}`}
+      style={{
+        height: mapHeight,
+        width: "100%",
+        marginBottom: marginBottom,
+      }}
       data-testid="map-wrapper"
     >
       <MapContainer
         center={center}
         zoom={11}
         scrollWheelZoom={false}
-        style={{ height: "100%", width: "100%", borderRadius: "10px" }}
+        style={{ height: "100%", width: "100%", borderRadius: borderRadius }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

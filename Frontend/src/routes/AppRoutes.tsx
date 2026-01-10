@@ -4,12 +4,14 @@ import Register from "../pages/Register/Register";
 import AddBoulder from "../pages/AddBoulder/AddBoulder";
 import Home from "../pages/Home/Home";
 import ProtectedRoute from "./ProtectedRoute";
+import Map from "../pages/Map/Map";
 
 const AppRoutes = () => {
   return (
     <Routes>
       {/**Open routes */}
       <Route path="/" element={<Home />} />
+      <Route path="/map" element={<Map />} />
       <Route path="/login" element={<Login />} />
       <Route path="register" element={<Register />} />
 

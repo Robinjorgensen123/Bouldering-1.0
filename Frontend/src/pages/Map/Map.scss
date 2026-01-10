@@ -1,0 +1,19 @@
+.map-page-wrapper {
+  width: 100%;
+  height: calc(100vh - 64px);
+  position: relative;
+  overflow: hidden;
+
+  .boulder-map-wrapper {
+    height: 100% !important;
+    margin-bottom: 0;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-page-wrapper {
+    height: calc(100vh - 60px);
+  }
+}

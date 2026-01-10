@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { type IBoulder } from "../../types/Boulder.types";
 import "./Home.scss";
 import { Link } from "react-router-dom";
+import BoulderMap from "../../components/BoulderMap/BoulderMap";
 
 interface ApiResponse {
   success: boolean;
@@ -14,10 +15,12 @@ interface LocationGroup {
 }
 
 const Home: React.FC = () => {
+  const [allBoulders, setAllBoulders] = useState<IBoulder[]>([]);
   const [groups, setGroups] = useState<LocationGroup[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<LocationGroup | null>(
     null
   );
+  const [view, setView] = useState<"grid" | "map">("grid");
 
   useEffect(() => {
     const fetchBoulders = async () => {
@@ -41,6 +44,7 @@ const Home: React.FC = () => {
         const boulderData = jsonResponse.data;
 
         if (Array.isArray(boulderData)) {
+          setAllBoulders(boulderData);
           const map: { [key: string]: IBoulder[] } = {};
 
           boulderData.forEach((boulder) => {
@@ -69,29 +73,50 @@ const Home: React.FC = () => {
 
   return (
     <div className="home-page">
-      <h1>Boulder Areas</h1>
-      <div className="location-grid">
-        {groups.map((group) => (
-          <div
-            key={group.locationKey}
-            className="location-card"
-            onClick={() => setSelectedGroup(group)}
+      <header className="home-header">
+        <h1>Boulder Areas</h1>
+        <div className="view-toggle">
+          <button
+            className={view === "grid" ? "active" : ""}
+            onClick={() => setView("grid")}
           >
-            <img
-              src={
-                group.boulders[0]
-                  ? `http://localhost:5000${group.boulders[0].imagesUrl}`
-                  : ""
-              }
-              alt="Area preview"
-            />
-            <div className="info">
-              <p>{group.boulders.length} boulders at this location</p>
-              <h3>Spot: {group.locationKey}</h3>
+            List
+          </button>
+          <button
+            className={view === "map" ? "active" : ""}
+            onClick={() => setView("map")}
+          >
+            Map
+          </button>
+        </div>
+      </header>
+
+      {view === "map" ? (
+        <BoulderMap boulders={allBoulders} />
+      ) : (
+        <div className="location-grid">
+          {groups.map((group) => (
+            <div
+              key={group.locationKey}
+              className="location-card"
+              onClick={() => setSelectedGroup(group)}
+            >
+              <img
+                src={
+                  group.boulders[0]?.imagesUrl
+                    ? `http://localhost:5000${group.boulders[0].imagesUrl}`
+                    : ""
+                }
+                alt="Area preview"
+              />
+              <div className="info">
+                <p>{group.boulders.length} boulders at this location</p>
+                <h3>Spot: {group.locationKey}</h3>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {selectedGroup && (
         <div className="modal-overlay" onClick={() => setSelectedGroup(null)}>
