@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TopoCanvas from "./TopoCanvas";
-import "./addBoulder.scss";
+import "./AddBoulder.scss";
 import { useNavigate } from "react-router-dom";
 import { ILinePoint } from "../../types/Boulder.types";
 import { useGeolocation } from "../../hooks/useGeolocation";
