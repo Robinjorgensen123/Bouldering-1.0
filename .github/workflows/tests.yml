@@ -1,4 +1,4 @@
-name: Backend CI
+name: Project CI (Frontend & Backend)
 
 on:
   push:
@@ -7,25 +7,42 @@ on:
     branches: [main, "dev"]
 
 jobs:
-  test:
+  backend-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
-          # Berätta var package-lock.json finns (eftersom vi är i /backend)
           cache-dependency-path: Backend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install BE dependencies
         run: npm install
         working-directory: ./Backend
 
-      - name: Run Vitest
+      - name: Run Backend Tests
         run: npm test
         working-directory: ./Backend
+
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install FE dependencies
+        run: npm install
+        working-directory: ./Frontend
+
+      - name: Run Frontend Tests
+        run: npm test
+        working-directory: ./Frontend
