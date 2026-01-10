@@ -18,13 +18,6 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
     } = req.body;
     const userId = req.userId;
 
-    if (typeof coordinates === "string") {
-      coordinates = JSON.parse(coordinates);
-    }
-    if (typeof topoData === "string" && topoData !== "") {
-      topoData = JSON.parse(topoData);
-    }
-
     const user = await User.findById(userId);
     if (!user) {
       return res

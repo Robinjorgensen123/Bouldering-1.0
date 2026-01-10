@@ -21,7 +21,7 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     return {
       folder: "boulders",
-      allowed_formats: ["jpg", "png", "jpeg"],
+      allowed_formats: ["jpg", "png", "jpeg", "webp", "heic"],
       transformation: [{ width: 1200, height: 1200, crop: "limit" }],
     };
   },

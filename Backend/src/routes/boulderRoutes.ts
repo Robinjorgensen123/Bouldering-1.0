@@ -10,6 +10,7 @@ import { validate } from "../middleware/validate.js";
 import { validateId } from "../middleware/validateId.js";
 import { boulderSchema } from "../validators/boulderValidator.js";
 import { upload } from "../config/cloudinary.js";
+import { parseFormData } from "../middleware/parseMiddleware.js";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.post(
   "/",
   protect,
   upload.single("image"),
+  parseFormData,
   validate(boulderSchema),
   createBoulder
 );
