@@ -1,0 +1,27 @@
+.settings-container {
+  padding: 20px;
+
+  .settings-section {
+    margin-top: 20px;
+
+    .scale-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+
+      button {
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        background-color: white;
+        cursor: pointer;
+        border-radius: 5px;
+
+        &.active {
+          background-color: #2563eb;
+          color: white;
+          border-color: #2453eb;
+        }
+      }
+    }
+  }
+}

@@ -5,6 +5,7 @@ import AddBoulder from "../pages/AddBoulder/AddBoulder";
 import Home from "../pages/Home/Home";
 import ProtectedRoute from "./ProtectedRoute";
 import Map from "../pages/Map/Map";
+import UserSettings from "../pages/UserSettings/UserSettings";
 
 const AppRoutes = () => {
   return (
@@ -13,7 +14,8 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/map" element={<Map />} />
       <Route path="/login" element={<Login />} />
-      <Route path="register" element={<Register />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/settings" element={<UserSettings />} />
 
       {/**Protected Routes*/}
       <Route

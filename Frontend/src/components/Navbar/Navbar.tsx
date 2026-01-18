@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Map, PlusSquare, Home } from "lucide-react";
+import { Map, PlusSquare, Home, Settings } from "lucide-react";
 import "./Navbar.scss";
 
 const Navbar = () => {
@@ -40,6 +40,16 @@ const Navbar = () => {
           >
             <PlusSquare size={20} />
             <span>Add</span>
+          </NavLink>
+
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              isActive ? "nav-item active" : "nav-item"
+            }
+          >
+            <Settings size={20} />
+            <span>Settings</span>
           </NavLink>
         </div>
       </div>

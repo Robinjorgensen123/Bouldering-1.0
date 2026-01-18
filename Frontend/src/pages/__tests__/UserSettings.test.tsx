@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import UserSettings from "../UserSettings/UserSettings";
 import "@testing-library/jest-dom";
-import { User } from "lucide-react";
 
 describe("UserSettings Page", () => {
   beforeEach(() => {
@@ -14,7 +13,7 @@ describe("UserSettings Page", () => {
     render(<UserSettings />);
 
     expect(screen.getByText(/Grading System/i)).toBeInTheDocument();
-    expect(screen.getByText(/Fontainbleau/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fontainebleau/i)).toBeInTheDocument();
     expect(screen.getByText(/V-Scale/i)).toBeInTheDocument();
   });
 
