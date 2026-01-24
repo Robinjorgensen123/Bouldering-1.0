@@ -39,7 +39,7 @@ const Navbar = () => {
             }
           >
             <PlusSquare size={20} />
-            <span>Add</span>
+            <span>Add New Boulder</span>
           </NavLink>
 
           <NavLink
