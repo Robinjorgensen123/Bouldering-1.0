@@ -160,7 +160,7 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
     const updatedBoulder = await Boulder.findByIdAndUpdate(
       id,
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     res.status(200).json({
