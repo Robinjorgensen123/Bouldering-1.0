@@ -3,12 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
 import "./Login.scss";
 import { AuthResponse } from "../../types/User.types";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,8 +23,7 @@ const Login = () => {
 
       const { token, user } = response.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("gradingSystem", user.gradingSystem);
+      login(token, user);
 
       navigate("/");
     } catch (err: any) {

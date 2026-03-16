@@ -12,3 +12,11 @@ export interface AuthResponse {
   success: boolean;
   message?: string;
 }
+
+export interface AuthContextType {
+  user: IUser | null;
+  token: string | null;
+  login: (token: string, user: IUser) => void;
+  logout: () => void;
+  updateUser: (updatedUser: IUser) => void;
+}

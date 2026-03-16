@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddBoulder from "../AddBoulder/AddBoulder";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "../../context/AuthContext";
 
 const storageMock = () => {
   vi.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
@@ -14,11 +15,13 @@ const storageMock = () => {
 const renderWithRouter = () => {
   return render(
     <MemoryRouter initialEntries={["/add"]}>
-      <Routes>
-        <Route path="/add" element={<AddBoulder />} />
-        <Route path="/" element={<div>Home</div>} />
-      </Routes>
-    </MemoryRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/add" element={<AddBoulder />} />
+          <Route path="/" element={<div>Home</div>} />
+        </Routes>
+      </AuthProvider>
+    </MemoryRouter>,
   );
 };
 
@@ -36,7 +39,7 @@ describe("AddBoulder test", () => {
             latitude: 57.7089,
             longitude: 11.9746,
           },
-        })
+        }),
       ),
     };
     (globalThis.navigator as any).geolocation = mockGeolocation;
@@ -50,7 +53,7 @@ describe("AddBoulder test", () => {
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/select image/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /get coordinates/i })
+      screen.getByRole("button", { name: /get coordinates/i }),
     ).toBeInTheDocument();
   });
 
@@ -97,7 +100,7 @@ describe("AddBoulder test", () => {
     fireEvent.touchEnd(canvas);
 
     expect(
-      screen.getByRole("button", { name: /reset line/i })
+      screen.getByRole("button", { name: /reset line/i }),
     ).toBeInTheDocument();
   });
 

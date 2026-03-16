@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import { type IBoulder } from "../../types/Boulder.types";
 import "./Home.scss";
 import { Link } from "react-router-dom";
@@ -18,15 +19,17 @@ const Home: React.FC = () => {
   const [allBoulders, setAllBoulders] = useState<IBoulder[]>([]);
   const [groups, setGroups] = useState<LocationGroup[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<LocationGroup | null>(
-    null
+    null,
   );
   const [view, setView] = useState<"grid" | "map">("grid");
 
+  const { token } = useAuth();
+
   useEffect(() => {
     const fetchBoulders = async () => {
-      try {
-        const token = localStorage.getItem("token");
+      if (!token) return;
 
+      try {
         const response = await fetch("http://localhost:5000/api/boulders", {
           method: "GET",
           headers: {

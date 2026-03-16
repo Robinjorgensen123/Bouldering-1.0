@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import ProtectedRoute from "../ProtectedRoute";
+import { AuthProvider } from "../../context/AuthContext";
 import "@testing-library/jest-dom";
 
 const MockAddBoulder = () => <div>Add Boulder Page</div>;
@@ -15,17 +16,19 @@ describe("ProtectedRoute", () => {
   it("it should redirect to login if no token is present", () => {
     render(
       <MemoryRouter initialEntries={["/add"]}>
-        <Routes>
-          <Route
-            path="/add"
-            element={
-              <ProtectedRoute>
-                <MockAddBoulder />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<MockLogin />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route
+              path="/add"
+              element={
+                <ProtectedRoute>
+                  <MockAddBoulder />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<MockLogin />} />
+          </Routes>
+        </AuthProvider>
       </MemoryRouter>,
     );
     expect(screen.queryByText(/Add Boulder Page/)).not.toBeInTheDocument();
@@ -37,17 +40,19 @@ describe("ProtectedRoute", () => {
 
     render(
       <MemoryRouter initialEntries={["/add"]}>
-        <Routes>
-          <Route
-            path="/add"
-            element={
-              <ProtectedRoute>
-                <MockAddBoulder />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<MockLogin />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route
+              path="/add"
+              element={
+                <ProtectedRoute>
+                  <MockAddBoulder />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<MockLogin />} />
+          </Routes>
+        </AuthProvider>
       </MemoryRouter>,
     );
     expect(screen.getByText(/Add Boulder Page/)).toBeInTheDocument();

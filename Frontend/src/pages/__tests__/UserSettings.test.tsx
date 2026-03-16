@@ -1,35 +1,60 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import UserSettings from "../UserSettings/UserSettings";
+import { AuthProvider } from "../../context/AuthContext";
 import "@testing-library/jest-dom";
 
 describe("UserSettings Page", () => {
   beforeEach(() => {
     localStorage.clear();
-    vi.spyOn(Storage.prototype, "setItem");
+    vi.spyOn(localStorage, "setItem");
+    const mockUser = {
+      _id: "1",
+      email: "test@test.com",
+      gradingSystem: "font",
+    };
+    localStorage.setItem("user", JSON.stringify(mockUser));
+    localStorage.setItem("token", "mock-token");
+    vi.clearAllMocks();
   });
 
   it("should render the grading system options", () => {
-    render(<UserSettings />);
+    render(
+      <AuthProvider>
+        <UserSettings />
+      </AuthProvider>,
+    );
 
     expect(screen.getByText(/Grading System/i)).toBeInTheDocument();
     expect(screen.getByText(/Fontainebleau/i)).toBeInTheDocument();
     expect(screen.getByText(/V-Scale/i)).toBeInTheDocument();
   });
 
-  it("should update localstorage when a scale is selected", () => {
-    render(<UserSettings />);
+  it("should update localstorage when a scale is selected", async () => {
+    render(
+      <AuthProvider>
+        <UserSettings />
+      </AuthProvider>,
+    );
 
     const vScaleButton = screen.getByLabelText(/V-Scale/i);
-
     fireEvent.click(vScaleButton);
 
-    expect(localStorage.setItem).toHaveBeenCalledWith("gradeScale", "v-scale");
-    expect(localStorage.getItem("gradeScale")).toBe("v-scale");
+    await waitFor(
+      () => {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        expect(storedUser.gradingSystem).toBe("v-scale");
+      },
+      { timeout: 2000 },
+    );
   });
 
   it("shold show the active class on the selected scale", () => {
-    render(<UserSettings />);
+    render(
+      <AuthProvider>
+        <UserSettings />
+      </AuthProvider>,
+    );
 
     const fontButton = screen.getByText(/Fontainebleau/i);
     const vButton = screen.getByText(/V-Scale/i);

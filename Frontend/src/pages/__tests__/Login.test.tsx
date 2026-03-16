@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import api from "../../services/api";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "../Login/Login";
+import { AuthProvider } from "../../context/AuthContext";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -26,8 +27,10 @@ describe("Login Page", () => {
   it("should render all input fields and login button", () => {
     render(
       <BrowserRouter>
-        <Login />
-      </BrowserRouter>
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -43,8 +46,10 @@ describe("Login Page", () => {
 
     render(
       <BrowserRouter>
-        <Login />
-      </BrowserRouter>
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      </BrowserRouter>,
     );
 
     await user.type(screen.getByLabelText(/email/i), "wrong@test.com");
@@ -70,8 +75,10 @@ describe("Login Page", () => {
 
     render(
       <BrowserRouter>
-        <Login />
-      </BrowserRouter>
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      </BrowserRouter>,
     );
 
     await user.type(screen.getByLabelText(/email/i), "user@test.com");
