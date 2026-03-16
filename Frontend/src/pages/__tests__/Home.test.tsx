@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Home from "../Home/Home";
 import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "../../context/AuthContext";
 
 vi.mock("../../components/BoulderMap/BoulderMap", () => ({
   default: () => <div data-testid="mock-map">Map View Active</div>,
@@ -12,6 +13,7 @@ vi.mock("../../components/BoulderMap/BoulderMap", () => ({
 describe("Home Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.setItem("token", "mocked_token");
   });
 
   const mockData = {
@@ -62,13 +64,15 @@ describe("Home Page", () => {
 
     render(
       <BrowserRouter>
-        <Home />
-      </BrowserRouter>
+        <AuthProvider>
+          <Home />
+        </AuthProvider>
+      </BrowserRouter>,
     );
 
     await waitFor(() => {
       expect(
-        screen.getByText(/2 boulders at this location/i)
+        screen.getByText(/2 boulders at this location/i),
       ).toBeInTheDocument();
     });
   });
@@ -79,8 +83,10 @@ describe("Home Page", () => {
     });
     render(
       <BrowserRouter>
-        <Home />
-      </BrowserRouter>
+        <AuthProvider>
+          <Home />
+        </AuthProvider>
+      </BrowserRouter>,
     );
 
     const mapBtn = screen.getByRole("button", { name: /map/i });
