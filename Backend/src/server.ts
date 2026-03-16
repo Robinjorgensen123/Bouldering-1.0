@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import boulderRoutes from "./routes/boulderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import historyRoutes from "./routes/historyRoutes.js";
 import connectDB from "./config/db.js";
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/boulders", boulderRoutes);
+app.use("/api/history", historyRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
