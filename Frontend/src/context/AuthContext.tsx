@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { IUser, AuthContextType } from "../types/User.types";
+import { setAuthToken } from "../services/api";
 
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
@@ -18,6 +19,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (savedUser && savedUser !== "undefined") {
       setUser(JSON.parse(savedUser));
     }
+
+    setAuthToken(localStorage.getItem("token"));
   }, []);
 
   const login = (newToken: string, newUser: IUser) => {
@@ -25,6 +28,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setUser(newUser);
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
+    setAuthToken(newToken);
   };
 
   const logout = () => {
@@ -32,6 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    setAuthToken(null);
   };
 
   const updateUser = (updatedUser: IUser) => {

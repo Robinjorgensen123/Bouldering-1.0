@@ -4,11 +4,10 @@ import "./AddBoulder.scss";
 import { useNavigate } from "react-router-dom";
 import { ILinePoint } from "../../types/Boulder.types";
 import { useGeolocation } from "../../hooks/useGeolocation";
-import { useAuth } from "../../hooks/useAuth";
+import api from "../../services/api";
 
 const AddBoulder: React.FC = () => {
   const navigate = useNavigate();
-  const { token } = useAuth();
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
@@ -47,7 +46,7 @@ const AddBoulder: React.FC = () => {
       alert("Pleace acquire coordinates before uploading!");
       return;
     }
-    const token = localStorage.getItem("token");
+
     const formData = new FormData();
 
     formData.append("name", name);
@@ -65,20 +64,8 @@ const AddBoulder: React.FC = () => {
     );
 
     try {
-      if (!token) {
-        alert("You must be logged in to add a boulder.");
-        return;
-      }
-
-      const response = await fetch("http://localhost:5000/api/boulders", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
+      const response = await api.post("/boulders", formData);
+      if (response.status === 200 || response.status === 201) {
         navigate("/");
       }
     } catch (err) {

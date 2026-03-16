@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import api from "../../services/api";
 import { type IBoulder } from "../../types/Boulder.types";
 import "./Home.scss";
 import { Link } from "react-router-dom";
@@ -30,29 +31,16 @@ const Home: React.FC = () => {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:5000/api/boulders", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 401) {
-          console.error("Not logged in, or token expired");
-          return;
-        }
-
-        const jsonResponse: ApiResponse = await response.json();
-        const boulderData = jsonResponse.data;
+        const response = await api.get<ApiResponse>("/boulders");
+        const boulderData = response.data.data;
 
         if (Array.isArray(boulderData)) {
           setAllBoulders(boulderData);
+
           const map: { [key: string]: IBoulder[] } = {};
 
           boulderData.forEach((boulder) => {
             const key = boulder.location || "Unknown Location";
-
             if (!map[key]) {
               map[key] = [];
             }
@@ -72,7 +60,7 @@ const Home: React.FC = () => {
     };
 
     fetchBoulders();
-  }, []);
+  }, [token]);
 
   return (
     <div className="home-page">

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import Home from "../Home/Home";
+import api from "../../services/api";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "../../context/AuthContext";
 
@@ -8,7 +9,10 @@ vi.mock("../../components/BoulderMap/BoulderMap", () => ({
   default: () => <div data-testid="mock-map">Map View Active</div>,
 }));
 
-(globalThis.fetch as any) = vi.fn();
+vi.mock("../../services/api", () => ({
+  default: { get: vi.fn() },
+  setAuthToken: vi.fn(),
+}));
 
 describe("Home Page", () => {
   beforeEach(() => {
@@ -37,9 +41,8 @@ describe("Home Page", () => {
   };
 
   it("should group boulders with same coordinates", async () => {
-    (globalThis.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({
+    (api.get as any).mockResolvedValue({
+      data: {
         success: true,
         data: [
           {
@@ -59,7 +62,7 @@ describe("Home Page", () => {
             coordinates: { lat: 59.3, lng: 18.0 },
           },
         ],
-      }),
+      },
     });
 
     render(
@@ -77,9 +80,8 @@ describe("Home Page", () => {
     });
   });
   it("should toggle between grid and map view when buttons are clicked", async () => {
-    (globalThis.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({ success: true, data: [] }),
+    (api.get as any).mockResolvedValue({
+      data: { success: true, data: [] },
     });
     render(
       <BrowserRouter>

@@ -16,6 +16,7 @@ vi.mock("../../services/api", () => ({
   default: {
     post: vi.fn(),
   },
+  setAuthToken: vi.fn(),
 }));
 
 describe("Login Page", () => {

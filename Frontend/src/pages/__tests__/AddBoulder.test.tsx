@@ -2,8 +2,13 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddBoulder from "../AddBoulder/AddBoulder";
+import api from "../../services/api";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "../../context/AuthContext";
+
+vi.mock("../../services/api", () => ({
+  default: { post: vi.fn() },
+  setAuthToken: vi.fn(),
+}));
 
 const storageMock = () => {
   vi.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
@@ -15,12 +20,10 @@ const storageMock = () => {
 const renderWithRouter = () => {
   return render(
     <MemoryRouter initialEntries={["/add"]}>
-      <AuthProvider>
-        <Routes>
-          <Route path="/add" element={<AddBoulder />} />
-          <Route path="/" element={<div>Home</div>} />
-        </Routes>
-      </AuthProvider>
+      <Routes>
+        <Route path="/add" element={<AddBoulder />} />
+        <Route path="/" element={<div>Home</div>} />
+      </Routes>
     </MemoryRouter>,
   );
 };
@@ -28,7 +31,6 @@ const renderWithRouter = () => {
 describe("AddBoulder test", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    globalThis.fetch = vi.fn();
     globalThis.URL.createObjectURL = vi.fn(() => "mock-url");
     storageMock();
 
@@ -105,45 +107,53 @@ describe("AddBoulder test", () => {
   });
 
   it("should submit the form and include topoData in the FormData", async () => {
-    const user = userEvent.setup();
-    (globalThis.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({ success: true }),
+    (api.post as any).mockResolvedValue({
+      status: 201,
+      data: { success: true },
     });
 
     renderWithRouter();
 
-    await user.type(screen.getByLabelText(/name/i), "Midnight Lightning");
-    await user.type(screen.getByLabelText(/grade/i), "7B");
-    await user.type(screen.getByLabelText(/description/i), "Classic");
-    await user.type(screen.getByLabelText(/area \/ sector/i), "Yosemite");
+    fireEvent.change(screen.getByLabelText(/name/i), {
+      target: { value: "Midnight Lightning" },
+    });
+    fireEvent.change(screen.getByLabelText(/grade/i), {
+      target: { value: "7B" },
+    });
+    fireEvent.change(screen.getByLabelText(/description/i), {
+      target: { value: "Classic" },
+    });
+    fireEvent.change(screen.getByLabelText(/area \/ sector/i), {
+      target: { value: "Yosemite" },
+    });
 
     const file = new File(["image"], "boulder.png", { type: "image/png" });
-    await user.upload(screen.getByLabelText(/select image/i), file);
+    fireEvent.change(screen.getByLabelText(/select image/i), {
+      target: { files: [file] },
+    });
 
     const getCoordsBtn = screen.getByRole("button", {
       name: /get coordinates/i,
     });
-    await user.click(getCoordsBtn);
+    fireEvent.click(getCoordsBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/57\.7089/)).toBeInTheDocument();
+      expect(screen.getByText(/11\.9746/)).toBeInTheDocument();
+    });
 
     const canvas = screen.getByLabelText("topo-canvas");
     fireEvent.touchStart(canvas, { touches: [{ clientX: 50, clientY: 50 }] });
     fireEvent.touchEnd(canvas);
 
     const submitBtn = screen.getByRole("button", { name: /upload/i });
-    await user.click(submitBtn);
+    fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      const fetchMock = globalThis.fetch as any;
-      expect(fetchMock).toHaveBeenCalled();
+      expect(api.post).toHaveBeenCalled();
 
-      const calls = fetchMock.mock.calls;
-
-      const postCall = calls.find((call: any) => call[1]?.method === "POST");
-
-      expect(postCall).toBeDefined();
-
-      const formData = postCall[1].body as FormData;
+      const postCall = (api.post as any).mock.calls[0];
+      const formData = postCall[1] as FormData;
 
       expect(formData.get("name")).toBe("Midnight Lightning");
       expect(formData.get("location")).toBe("Yosemite");
