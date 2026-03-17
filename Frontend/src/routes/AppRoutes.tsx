@@ -6,6 +6,7 @@ import Home from "../pages/Home/Home";
 import ProtectedRoute from "./ProtectedRoute";
 import Map from "../pages/Map/Map";
 import UserSettings from "../pages/UserSettings/UserSettings";
+import History from "../pages/History/History";
 
 const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/settings" element={<UserSettings />} />
+      <Route path="/history" element={<History />} />
 
       {/**Protected Routes*/}
       <Route
