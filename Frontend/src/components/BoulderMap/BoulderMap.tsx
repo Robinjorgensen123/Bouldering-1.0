@@ -4,13 +4,15 @@ import "leaflet/dist/leaflet.css";
 import "./BoulderMap.scss";
 import { IBoulder } from "../../types/Boulder.types";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import BoulderDetailsPanel from "../BoulderDetailsPanel/BoulderDetailsPanel";
 const markerIcon = new URL(
   "leaflet/dist/images/marker-icon.png",
-  import.meta.url
+  import.meta.url,
 ).href;
 const markerShadow = new URL(
   "leaflet/dist/images/marker-shadow.png",
-  import.meta.url
+  import.meta.url,
 ).href;
 
 const DefaultIcon = L.icon({
@@ -29,9 +31,11 @@ interface Props {
 }
 
 const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
+  const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
+  const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
+
   //Default coordinates to Gothenburg
   const defaultCenter: [number, number] = [57.7089, 11.9746];
-
   const center: [number, number] =
     boulders.length > 0
       ? [boulders[0].coordinates.lat, boulders[0].coordinates.lng]
@@ -40,6 +44,11 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
   const mapHeight = isFullScreen ? "100%" : "400px";
   const marginBottom = isFullScreen ? "0" : "2rem";
   const borderRadius = isFullScreen ? "0" : "10px";
+
+  const handleMarkerClick = (boulder: IBoulder) => {
+    setSelectedBoulder(boulder);
+    setIsDetailsPanelOpen(true);
+  };
 
   return (
     <div
@@ -65,6 +74,9 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
           <Marker
             key={boulder._id}
             position={[boulder.coordinates.lat, boulder.coordinates.lng]}
+            eventHandlers={{
+              click: () => handleMarkerClick(boulder),
+            }}
           >
             <Popup>
               <div className="map-popup">
@@ -78,6 +90,12 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
           </Marker>
         ))}
       </MapContainer>
+
+      <BoulderDetailsPanel
+        boulder={selectedBoulder}
+        isOpen={isDetailsPanelOpen}
+        onClose={() => setIsDetailsPanelOpen(false)}
+      />
     </div>
   );
 };

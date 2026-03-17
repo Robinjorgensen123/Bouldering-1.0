@@ -52,7 +52,7 @@ export const getUserHistory = async (req: AuthRequest, res: Response) => {
       });
     }
     const history = await History.find({ user: req.userId })
-      .populate("boulder", "title grade")
+      .populate("boulder", "name grade")
       .sort({ completedAt: -1 });
 
     return res.status(200).json({
