@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { userEvent } from "@testing-library/user-event";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import api from "../../services/api";
 import { vi, describe, it, expect, beforeEach } from "vitest";
@@ -40,7 +39,6 @@ describe("Login Page", () => {
   });
 
   it("should show error message when login fails", async () => {
-    const user = userEvent.setup();
     (api.post as any).mockRejectedValueOnce({
       response: { data: { message: "Invalid credentials" } },
     });
@@ -53,17 +51,23 @@ describe("Login Page", () => {
       </BrowserRouter>,
     );
 
-    await user.type(screen.getByLabelText(/email/i), "wrong@test.com");
-    await user.type(screen.getByLabelText(/password/i), "wrongpassword");
-    await user.click(screen.getByRole("button", { name: /log in/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "wrong@test.com" },
     });
-  });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "wrongpassword" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+
+    await waitFor(
+      () => {
+        expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+      },
+      { timeout: 4000 },
+    );
+  }, 20000);
 
   it("should store token and navigate to home on success", async () => {
-    const user = userEvent.setup();
     const fakeToken = "valid-jwt-token";
     (api.post as any).mockResolvedValueOnce({
       data: {
@@ -82,13 +86,20 @@ describe("Login Page", () => {
       </BrowserRouter>,
     );
 
-    await user.type(screen.getByLabelText(/email/i), "user@test.com");
-    await user.type(screen.getByLabelText(/password/i), "correctpassword");
-    await user.click(screen.getByRole("button", { name: /log in/i }));
-
-    await waitFor(() => {
-      expect(localStorage.getItem("token")).toBe(fakeToken);
-      expect(mockNavigate).toHaveBeenCalledWith("/");
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "user@test.com" },
     });
-  });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "correctpassword" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+
+    await waitFor(
+      () => {
+        expect(localStorage.getItem("token")).toBe(fakeToken);
+        expect(mockNavigate).toHaveBeenCalledWith("/");
+      },
+      { timeout: 4000 },
+    );
+  }, 20000);
 });

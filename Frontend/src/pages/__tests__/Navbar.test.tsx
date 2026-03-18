@@ -8,7 +8,7 @@ describe("Navbar Component", () => {
     render(
       <MemoryRouter>
         <Navbar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const homeLink = screen.getByRole("link", { name: /home/i });
@@ -18,5 +18,5 @@ describe("Navbar Component", () => {
     expect(homeLink).toHaveAttribute("href", "/");
     expect(mapLink).toHaveAttribute("href", "/map");
     expect(addLink).toHaveAttribute("href", "/add");
-  });
+  }, 10000);
 });

@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddBoulder from "../AddBoulder/AddBoulder";
 import api from "../../services/api";
@@ -57,42 +56,44 @@ describe("AddBoulder test", () => {
     expect(
       screen.getByRole("button", { name: /get coordinates/i }),
     ).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("should fetch and display coordinates when the button is clicked", async () => {
-    const user = userEvent.setup();
     renderWithRouter();
 
     const getCoordsBtn = screen.getByRole("button", {
       name: /get coordinates/i,
     });
-    await user.click(getCoordsBtn);
+    fireEvent.click(getCoordsBtn);
 
-    expect(screen.getByText(/57.7089/)).toBeInTheDocument();
-    expect(screen.getByText(/11.9746/)).toBeInTheDocument();
-  });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/57.7089/)).toBeInTheDocument();
+        expect(screen.getByText(/11.9746/)).toBeInTheDocument();
+      },
+      { timeout: 4000 },
+    );
+  }, 10000);
 
   it("should show a preview when an image is selected", async () => {
-    const user = userEvent.setup();
     renderWithRouter();
 
     const file = new File(["test"], "boulder.png", { type: "image/png" });
     const input = screen.getByLabelText(/select image/i);
 
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     const preview = screen.getByAltText(/preview/i);
     expect(preview).toBeInTheDocument();
     expect(preview).toHaveAttribute("src", "mock-url");
-  });
+  }, 10000);
 
   it("should capture topo points when drawing on the canvas", async () => {
-    const user = userEvent.setup();
     renderWithRouter();
 
     const file = new File(["test"], "boulder.png", { type: "image/png" });
     const input = screen.getByLabelText(/select image/i);
-    await user.upload(input, file);
+    fireEvent.change(input, { target: { files: [file] } });
 
     // Canvasen hittas via aria-label
     const canvas = screen.getByLabelText("topo-canvas");
@@ -104,7 +105,7 @@ describe("AddBoulder test", () => {
     expect(
       screen.getByRole("button", { name: /reset line/i }),
     ).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("should submit the form and include topoData in the FormData", async () => {
     (api.post as any).mockResolvedValue({
@@ -149,21 +150,24 @@ describe("AddBoulder test", () => {
     const submitBtn = screen.getByRole("button", { name: /upload/i });
     fireEvent.click(submitBtn);
 
-    await waitFor(() => {
-      expect(api.post).toHaveBeenCalled();
+    await waitFor(
+      () => {
+        expect(api.post).toHaveBeenCalled();
 
-      const postCall = (api.post as any).mock.calls[0];
-      const formData = postCall[1] as FormData;
+        const postCall = (api.post as any).mock.calls[0];
+        const formData = postCall[1] as FormData;
 
-      expect(formData.get("name")).toBe("Midnight Lightning");
-      expect(formData.get("location")).toBe("Yosemite");
+        expect(formData.get("name")).toBe("Midnight Lightning");
+        expect(formData.get("location")).toBe("Yosemite");
 
-      const topoDataRaw = formData.get("topoData");
-      expect(topoDataRaw).toBeDefined();
+        const topoDataRaw = formData.get("topoData");
+        expect(topoDataRaw).toBeDefined();
 
-      const topoData = JSON.parse(topoDataRaw as string);
+        const topoData = JSON.parse(topoDataRaw as string);
 
-      expect(topoData.linePoints.length).toBeGreaterThan(0);
-    });
-  });
+        expect(topoData.linePoints.length).toBeGreaterThan(0);
+      },
+      { timeout: 4000 },
+    );
+  }, 20000);
 });

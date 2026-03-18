@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Button, Stack } from "@mui/material";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import "./TopoCanvas.scss";
 import { ILinePoint } from "../../types/Boulder.types";
 
@@ -70,7 +72,7 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
   }, [points]);
 
   return (
-    <div className="topo-canvas-container">
+    <Stack className="topo-canvas-container" spacing={2}>
       {/**Uploaded img */}
       <img src={imageSrc} alt="preview" />
       <canvas
@@ -89,11 +91,18 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
       />
 
       {points.length > 0 && (
-        <button type="button" className="reset-btn" onClick={handleReset}>
+        <Button
+          type="button"
+          className="reset-btn"
+          onClick={handleReset}
+          variant="outlined"
+          startIcon={<RestartAltRoundedIcon />}
+          sx={{ alignSelf: "flex-start" }}
+        >
           Reset Line
-        </button>
+        </Button>
       )}
-    </div>
+    </Stack>
   );
 };
 

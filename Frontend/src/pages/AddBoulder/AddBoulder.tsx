@@ -1,10 +1,27 @@
 import React, { useState } from "react";
 import TopoCanvas from "./TopoCanvas";
-import "./AddBoulder.scss";
 import { useNavigate } from "react-router-dom";
 import { ILinePoint } from "../../types/Boulder.types";
 import { useGeolocation } from "../../hooks/useGeolocation";
 import api from "../../services/api";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Divider,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
+import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
+import HikingRoundedIcon from "@mui/icons-material/HikingRounded";
+import NearMeRoundedIcon from "@mui/icons-material/NearMeRounded";
+import UploadRoundedIcon from "@mui/icons-material/UploadRounded";
 
 const AddBoulder: React.FC = () => {
   const navigate = useNavigate();
@@ -74,91 +91,173 @@ const AddBoulder: React.FC = () => {
   };
 
   return (
-    <div className="add-boulder-page">
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Boulder name"
-            required
-          />
-        </div>
+    <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+      <Card
+        elevation={0}
+        sx={{ borderRadius: 4, border: "1px solid", borderColor: "divider" }}
+      >
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack spacing={3}>
+            <Box>
+              <Stack direction="row" spacing={1.5} alignItems="center" mb={1}>
+                <HikingRoundedIcon color="primary" />
+                <Typography variant="h4" fontWeight="bold">
+                  Add New Boulder
+                </Typography>
+              </Stack>
+              <Typography variant="body1" color="text.secondary">
+                Add route details, capture the wall image, and draw the topo
+                line before publishing.
+              </Typography>
+            </Box>
 
-        <div className="input-group">
-          <label htmlFor="grade">Grade</label>
-          <input
-            id="grade"
-            type="text"
-            value={grade}
-            onChange={(e) => setGrade(e.target.value)}
-            required
-          />
-        </div>
+            <Divider />
 
-        <div className="input-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe the route"
-          />
-        </div>
+            <Box component="form" onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField
+                    id="name"
+                    label="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Boulder name"
+                    required
+                    fullWidth
+                  />
 
-        <div className="coords-section">
-          <button
-            type="button"
-            onClick={handleGetCoordinates}
-            disabled={geoLoading}
-          >
-            {geoLoading ? "Acquiring location..." : "Get Coordinates"}
-          </button>
-          {lat && lng && (
-            <div className="coords-display">
-              <p>Lat: {lat.toFixed(5)}</p>
-              <p>Lng: {lng.toFixed(5)}</p>
-            </div>
-          )}
-        </div>
+                  <TextField
+                    id="grade"
+                    label="Grade"
+                    value={grade}
+                    onChange={(e) => setGrade(e.target.value)}
+                    required
+                    fullWidth
+                  />
+                </Stack>
 
-        <div className="input-group">
-          <label htmlFor="image">Select Image</label>
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-        </div>
+                <TextField
+                  id="location"
+                  label="Area / Sector"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g Sector B"
+                  required
+                  fullWidth
+                />
 
-        <div className="input-group">
-          <label htmlFor="location">Area / Sector</label>
-          <input
-            id="location"
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g Sector B"
-            required
-          />
-        </div>
+                <TextField
+                  id="description"
+                  label="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe the route"
+                  multiline
+                  rows={4}
+                  fullWidth
+                />
 
-        {preview && (
-          <div className="topo-container">
-            <label>Draw Topo Line:</label>
-            <TopoCanvas
-              imageSrc={preview}
-              onSavedPoints={(points) => setTopoPoints(points)}
-            />
-          </div>
-        )}
-        <button type="submit">Upload Boulder</button>
-      </form>
-    </div>
+                <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                  <Stack spacing={1.5}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <ExploreRoundedIcon color="primary" fontSize="small" />
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        Location
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary">
+                      Fetch your current coordinates and attach them to this
+                      boulder.
+                    </Typography>
+                    <Box>
+                      <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={handleGetCoordinates}
+                        disabled={geoLoading}
+                        startIcon={<NearMeRoundedIcon />}
+                      >
+                        {geoLoading
+                          ? "Acquiring location..."
+                          : "Get Coordinates"}
+                      </Button>
+                    </Box>
+                    {lat && lng && (
+                      <Alert severity="success" sx={{ alignItems: "center" }}>
+                        Lat: {lat.toFixed(5)} | Lng: {lng.toFixed(5)}
+                      </Alert>
+                    )}
+                  </Stack>
+                </Paper>
+
+                <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                  <Stack spacing={1.5}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <AddPhotoAlternateRoundedIcon
+                        color="primary"
+                        fontSize="small"
+                      />
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        Wall Image
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary">
+                      Upload a photo so you can draw the topo line directly on
+                      top of it.
+                    </Typography>
+                    <Box>
+                      <label htmlFor="image">
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          mb={0.5}
+                        >
+                          Select Image
+                        </Typography>
+                      </label>
+                      <input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Box>
+                  </Stack>
+                </Paper>
+
+                {preview && (
+                  <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                    <Stack spacing={1.5}>
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        Draw Topo Line
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Mark the movement line on the image to save the route
+                        path.
+                      </Typography>
+                      <TopoCanvas
+                        imageSrc={preview}
+                        onSavedPoints={(points) => setTopoPoints(points)}
+                      />
+                    </Stack>
+                  </Paper>
+                )}
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  startIcon={<UploadRoundedIcon />}
+                >
+                  Upload Boulder
+                </Button>
+              </Stack>
+            </Box>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 

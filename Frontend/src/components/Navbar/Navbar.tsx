@@ -35,6 +35,8 @@ const Navbar = () => {
               end={end}
               startIcon={icon}
               color="inherit"
+              disableRipple
+              disableFocusRipple
               sx={{
                 textTransform: "none",
                 "&.active": {
