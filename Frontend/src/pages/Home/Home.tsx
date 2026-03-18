@@ -88,7 +88,7 @@ const Home: React.FC = () => {
             variant={view === "grid" ? "contained" : "outlined"}
             onClick={() => setView("grid")}
           >
-            List
+            Areas
           </Button>
           <Button
             variant={view === "map" ? "contained" : "outlined"}
