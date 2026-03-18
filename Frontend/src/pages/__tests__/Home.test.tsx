@@ -96,8 +96,8 @@ describe("Home Page", () => {
 
     expect(screen.getByTestId("mock-map")).toBeInTheDocument();
 
-    const listBtn = screen.getByRole("button", { name: /list/i });
-    fireEvent.click(listBtn);
+    const areasBtn = screen.getByRole("button", { name: /areas/i });
+    fireEvent.click(areasBtn);
     expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
   });
 });
