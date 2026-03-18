@@ -2,12 +2,22 @@ import { useState, useEffect } from "react";
 import BoulderMap from "../../components/BoulderMap/BoulderMap";
 import api from "../../services/api";
 import { IBoulder } from "../../types/Boulder.types";
-import { Box, Chip, CircularProgress, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  CircularProgress,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MapRoundedIcon from "@mui/icons-material/MapRounded";
 
 const Map = () => {
   const [boulders, setBoulders] = useState<IBoulder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isInfoOpen, setIsInfoOpen] = useState(true);
 
   useEffect(() => {
     const fetchBoulders = async () => {
@@ -50,45 +60,72 @@ const Map = () => {
     <Box
       sx={{
         width: "100%",
+        height: { xs: "calc(100vh - 60px)", md: "calc(100vh - 64px)" },
         minHeight: { xs: "calc(100vh - 60px)", md: "calc(100vh - 64px)" },
         position: "relative",
+        isolation: "isolate",
         overflow: "hidden",
         bgcolor: "grey.100",
       }}
     >
-      <Stack
-        spacing={1}
-        sx={{
-          position: "absolute",
-          top: 16,
-          left: 16,
-          zIndex: 400,
-          px: 2,
-          py: 1.5,
-          borderRadius: 3,
-          bgcolor: "rgba(255,255,255,0.92)",
-          backdropFilter: "blur(10px)",
-          boxShadow: 3,
-          maxWidth: { xs: "calc(100% - 32px)", sm: 320 },
-        }}
-      >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <MapRoundedIcon color="primary" />
-          <Typography variant="h6" fontWeight={700}>
-            Boulder Map
+      {isInfoOpen ? (
+        <Stack
+          spacing={1}
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            zIndex: 1400,
+            px: 2,
+            py: 1.5,
+            borderRadius: 3,
+            bgcolor: "rgba(255,255,255,0.92)",
+            backdropFilter: "blur(10px)",
+            boxShadow: 3,
+            maxWidth: { xs: "calc(100% - 32px)", sm: 320 },
+          }}
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            <MapRoundedIcon color="primary" />
+            <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
+              Boulder Map
+            </Typography>
+            <IconButton
+              size="small"
+              aria-label="Close map info"
+              onClick={() => setIsInfoOpen(false)}
+            >
+              <CloseRoundedIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+          <Typography variant="body2" color="text.secondary">
+            Explore all registered problems and tap a marker to open route
+            details.
           </Typography>
+          <Chip
+            size="small"
+            color="primary"
+            variant="outlined"
+            label={`${boulders.length} boulders loaded`}
+            sx={{ alignSelf: "flex-start" }}
+          />
         </Stack>
-        <Typography variant="body2" color="text.secondary">
-          Explore all registered problems and tap a marker to open route details.
-        </Typography>
+      ) : (
         <Chip
-          size="small"
-          color="primary"
-          variant="outlined"
-          label={`${boulders.length} boulders loaded`}
-          sx={{ alignSelf: "flex-start" }}
+          icon={<InfoOutlinedIcon />}
+          label="Show map info"
+          clickable
+          onClick={() => setIsInfoOpen(true)}
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            zIndex: 1400,
+            bgcolor: "rgba(255,255,255,0.92)",
+            backdropFilter: "blur(8px)",
+          }}
         />
-      </Stack>
+      )}
 
       <BoulderMap boulders={boulders} isFullScreen={true} />
     </Box>
