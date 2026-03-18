@@ -1,7 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import api from "../../services/api";
-import "./Register.scss";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +22,8 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEmail("");
+    setError("");
+
     try {
       await api.post("auth/register", { email, password });
       navigate("/login");
@@ -21,42 +33,65 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <form onSubmit={handleSubmit} className="auth-card">
-        <h2>Sign Up</h2>
-        {error && <div className="error-banner">{error}</div>}
+    <Container
+      maxWidth="sm"
+      sx={{ minHeight: "100vh", display: "flex", alignItems: "center", py: 4 }}
+    >
+      <Card
+        elevation={0}
+        sx={{ width: "100%", borderRadius: 4, border: "1px solid", borderColor: "divider" }}
+      >
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Box component="form" onSubmit={handleSubmit}>
+            <Stack spacing={3}>
+              <Box>
+                <Typography variant="h4" fontWeight="bold" gutterBottom>
+                  Sign Up
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Create an account to log sends, manage boulders, and track your climbing history.
+                </Typography>
+              </Box>
 
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+              {error && <Alert severity="error">{error}</Alert>}
 
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+              <TextField
+                id="email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+                fullWidth
+              />
 
-        <button type="submit" className="btn-submit">
-          Sign Up
-        </button>
+              <TextField
+                id="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                fullWidth
+              />
 
-        <div className="auth-footer">
-          Already have an account? <Link to="/login">Log In</Link>
-        </div>
-      </form>
-    </div>
+              <Button type="submit" variant="contained" size="large" fullWidth>
+                Sign Up
+              </Button>
+
+              <Typography variant="body2" textAlign="center" color="text.secondary">
+                Already have an account?{" "}
+                <Link component={RouterLink} to="/login" underline="hover">
+                  Log In
+                </Link>
+              </Typography>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
