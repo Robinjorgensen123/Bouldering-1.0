@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter, data, useNavigate } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import api from "../../services/api";
 import Register from "../Register/Register";
@@ -29,7 +29,7 @@ describe("Register Page", () => {
     render(
       <BrowserRouter>
         <Register />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     await user.type(screen.getByLabelText(/email/i), "test@test.com");
@@ -48,7 +48,7 @@ describe("Register Page", () => {
     render(
       <BrowserRouter>
         <Register />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     await user.type(screen.getByLabelText(/email/i), "climber@test.com");
