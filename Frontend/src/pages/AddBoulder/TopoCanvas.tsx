@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
+import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import "./TopoCanvas.scss";
 import { ILinePoint } from "../../types/Boulder.types";
 
 interface TopoCanvasProp {
@@ -11,8 +11,13 @@ interface TopoCanvasProp {
 
 const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pointsRef = useRef<ILinePoint[]>([]);
   const [points, setPoints] = useState<ILinePoint[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  useEffect(() => {
+    pointsRef.current = points;
+  }, [points]);
 
   const getCoords = (e: React.MouseEvent | React.TouchEvent): ILinePoint => {
     const canvas = canvasRef.current;
@@ -44,21 +49,29 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
 
   const handleEnd = () => {
     setIsDrawing(false);
-    onSavedPoints(points);
+    onSavedPoints(pointsRef.current);
+  };
+
+  const handleUndo = () => {
+    setPoints((prev) => {
+      const nextPoints = prev.slice(0, -1);
+      onSavedPoints(nextPoints);
+      return nextPoints;
+    });
   };
 
   const handleReset = () => {
     setPoints([]);
     onSavedPoints([]);
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    ctx?.clearRect(0, 0, canvas!.width, canvas!.height);
   };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!ctx || points.length < 2) return;
+    if (!canvas || !ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (points.length < 2) return;
 
     ctx.strokeStyle = "#39FF14";
     ctx.lineWidth = 4;
@@ -66,41 +79,108 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
     ctx.lineCap = "round";
 
     ctx.beginPath();
-    ctx.moveTo(points[points.length - 2].x, points[points.length - 2].y);
-    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+    ctx.moveTo(points[0].x, points[0].y);
+    points.slice(1).forEach((point) => {
+      ctx.lineTo(point.x, point.y);
+    });
     ctx.stroke();
   }, [points]);
 
   return (
-    <Stack className="topo-canvas-container" spacing={2}>
-      {/**Uploaded img */}
-      <img src={imageSrc} alt="preview" />
-      <canvas
-        ref={canvasRef}
-        aria-label="topo-canvas"
-        width={500}
-        height={500}
-        onTouchStart={handleStart}
-        onTouchMove={handleMove}
-        onTouchEnd={handleEnd}
-        onMouseDown={handleStart}
-        onMouseUp={handleEnd}
-        onMouseMove={handleMove}
-        onMouseLeave={handleEnd}
-        style={{ touchAction: "none" }} // Prevents scroll on mobile while drawing
-      />
+    <Stack spacing={2.5}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={1.5}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+      >
+        <Box>
+          <Typography variant="subtitle1" fontWeight={700}>
+            Topo Editor
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Draw directly on the wall image to mark the route path.
+          </Typography>
+        </Box>
+        <Chip
+          color={points.length > 0 ? "success" : "default"}
+          label={points.length > 0 ? `${points.length} points captured` : "No line drawn yet"}
+          size="small"
+        />
+      </Stack>
+
+      <Paper
+        elevation={0}
+        sx={{
+          position: "relative",
+          width: "100%",
+          maxWidth: 600,
+          mx: "auto",
+          borderRadius: 3,
+          overflow: "hidden",
+          border: "1px solid",
+          borderColor: "divider",
+          bgcolor: "grey.950",
+        }}
+      >
+        <Box
+          component="img"
+          src={imageSrc}
+          alt="preview"
+          sx={{
+            width: "100%",
+            height: "auto",
+            display: "block",
+            userSelect: "none",
+          }}
+        />
+        <Box
+          component="canvas"
+          ref={canvasRef}
+          aria-label="topo-canvas"
+          width={500}
+          height={500}
+          onTouchStart={handleStart}
+          onTouchMove={handleMove}
+          onTouchEnd={handleEnd}
+          onMouseDown={handleStart}
+          onMouseUp={handleEnd}
+          onMouseMove={handleMove}
+          onMouseLeave={handleEnd}
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            touchAction: "none",
+            cursor: "crosshair",
+            zIndex: 1,
+          }}
+        />
+      </Paper>
 
       {points.length > 0 && (
-        <Button
-          type="button"
-          className="reset-btn"
-          onClick={handleReset}
-          variant="outlined"
-          startIcon={<RestartAltRoundedIcon />}
-          sx={{ alignSelf: "flex-start" }}
-        >
-          Reset Line
-        </Button>
+        <Stack direction="row" spacing={1.5}>
+          <Button
+            type="button"
+            onClick={handleUndo}
+            variant="outlined"
+            startIcon={<UndoRoundedIcon />}
+            disabled={points.length === 0}
+          >
+            Undo Last Point
+          </Button>
+          <Button
+            type="button"
+            className="reset-btn"
+            onClick={handleReset}
+            variant="outlined"
+            color="error"
+            startIcon={<RestartAltRoundedIcon />}
+          >
+            Reset Line
+          </Button>
+        </Stack>
       )}
     </Stack>
   );
