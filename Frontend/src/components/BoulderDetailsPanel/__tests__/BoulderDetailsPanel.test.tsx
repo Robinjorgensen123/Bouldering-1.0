@@ -25,7 +25,7 @@ describe("BoulderDetailsPanel", () => {
     {
       _id: "h1",
       user: { username: "ClimberDave" },
-      style: "redpoint",
+      ascentType: "redpoint",
       comment: "Solid",
       attempts: 2,
       completedAt: new Date().toISOString(),
@@ -63,8 +63,8 @@ describe("BoulderDetailsPanel", () => {
     expect(climber).toBeInTheDocument();
 
     // 2. Fyll i formuläret
-    const styleSelect = screen.getByLabelText(/style/i);
-    fireEvent.change(styleSelect, { target: { value: "flash" } });
+    const ascentTypeSelect = screen.getByLabelText(/ascent/i);
+    fireEvent.change(ascentTypeSelect, { target: { value: "flash" } });
 
     fireEvent.change(screen.getByLabelText(/attempts/i), {
       target: { value: "3" },
@@ -81,7 +81,7 @@ describe("BoulderDetailsPanel", () => {
       () => {
         expect(api.post).toHaveBeenCalledWith(
           "/history",
-          expect.objectContaining({ style: "flash", attempts: 3 }),
+          expect.objectContaining({ ascentType: "flash", attempts: 3 }),
         );
         expect(window.alert).toHaveBeenCalledWith("Climb logged successfully!");
       },
