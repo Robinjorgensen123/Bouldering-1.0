@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Map, PlusSquare, Home, Settings } from "lucide-react";
+import { Map, PlusSquare, Home, Settings, History } from "lucide-react";
 import { AppBar, Toolbar, Box, Button, Typography } from "@mui/material";
 
 const Navbar = () => {
   const navItems = [
     { to: "/", label: "Home", icon: <Home size={20} />, end: true },
     { to: "/map", label: "Map", icon: <Map size={20} /> },
+    { to: "/history", label: "History", icon: <History size={20} /> },
     { to: "/add", label: "Add New Boulder", icon: <PlusSquare size={20} /> },
     { to: "/settings", label: "Settings", icon: <Settings size={20} /> },
   ];

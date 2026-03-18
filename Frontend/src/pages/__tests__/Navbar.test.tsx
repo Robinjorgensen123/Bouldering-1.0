@@ -13,10 +13,12 @@ describe("Navbar Component", () => {
 
     const homeLink = screen.getByRole("link", { name: /home/i });
     const mapLink = screen.getByRole("link", { name: /map/i });
+    const historyLink = screen.getByRole("link", { name: /history/i });
     const addLink = screen.getByRole("link", { name: /add/i });
 
     expect(homeLink).toHaveAttribute("href", "/");
     expect(mapLink).toHaveAttribute("href", "/map");
+    expect(historyLink).toHaveAttribute("href", "/history");
     expect(addLink).toHaveAttribute("href", "/add");
   }, 10000);
 });
