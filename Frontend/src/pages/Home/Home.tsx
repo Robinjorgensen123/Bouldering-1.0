@@ -24,6 +24,17 @@ interface LocationGroup {
   boulders: IBoulder[];
 }
 
+const getPreviewImageSrc = (imagesUrl?: string) => {
+  if (!imagesUrl) return "";
+
+  // Supports both stored relative paths (/uploads/...) and absolute URLs (Cloudinary/S3).
+  if (/^https?:\/\//i.test(imagesUrl)) {
+    return imagesUrl;
+  }
+
+  return `http://localhost:5000${imagesUrl}`;
+};
+
 const Home: React.FC = () => {
   const [allBoulders, setAllBoulders] = useState<IBoulder[]>([]);
   const [groups, setGroups] = useState<LocationGroup[]>([]);
@@ -122,7 +133,7 @@ const Home: React.FC = () => {
               {group.boulders[0]?.imagesUrl ? (
                 <Box
                   component="img"
-                  src={`http://localhost:5000${group.boulders[0].imagesUrl}`}
+                  src={getPreviewImageSrc(group.boulders[0].imagesUrl)}
                   alt="Area preview"
                   sx={{ width: "100%", height: 170, objectFit: "cover" }}
                 />
