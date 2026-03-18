@@ -44,9 +44,9 @@ const History = () => {
                   {new Date(record.completedAt).toLocaleDateString()}
                 </span>
               </div>
-              {record.style && (
+              {record.ascentType && (
                 <div className="history-style">
-                  <Hash size={16} /> {record.style}
+                  <Hash size={16} /> {record.ascentType}
                 </div>
               )}
               {record.attempts !== undefined && (

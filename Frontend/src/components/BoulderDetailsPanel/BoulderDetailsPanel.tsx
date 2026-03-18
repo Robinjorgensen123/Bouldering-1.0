@@ -25,7 +25,7 @@ interface Props {
 }
 
 const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
-  const [style, setStyle] = useState("");
+  const [ascentType, setAscentType] = useState("");
   const [attempts, setAttempts] = useState(1);
   const [comment, setComment] = useState("");
   const [history, setHistory] = useState<any[]>([]);
@@ -54,7 +54,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
     try {
       await api.post("/history", {
         boulder: boulder?._id,
-        style,
+        ascentType,
         attempts,
         comment,
         completedAt: new Date().toISOString(),
@@ -70,7 +70,6 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
 
   return (
     <Drawer anchor="right" open={isOpen} onClose={onClose}>
-      {/* Box med fast bredd så testerna (och användare) ser innehållet ordentligt */}
       <Box sx={{ p: 3, width: { xs: "100vw", sm: 350 }, height: "100%" }}>
         {boulder && (
           <>
@@ -87,11 +86,11 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
               <Typography variant="h6">Log Climb</Typography>
 
               <FormControl fullWidth>
-                <InputLabel>Style</InputLabel>
+                <InputLabel>Ascent</InputLabel>
                 <Select
-                  value={style}
-                  label="Style"
-                  onChange={(e) => setStyle(e.target.value)}
+                  value={ascentType}
+                  label="Ascent"
+                  onChange={(e) => setAscentType(e.target.value)}
                 >
                   <MenuItem value="flash">Flash</MenuItem>
                   <MenuItem value="onsight">Onsight</MenuItem>
@@ -125,7 +124,6 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
 
             <Divider sx={{ my: 4 }} />
 
-            {/* --- HÄR ÄR DET VIKTIGA FÖR DINA TESTER --- */}
             <Typography variant="h6" gutterBottom>
               Recent Activity
             </Typography>
@@ -140,7 +138,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                   history.map((log) => (
                     <ListItem key={log._id} sx={{ px: 0 }}>
                       <ListItemText
-                        primary={`${log.user?.username || "Climber"} - ${log.style}`}
+                        primary={`${log.user?.username || "Climber"} - ${log.ascentType}`}
                         secondary={
                           <>
                             <Typography
