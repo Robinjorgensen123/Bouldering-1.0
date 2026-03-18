@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../services/api";
-import "./Login.scss";
 import { AuthResponse } from "../../types/User.types";
 import { useAuth } from "../../hooks/useAuth";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,46 +41,56 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <form onSubmit={handleSubmit} className="auth-card">
-        <h2>Log In</h2>
+    <Box
+      sx={{
+        minHeight: "70vh",
+        display: "grid",
+        placeItems: "center",
+        px: 2,
+      }}
+    >
+      <Card sx={{ width: "100%", maxWidth: 460, borderRadius: 3 }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box component="form" onSubmit={handleSubmit}>
+            <Stack spacing={2}>
+              <Typography variant="h5" fontWeight={700}>
+                Log In
+              </Typography>
 
-        {error && <div className="error-banner">{error}</div>}
+              {error && <Alert severity="error">{error}</Alert>}
 
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+              <TextField
+                id="email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                fullWidth
+              />
 
-        <div className="form-group">
-          <label htmlFor="password" id="password-label">
-            Password
-          </label>
-          <input
-            id="password"
-            aria-labelledby="password-label"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+              <TextField
+                id="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                fullWidth
+              />
 
-        <button type="submit" className="btn-submit">
-          Log In
-        </button>
+              <Button type="submit" variant="contained" size="large">
+                Log In
+              </Button>
 
-        <div className="auth-footer">
-          Don't have an account? <Link to="/register">Sign Up</Link>
-        </div>
-      </form>
-    </div>
+              <Typography variant="body2" color="text.secondary">
+                Don't have an account? <Link to="/register">Sign Up</Link>
+              </Typography>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 
