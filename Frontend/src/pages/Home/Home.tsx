@@ -92,14 +92,12 @@ const Home: React.FC = () => {
               className="location-card"
               onClick={() => setSelectedGroup(group)}
             >
-              <img
-                src={
-                  group.boulders[0]?.imagesUrl
-                    ? `http://localhost:5000${group.boulders[0].imagesUrl}`
-                    : ""
-                }
-                alt="Area preview"
-              />
+              {group.boulders[0]?.imagesUrl && (
+                <img
+                  src={`http://localhost:5000${group.boulders[0].imagesUrl}`}
+                  alt="Area preview"
+                />
+              )}
               <div className="info">
                 <p>{group.boulders.length} boulders at this location</p>
                 <h3>Spot: {group.locationKey}</h3>
