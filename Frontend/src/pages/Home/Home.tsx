@@ -2,9 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import api from "../../services/api";
 import { type IBoulder } from "../../types/Boulder.types";
-import "./Home.scss";
 import { Link } from "react-router-dom";
 import BoulderMap from "../../components/BoulderMap/BoulderMap";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 interface ApiResponse {
   success: boolean;
@@ -63,72 +71,142 @@ const Home: React.FC = () => {
   }, [token]);
 
   return (
-    <div className="home-page">
-      <header className="home-header">
-        <h1>Boulder Areas</h1>
-        <div className="view-toggle">
-          <button
-            className={view === "grid" ? "active" : ""}
+    <Box sx={{ px: { xs: 2, md: 4 }, py: 3 }}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        spacing={2}
+        sx={{ mb: 3 }}
+      >
+        <Typography variant="h4" fontWeight={700}>
+          Boulder Areas
+        </Typography>
+
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant={view === "grid" ? "contained" : "outlined"}
             onClick={() => setView("grid")}
           >
             List
-          </button>
-          <button
-            className={view === "map" ? "active" : ""}
+          </Button>
+          <Button
+            variant={view === "map" ? "contained" : "outlined"}
             onClick={() => setView("map")}
           >
             Map
-          </button>
-        </div>
-      </header>
+          </Button>
+        </Stack>
+      </Stack>
 
       {view === "map" ? (
         <BoulderMap boulders={allBoulders} />
       ) : (
-        <div className="location-grid">
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, minmax(0, 1fr))",
+              lg: "repeat(3, minmax(0, 1fr))",
+            },
+          }}
+        >
           {groups.map((group) => (
-            <div
+            <Card
               key={group.locationKey}
-              className="location-card"
               onClick={() => setSelectedGroup(group)}
+              sx={{ cursor: "pointer", borderRadius: 2 }}
             >
-              {group.boulders[0]?.imagesUrl && (
-                <img
+              {group.boulders[0]?.imagesUrl ? (
+                <Box
+                  component="img"
                   src={`http://localhost:5000${group.boulders[0].imagesUrl}`}
                   alt="Area preview"
+                  sx={{ width: "100%", height: 170, objectFit: "cover" }}
                 />
+              ) : (
+                <Box
+                  sx={{
+                    height: 170,
+                    display: "grid",
+                    placeItems: "center",
+                    bgcolor: "grey.100",
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    No preview image
+                  </Typography>
+                </Box>
               )}
-              <div className="info">
-                <p>{group.boulders.length} boulders at this location</p>
-                <h3>Spot: {group.locationKey}</h3>
-              </div>
-            </div>
+
+              <CardContent>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  spacing={1}
+                >
+                  <Typography variant="h6">
+                    Spot: {group.locationKey}
+                  </Typography>
+                  <Chip size="small" label={group.boulders[0]?.grade || "?"} />
+                </Stack>
+                <Typography color="text.secondary" sx={{ mt: 1 }}>
+                  {group.boulders.length} boulders at this location
+                </Typography>
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </Box>
       )}
 
       {selectedGroup && (
-        <div className="modal-overlay" onClick={() => setSelectedGroup(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Boulders at this spot</h2>
-            <div className="boulder-list">
-              {selectedGroup.boulders.map((b) => (
-                <Link
-                  key={b._id}
-                  to={`/boulder/${b._id}`}
-                  className="boulder-item"
-                >
-                  <h4>
-                    {b.name} ({b.grade})
-                  </h4>
-                </Link>
-              ))}
-            </div>
-            <button onClick={() => setSelectedGroup(null)}>Close</button>
-          </div>
-        </div>
+        <Box
+          onClick={() => setSelectedGroup(null)}
+          sx={{
+            position: "fixed",
+            inset: 0,
+            bgcolor: "rgba(0,0,0,0.45)",
+            display: "grid",
+            placeItems: "center",
+            zIndex: 1300,
+            p: 2,
+          }}
+        >
+          <Card
+            onClick={(e) => e.stopPropagation()}
+            sx={{ width: "min(560px, 100%)", borderRadius: 2 }}
+          >
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Boulders at this spot
+              </Typography>
+
+              <Stack spacing={1.25} sx={{ mb: 2 }}>
+                {selectedGroup.boulders.map((b) => (
+                  <Link
+                    key={b._id}
+                    to={`/boulder/${b._id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                      <CardContent sx={{ py: 1.25 }}>
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          {b.name} ({b.grade})
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </Stack>
+
+              <Button onClick={() => setSelectedGroup(null)}>Close</Button>
+            </CardContent>
+          </Card>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
