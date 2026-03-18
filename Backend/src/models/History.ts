@@ -5,7 +5,7 @@ const HistorySchema: Schema<IHistory> = new mongoose.Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     boulder: { type: Schema.Types.ObjectId, ref: "Boulder", required: true },
-    style: {
+    ascentType: {
       type: String,
       enum: ["onsight", "flash", "redpoint"],
       required: true,
