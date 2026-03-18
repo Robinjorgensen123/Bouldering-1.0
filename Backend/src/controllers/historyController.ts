@@ -1,11 +1,13 @@
 import { type Response } from "express";
+import mongoose from "mongoose";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
 import { History } from "../models/History.js";
 import type { CreateHistoryDTO } from "../types/History.types.js";
 
 export const createHistoryRecord = async (req: AuthRequest, res: Response) => {
   try {
-    const { boulder, style, attempts, comment }: CreateHistoryDTO = req.body;
+    const { boulder, ascentType, attempts, comment }: CreateHistoryDTO =
+      req.body;
 
     if (!req.userId) {
       return res.status(401).json({
@@ -17,10 +19,17 @@ export const createHistoryRecord = async (req: AuthRequest, res: Response) => {
     const historyData: any = {
       user: req.userId,
       boulder,
-      style,
+      ascentType,
       attempts,
       comment,
     };
+
+    if (!ascentType) {
+      return res.status(400).json({
+        success: false,
+        message: "Ascent type is required",
+      });
+    }
 
     if (comment !== undefined) {
       historyData.comment = comment;
@@ -39,6 +48,35 @@ export const createHistoryRecord = async (req: AuthRequest, res: Response) => {
     return res.status(400).json({
       success: false,
       message: error.message || "Error creating history record",
+    });
+  }
+};
+
+export const getHistoryByBoulder = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid boulder id",
+      });
+    }
+
+    const history = await History.find({
+      boulder: new mongoose.Types.ObjectId(id),
+    })
+      .populate("user", "email")
+      .sort({ completedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: history,
+    });
+  } catch (error: any) {
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Error fetching history for boulder",
     });
   }
 };

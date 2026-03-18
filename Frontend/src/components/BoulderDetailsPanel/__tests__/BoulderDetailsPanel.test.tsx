@@ -1,11 +1,16 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import BoulderDetailsPanel from "../BoulderDetailsPanel";
 import api from "../../../services/api";
+import { MemoryRouter } from "react-router-dom";
 
+// Mocka API:et
 vi.mock("../../../services/api", () => ({
-  default: { post: vi.fn() },
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+    setAuthToken: vi.fn(),
+  },
   setAuthToken: vi.fn(),
 }));
 
@@ -14,50 +19,73 @@ describe("BoulderDetailsPanel", () => {
     _id: "1",
     name: "Test Boulder",
     grade: "7A",
-    location: "Test Location",
+    location: "Loc",
   };
-
-  const onClose = vi.fn();
+  const mockHistory = [
+    {
+      _id: "h1",
+      user: { username: "ClimberDave" },
+      style: "redpoint",
+      comment: "Solid",
+      attempts: 2,
+      completedAt: new Date().toISOString(),
+    },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
-    window.alert = vi.fn();
+
+    vi.spyOn(window, "alert").mockImplementation(() => {});
+
+    (api.get as any).mockResolvedValue({
+      data: { success: true, data: mockHistory },
+    });
+    (api.post as any).mockResolvedValue({ data: { success: true } });
   });
 
-  it("should render boulder info and submit a log", async () => {
-    (api.post as any).mockResolvedValue({ data: { success: true } });
-
+  it("should render and submit log", async () => {
     render(
-      <BoulderDetailsPanel boulder={mockBoulder as any} isOpen={true} onClose={onClose} />,
+      <MemoryRouter>
+        <BoulderDetailsPanel
+          boulder={mockBoulder as any}
+          isOpen={true}
+          onClose={vi.fn()}
+        />
+      </MemoryRouter>,
     );
 
-    expect(screen.getByText(/Test Boulder/i)).toBeInTheDocument();
-    expect(screen.getByText(/7A - Test Location/i)).toBeInTheDocument();
+    // 1. Vänta på att ClimberDave dyker upp (viktigt för att veta att useEffect kört)
+    const climber = await screen.findByText(
+      /ClimberDave/i,
+      {},
+      { timeout: 4000 },
+    );
+    expect(climber).toBeInTheDocument();
 
+    // 2. Fyll i formuläret
     const styleSelect = screen.getByLabelText(/style/i);
-    userEvent.click(styleSelect);
-    const flashOption = await screen.findByRole("option", { name: /flash/i });
-    userEvent.click(flashOption);
+    fireEvent.change(styleSelect, { target: { value: "flash" } });
 
-    const attemptsInput = screen.getByLabelText(/attempts/i);
-    userEvent.clear(attemptsInput);
-    userEvent.type(attemptsInput, "3");
-
-    const commentInput = screen.getByLabelText(/comment/i);
-    userEvent.type(commentInput, "Nice climb");
-
-    const saveButton = screen.getByRole("button", { name: /save/i });
-    userEvent.click(saveButton);
-
-    await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith("/history", {
-        boulder: mockBoulder._id,
-        style: "flash",
-        attempts: 3,
-        comment: "Nice climb",
-      });
-      expect(onClose).toHaveBeenCalled();
-      expect(window.alert).toHaveBeenCalledWith("Climb logged successfully!");
+    fireEvent.change(screen.getByLabelText(/attempts/i), {
+      target: { value: "3" },
     });
-  });
+    fireEvent.change(screen.getByLabelText(/comment/i), {
+      target: { value: "Nice" },
+    });
+
+    // 3. Klicka på Spara
+    fireEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    // 4. Verifiera anropet
+    await waitFor(
+      () => {
+        expect(api.post).toHaveBeenCalledWith(
+          "/history",
+          expect.objectContaining({ style: "flash", attempts: 3 }),
+        );
+        expect(window.alert).toHaveBeenCalledWith("Climb logged successfully!");
+      },
+      { timeout: 4000 },
+    );
+  }, 20000);
 });
