@@ -1,11 +1,11 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "./BoulderMap.scss";
 import { IBoulder } from "../../types/Boulder.types";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import BoulderDetailsPanel from "../BoulderDetailsPanel/BoulderDetailsPanel";
+import { Box, Typography } from "@mui/material";
 const markerIcon = new URL(
   "leaflet/dist/images/marker-icon.png",
   import.meta.url,
@@ -51,14 +51,18 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
   };
 
   return (
-    <div
-      className={`boulder-map-wrapper ${isFullScreen ? "full-screen" : ""}`}
-      style={{
+    <Box
+      className="boulder-map-wrapper"
+      data-testid="map-wrapper"
+      sx={{
         height: mapHeight,
         width: "100%",
         marginBottom: marginBottom,
+        borderRadius: isFullScreen ? 0 : "12px",
+        overflow: "hidden",
+        boxShadow: isFullScreen ? "none" : "0 4px 12px rgba(0,0,0,0.15)",
+        border: isFullScreen ? "none" : "2px solid #e0e0e0",
       }}
-      data-testid="map-wrapper"
     >
       <MapContainer
         center={center}
@@ -79,13 +83,15 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
             }}
           >
             <Popup>
-              <div className="map-popup">
-                <h3>{boulder.name}</h3>
-                <p>
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  {boulder.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
                   {boulder.location} - {boulder.grade}
-                </p>
+                </Typography>
                 <Link to={`/boulder/${boulder._id}`}>Visa detaljer</Link>
-              </div>
+              </Box>
             </Popup>
           </Marker>
         ))}
@@ -96,7 +102,7 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
         isOpen={isDetailsPanelOpen}
         onClose={() => setIsDetailsPanelOpen(false)}
       />
-    </div>
+    </Box>
   );
 };
 
