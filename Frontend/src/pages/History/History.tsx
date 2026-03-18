@@ -1,9 +1,38 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
-import { Trophy, MessageSquare, Hash, Calendar } from "lucide-react";
+import {
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Container,
+  Divider,
+  List,
+  ListItem,
+  Stack,
+  Typography,
+} from "@mui/material";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
+import SellRoundedIcon from "@mui/icons-material/SellRounded";
+
+interface HistoryRecord {
+  _id: string;
+  ascentType?: string;
+  attempts?: number;
+  comment?: string;
+  completedAt?: string;
+  boulder: {
+    name: string;
+    grade: string;
+  };
+}
 
 const History = () => {
-  const [historyRecords, setHistoryRecords] = useState([]);
+  const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,46 +53,100 @@ const History = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Container maxWidth="md" sx={{ py: 5 }}>
+        <Stack alignItems="center" spacing={2}>
+          <CircularProgress size={32} />
+          <Typography>Loading...</Typography>
+        </Stack>
+      </Container>
+    );
   }
+
   return (
-    <div className="history-container">
-      <h1>Climbing History</h1>
+    <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+      <Stack spacing={3}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Climbing History
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Review your recent sends, attempts, and notes across logged boulders.
+          </Typography>
+        </Box>
+
       {historyRecords.length === 0 ? (
-        <p>No history records found.</p>
+        <Alert severity="info">No history records found.</Alert>
       ) : (
-        <ul className="history-list">
-          {historyRecords.map((record: any) => (
-            <li key={record._id} className="history-item">
-              <div className="history-header">
-                <h2>
-                  {record.boulder.name} ({record.boulder.grade})
-                </h2>
-                <span className="history-date">
-                  <Calendar size={16} />{" "}
-                  {new Date(record.completedAt).toLocaleDateString()}
-                </span>
-              </div>
-              {record.ascentType && (
-                <div className="history-style">
-                  <Hash size={16} /> {record.ascentType}
-                </div>
-              )}
-              {record.attempts !== undefined && (
-                <div className="history-attempts">
-                  <Trophy size={16} /> {record.attempts} attempts
-                </div>
-              )}
-              {record.comment && (
-                <div className="history-comment">
-                  <MessageSquare size={16} /> {record.comment}
-                </div>
-              )}
-            </li>
+        <List disablePadding sx={{ display: "grid", gap: 2 }}>
+          {historyRecords.map((record) => (
+            <ListItem key={record._id} disableGutters disablePadding>
+              <Card
+                elevation={0}
+                sx={{
+                  width: "100%",
+                  borderRadius: 3,
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <CardContent>
+                  <Stack spacing={2}>
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      justifyContent="space-between"
+                      spacing={1.5}
+                    >
+                      <Box>
+                        <Typography variant="h6" fontWeight={700}>
+                          {record.boulder.name} ({record.boulder.grade})
+                        </Typography>
+                      </Box>
+                      {record.completedAt && (
+                        <Chip
+                          icon={<CalendarMonthRoundedIcon />}
+                          label={new Date(record.completedAt).toLocaleDateString()}
+                          variant="outlined"
+                          sx={{ alignSelf: { xs: "flex-start", sm: "center" } }}
+                        />
+                      )}
+                    </Stack>
+
+                    <Divider />
+
+                    <Stack spacing={1.25}>
+                      {record.ascentType && (
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <SellRoundedIcon fontSize="small" color="primary" />
+                          <Typography>{record.ascentType}</Typography>
+                        </Stack>
+                      )}
+                      {record.attempts !== undefined && (
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <EmojiEventsRoundedIcon fontSize="small" color="primary" />
+                          <Typography>{record.attempts} attempts</Typography>
+                        </Stack>
+                      )}
+                      {record.comment && (
+                        <Stack direction="row" spacing={1} alignItems="flex-start">
+                          <ChatBubbleOutlineRoundedIcon
+                            fontSize="small"
+                            color="primary"
+                            sx={{ mt: 0.25 }}
+                          />
+                          <Typography>{record.comment}</Typography>
+                        </Stack>
+                      )}
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </ListItem>
           ))}
-        </ul>
+        </List>
       )}
-    </div>
+      </Stack>
+    </Container>
   );
 };
 
