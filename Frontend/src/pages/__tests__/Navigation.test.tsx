@@ -3,12 +3,14 @@ import { expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import App from "../../App";
-import Map from "../Map/Map";
+import { AuthProvider } from "../../context/AuthContext";
 
 it("should navigate to the full map page via URL", async () => {
   render(
     <MemoryRouter initialEntries={["/map"]}>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </MemoryRouter>
   );
   const map = await screen.findByTestId("map-wrapper");

@@ -2,7 +2,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import UserSettings from "../UserSettings/UserSettings";
 import { AuthProvider } from "../../context/AuthContext";
+import api from "../../services/api";
 import "@testing-library/jest-dom";
+
+vi.mock("../../services/api", () => ({
+  default: {
+    put: vi.fn(),
+  },
+  setAuthToken: vi.fn(),
+}));
 
 describe("UserSettings Page", () => {
   beforeEach(() => {
@@ -16,6 +24,20 @@ describe("UserSettings Page", () => {
     localStorage.setItem("user", JSON.stringify(mockUser));
     localStorage.setItem("token", "mock-token");
     vi.clearAllMocks();
+    vi.mocked(api.put).mockImplementation(async (_url, data) => {
+      const body = (data as { gradingSystem?: string } | undefined) ?? {};
+
+      return {
+        data: {
+          success: true,
+          data: {
+            _id: "1",
+            email: "test@test.com",
+            gradingSystem: body.gradingSystem || "font",
+          },
+        },
+      };
+    });
   });
 
   it("should render the grading system options", () => {
@@ -42,14 +64,16 @@ describe("UserSettings Page", () => {
 
     await waitFor(
       () => {
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}") as {
+          gradingSystem?: string;
+        };
         expect(storedUser.gradingSystem).toBe("v-scale");
       },
       { timeout: 2000 },
     );
   });
 
-  it("shold show the active class on the selected scale", () => {
+  it("shold show the active class on the selected scale", async () => {
     render(
       <AuthProvider>
         <UserSettings />
@@ -64,7 +88,9 @@ describe("UserSettings Page", () => {
 
     fireEvent.click(vButton);
 
-    expect(vButton).toHaveClass("active");
-    expect(fontButton).not.toHaveClass("active");
+    await waitFor(() => {
+      expect(vButton).toHaveClass("active");
+      expect(fontButton).not.toHaveClass("active");
+    });
   });
 });

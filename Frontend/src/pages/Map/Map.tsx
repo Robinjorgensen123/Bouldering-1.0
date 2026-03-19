@@ -13,8 +13,10 @@ import {
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MapRoundedIcon from "@mui/icons-material/MapRounded";
+import { useAuth } from "../../hooks/useAuth";
 
 const Map = () => {
+  const { user } = useAuth();
   const [boulders, setBoulders] = useState<IBoulder[]>([]);
   const [loading, setLoading] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(true);
@@ -34,7 +36,7 @@ const Map = () => {
     };
 
     fetchBoulders();
-  }, []);
+  }, [user?.gradingSystem]);
 
   if (loading) {
     return (

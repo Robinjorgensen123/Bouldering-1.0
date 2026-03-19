@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IBoulder } from "../../types/Boulder.types";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BoulderDetailsPanel from "../BoulderDetailsPanel/BoulderDetailsPanel";
 import { Box, Typography } from "@mui/material";
 const markerIcon = new URL(
@@ -33,6 +33,20 @@ interface Props {
 const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
   const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
+
+  useEffect(() => {
+    if (!selectedBoulder?._id) return;
+
+    const updatedBoulder = boulders.find(
+      (boulder) => boulder._id === selectedBoulder._id,
+    );
+
+    setSelectedBoulder(updatedBoulder ?? null);
+
+    if (!updatedBoulder) {
+      setIsDetailsPanelOpen(false);
+    }
+  }, [boulders, selectedBoulder?._id]);
 
   //Default coordinates to Gothenburg
   const defaultCenter: [number, number] = [57.7089, 11.9746];
