@@ -43,7 +43,7 @@ const Home: React.FC = () => {
   );
   const [view, setView] = useState<"grid" | "map">("grid");
 
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   useEffect(() => {
     const fetchBoulders = async () => {
@@ -79,7 +79,17 @@ const Home: React.FC = () => {
     };
 
     fetchBoulders();
-  }, [token]);
+  }, [token, user?.gradingSystem]);
+
+  useEffect(() => {
+    if (!selectedGroup) return;
+
+    const updatedGroup = groups.find(
+      (group) => group.locationKey === selectedGroup.locationKey,
+    );
+
+    setSelectedGroup(updatedGroup ?? null);
+  }, [groups, selectedGroup?.locationKey]);
 
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: 3 }}>

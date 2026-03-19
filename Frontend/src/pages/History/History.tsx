@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import { useAuth } from "../../hooks/useAuth";
 import {
   Alert,
   Box,
@@ -34,6 +35,7 @@ interface HistoryRecord {
 const History = () => {
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -50,7 +52,7 @@ const History = () => {
     };
 
     fetchHistory();
-  }, []);
+  }, [user?.gradingSystem]);
 
   if (loading) {
     return (
@@ -71,80 +73,100 @@ const History = () => {
             Climbing History
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Review your recent sends, attempts, and notes across logged boulders.
+            Review your recent sends, attempts, and notes across logged
+            boulders.
           </Typography>
         </Box>
 
-      {historyRecords.length === 0 ? (
-        <Alert severity="info">No history records found.</Alert>
-      ) : (
-        <List disablePadding sx={{ display: "grid", gap: 2 }}>
-          {historyRecords.map((record) => (
-            <ListItem key={record._id} disableGutters disablePadding>
-              <Card
-                elevation={0}
-                sx={{
-                  width: "100%",
-                  borderRadius: 3,
-                  border: "1px solid",
-                  borderColor: "divider",
-                }}
-              >
-                <CardContent>
-                  <Stack spacing={2}>
-                    <Stack
-                      direction={{ xs: "column", sm: "row" }}
-                      justifyContent="space-between"
-                      spacing={1.5}
-                    >
-                      <Box>
-                        <Typography variant="h6" fontWeight={700}>
-                          {record.boulder.name} ({record.boulder.grade})
-                        </Typography>
-                      </Box>
-                      {record.completedAt && (
-                        <Chip
-                          icon={<CalendarMonthRoundedIcon />}
-                          label={new Date(record.completedAt).toLocaleDateString()}
-                          variant="outlined"
-                          sx={{ alignSelf: { xs: "flex-start", sm: "center" } }}
-                        />
-                      )}
-                    </Stack>
-
-                    <Divider />
-
-                    <Stack spacing={1.25}>
-                      {record.ascentType && (
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <SellRoundedIcon fontSize="small" color="primary" />
-                          <Typography>{record.ascentType}</Typography>
-                        </Stack>
-                      )}
-                      {record.attempts !== undefined && (
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <EmojiEventsRoundedIcon fontSize="small" color="primary" />
-                          <Typography>{record.attempts} attempts</Typography>
-                        </Stack>
-                      )}
-                      {record.comment && (
-                        <Stack direction="row" spacing={1} alignItems="flex-start">
-                          <ChatBubbleOutlineRoundedIcon
-                            fontSize="small"
-                            color="primary"
-                            sx={{ mt: 0.25 }}
+        {historyRecords.length === 0 ? (
+          <Alert severity="info">No history records found.</Alert>
+        ) : (
+          <List disablePadding sx={{ display: "grid", gap: 2 }}>
+            {historyRecords.map((record) => (
+              <ListItem key={record._id} disableGutters disablePadding>
+                <Card
+                  elevation={0}
+                  sx={{
+                    width: "100%",
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <CardContent>
+                    <Stack spacing={2}>
+                      <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        justifyContent="space-between"
+                        spacing={1.5}
+                      >
+                        <Box>
+                          <Typography variant="h6" fontWeight={700}>
+                            {record.boulder.name} ({record.boulder.grade})
+                          </Typography>
+                        </Box>
+                        {record.completedAt && (
+                          <Chip
+                            icon={<CalendarMonthRoundedIcon />}
+                            label={new Date(
+                              record.completedAt,
+                            ).toLocaleDateString()}
+                            variant="outlined"
+                            sx={{
+                              alignSelf: { xs: "flex-start", sm: "center" },
+                            }}
                           />
-                          <Typography>{record.comment}</Typography>
-                        </Stack>
-                      )}
+                        )}
+                      </Stack>
+
+                      <Divider />
+
+                      <Stack spacing={1.25}>
+                        {record.ascentType && (
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
+                            <SellRoundedIcon fontSize="small" color="primary" />
+                            <Typography>{record.ascentType}</Typography>
+                          </Stack>
+                        )}
+                        {record.attempts !== undefined && (
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
+                            <EmojiEventsRoundedIcon
+                              fontSize="small"
+                              color="primary"
+                            />
+                            <Typography>{record.attempts} attempts</Typography>
+                          </Stack>
+                        )}
+                        {record.comment && (
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="flex-start"
+                          >
+                            <ChatBubbleOutlineRoundedIcon
+                              fontSize="small"
+                              color="primary"
+                              sx={{ mt: 0.25 }}
+                            />
+                            <Typography>{record.comment}</Typography>
+                          </Stack>
+                        )}
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </ListItem>
-          ))}
-        </List>
-      )}
+                  </CardContent>
+                </Card>
+              </ListItem>
+            ))}
+          </List>
+        )}
       </Stack>
     </Container>
   );
