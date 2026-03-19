@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ILinePoint } from "../../types/Boulder.types";
 import { useGeolocation } from "../../hooks/useGeolocation";
 import api from "../../services/api";
+import axios from "axios";
 import {
   Alert,
   Box,
@@ -86,6 +87,11 @@ const AddBoulder: React.FC = () => {
         navigate("/");
       }
     } catch (err) {
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.message || "Upload failed"
+        : "Upload failed";
+
+      alert(message);
       console.error("Upload failed", err);
     }
   };

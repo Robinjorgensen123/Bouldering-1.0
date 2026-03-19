@@ -84,4 +84,27 @@ describe("History Page", () => {
       expect(screen.getByText(/no history records found/i)).toBeInTheDocument();
     });
   });
+
+  it("should render fallback text when boulder is null", async () => {
+    (api.get as any).mockResolvedValueOnce({
+      data: {
+        success: true,
+        data: [
+          {
+            _id: "h2",
+            ascentType: "flash",
+            attempts: 1,
+            comment: "still logged",
+            boulder: null,
+          },
+        ],
+      },
+    });
+
+    renderHistory();
+
+    await waitFor(() => {
+      expect(screen.getByText(/deleted boulder/i)).toBeInTheDocument();
+    });
+  });
 });
