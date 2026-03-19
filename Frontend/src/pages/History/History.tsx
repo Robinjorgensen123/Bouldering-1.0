@@ -29,7 +29,7 @@ interface HistoryRecord {
   boulder: {
     name: string;
     grade: string;
-  };
+  } | null;
 }
 
 const History = () => {
@@ -102,7 +102,9 @@ const History = () => {
                       >
                         <Box>
                           <Typography variant="h6" fontWeight={700}>
-                            {record.boulder.name} ({record.boulder.grade})
+                            {record.boulder
+                              ? `${record.boulder.name} (${record.boulder.grade})`
+                              : "Deleted boulder"}
                           </Typography>
                         </Box>
                         {record.completedAt && (
