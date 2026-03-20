@@ -107,7 +107,7 @@ const BoulderMap = ({
 
   const mapHeight = isFullScreen ? "100%" : "400px";
   const marginBottom = isFullScreen ? "0" : "2rem";
-  const borderRadius = isFullScreen ? "0" : "10px";
+  const borderRadius = isFullScreen ? "0" : "14px";
 
   const handleMarkerClick = (boulder: IBoulder) => {
     setSelectedBoulder(boulder);
@@ -122,10 +122,10 @@ const BoulderMap = ({
         height: mapHeight,
         width: "100%",
         marginBottom: marginBottom,
-        borderRadius: isFullScreen ? 0 : "12px",
+        borderRadius: isFullScreen ? 0 : "14px",
         overflow: "hidden",
-        boxShadow: isFullScreen ? "none" : "0 4px 12px rgba(0,0,0,0.15)",
-        border: isFullScreen ? "none" : "2px solid #e0e0e0",
+        boxShadow: isFullScreen ? "none" : "0 8px 20px rgba(24,58,55,0.14)",
+        border: isFullScreen ? "none" : "1px solid rgba(24,58,55,0.14)",
       }}
     >
       <MapContainer
@@ -156,7 +156,7 @@ const BoulderMap = ({
                 <Typography variant="body2" color="text.secondary">
                   {boulder.location} - {boulder.grade}
                 </Typography>
-                <Link to={`/boulder/${boulder._id}`}>Visa detaljer</Link>
+                <Link to={`/boulder/${boulder._id}`}>Show Details</Link>
               </Box>
             </Popup>
           </Marker>

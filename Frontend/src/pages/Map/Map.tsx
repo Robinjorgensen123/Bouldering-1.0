@@ -71,7 +71,7 @@ const Map = () => {
         position: "relative",
         isolation: "isolate",
         overflow: "hidden",
-        bgcolor: "grey.100",
+        bgcolor: "#E9EFEB",
       }}
     >
       {isInfoOpen ? (
@@ -87,7 +87,9 @@ const Map = () => {
             borderRadius: 3,
             bgcolor: "rgba(255,255,255,0.92)",
             backdropFilter: "blur(10px)",
-            boxShadow: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            boxShadow: "0 6px 16px rgba(24,58,55,0.14)",
             maxWidth: { xs: "calc(100% - 32px)", sm: 320 },
           }}
         >
@@ -129,6 +131,8 @@ const Map = () => {
             zIndex: 1400,
             bgcolor: "rgba(255,255,255,0.92)",
             backdropFilter: "blur(8px)",
+            border: "1px solid",
+            borderColor: "divider",
           }}
         />
       )}

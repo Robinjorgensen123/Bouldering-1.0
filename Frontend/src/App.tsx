@@ -9,7 +9,13 @@ const App = () => {
   const isMapRoute = location.pathname === "/map";
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}
+    >
       <Navbar />
 
       {isMapRoute ? (
@@ -20,7 +26,11 @@ const App = () => {
         <Container
           component="main"
           maxWidth="lg"
-          sx={{ flex: 1, py: { xs: 2, md: 3 }, px: { xs: 2, md: 3 } }}
+          sx={{
+            flex: 1,
+            py: { xs: 2.5, md: 3.5 },
+            px: { xs: 2, md: 3 },
+          }}
         >
           <AppRoutes />
         </Container>

@@ -39,7 +39,12 @@ const Register = () => {
     >
       <Card
         elevation={0}
-        sx={{ width: "100%", borderRadius: 4, border: "1px solid", borderColor: "divider" }}
+        sx={{
+          width: "100%",
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+        }}
       >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Box component="form" onSubmit={handleSubmit}>
@@ -49,7 +54,8 @@ const Register = () => {
                   Sign Up
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Create an account to log sends, manage boulders, and track your climbing history.
+                  Create an account to log sends, manage boulders, and track
+                  your climbing history.
                 </Typography>
               </Box>
 
@@ -81,7 +87,11 @@ const Register = () => {
                 Sign Up
               </Button>
 
-              <Typography variant="body2" textAlign="center" color="text.secondary">
+              <Typography
+                variant="body2"
+                textAlign="center"
+                color="text.secondary"
+              >
                 Already have an account?{" "}
                 <Link component={RouterLink} to="/login" underline="hover">
                   Log In

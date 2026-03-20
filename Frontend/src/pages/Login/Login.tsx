@@ -49,12 +49,24 @@ const Login = () => {
         px: 2,
       }}
     >
-      <Card sx={{ width: "100%", maxWidth: 460, borderRadius: 3 }}>
+      <Card
+        elevation={0}
+        sx={{
+          width: "100%",
+          maxWidth: 460,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         <CardContent sx={{ p: 3 }}>
           <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={2}>
               <Typography variant="h5" fontWeight={700}>
                 Log In
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Continue where you left off and manage your boulders.
               </Typography>
 
               {error && <Alert severity="error">{error}</Alert>}

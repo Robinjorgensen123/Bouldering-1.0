@@ -13,6 +13,8 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Paper,
+  Stack,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
@@ -70,100 +72,127 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
 
   return (
     <Drawer anchor="right" open={isOpen} onClose={onClose}>
-      <Box sx={{ p: 3, width: { xs: "100vw", sm: 350 }, height: "100%" }}>
+      <Box
+        sx={{
+          p: 2,
+          width: { xs: "100vw", sm: 390 },
+          height: "100%",
+          bgcolor: "background.default",
+        }}
+      >
         {boulder && (
-          <>
-            <Typography variant="h5" fontWeight="bold">
-              {boulder.name}
-            </Typography>
-            <Typography color="textSecondary" gutterBottom>
-              {boulder.grade} - {boulder.location}
-            </Typography>
+          <Stack spacing={2} sx={{ height: "100%" }}>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
+              <Typography variant="h5" fontWeight={800}>
+                {boulder.name}
+              </Typography>
+              <Typography color="text.secondary" gutterBottom>
+                {boulder.grade} - {boulder.location}
+              </Typography>
+            </Paper>
 
-            <Box
-              sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
-            >
-              <Typography variant="h6">Log Climb</Typography>
+            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Typography variant="h6">Log Climb</Typography>
 
-              <FormControl fullWidth>
-                <InputLabel>Ascent</InputLabel>
-                <Select
-                  value={ascentType}
-                  label="Ascent"
-                  onChange={(e) => setAscentType(e.target.value)}
+                <FormControl fullWidth>
+                  <InputLabel>Ascent</InputLabel>
+                  <Select
+                    value={ascentType}
+                    label="Ascent"
+                    onChange={(e) => setAscentType(e.target.value)}
+                  >
+                    <MenuItem value="flash">Flash</MenuItem>
+                    <MenuItem value="onsight">Onsight</MenuItem>
+                    <MenuItem value="redpoint">Redpoint</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label="Attempts"
+                  type="number"
+                  value={attempts}
+                  onChange={(e) => setAttempts(Number(e.target.value))}
+                />
+
+                <TextField
+                  label="Comment"
+                  multiline
+                  rows={2}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleLogSubmit}
                 >
-                  <MenuItem value="flash">Flash</MenuItem>
-                  <MenuItem value="onsight">Onsight</MenuItem>
-                  <MenuItem value="redpoint">Redpoint</MenuItem>
-                </Select>
-              </FormControl>
-
-              <TextField
-                label="Attempts"
-                type="number"
-                value={attempts}
-                onChange={(e) => setAttempts(Number(e.target.value))}
-              />
-
-              <TextField
-                label="Comment"
-                multiline
-                rows={2}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleLogSubmit}
-              >
-                Save
-              </Button>
-            </Box>
-
-            <Divider sx={{ my: 4 }} />
-
-            <Typography variant="h6" gutterBottom>
-              Recent Activity
-            </Typography>
-
-            {loadingHistory ? (
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgress size={24} />
+                  Save
+                </Button>
               </Box>
-            ) : (
-              <List>
-                {history.length > 0 ? (
-                  history.map((log) => (
-                    <ListItem key={log._id} sx={{ px: 0 }}>
-                      <ListItemText
-                        primary={`${log.user?.username || "Climber"} - ${log.ascentType}`}
-                        secondary={
-                          <>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textPrimary"
-                            >
-                              {log.comment}
-                            </Typography>
-                            <Typography component="span" variant="caption">
-                              {new Date(log.completedAt).toLocaleDateString()}
-                            </Typography>
-                          </>
-                        }
-                      />
-                    </ListItem>
-                  ))
-                ) : (
-                  <Typography variant="body2" color="textSecondary">
-                    No logs yet.
-                  </Typography>
-                )}
-              </List>
-            )}
-          </>
+            </Paper>
+
+            <Paper
+              variant="outlined"
+              sx={{ p: 2, borderRadius: 3, overflow: "auto", flexGrow: 1 }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Recent Activity
+              </Typography>
+
+              <Divider sx={{ mb: 1.5 }} />
+
+              {loadingHistory ? (
+                <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : (
+                <List>
+                  {history.length > 0 ? (
+                    history.map((log) => (
+                      <ListItem
+                        key={log._id}
+                        sx={{
+                          px: 0,
+                          py: 1,
+                          borderBottom: "1px solid",
+                          borderBottomColor: "divider",
+                        }}
+                      >
+                        <ListItemText
+                          primary={`${log.user?.username || "Climber"} - ${log.ascentType}`}
+                          secondary={
+                            <>
+                              <Typography
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                                sx={{ display: "block" }}
+                              >
+                                {log.comment}
+                              </Typography>
+                              <Typography
+                                component="span"
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {new Date(log.completedAt).toLocaleDateString()}
+                              </Typography>
+                            </>
+                          }
+                        />
+                      </ListItem>
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No logs yet.
+                    </Typography>
+                  )}
+                </List>
+              )}
+            </Paper>
+          </Stack>
         )}
       </Box>
     </Drawer>

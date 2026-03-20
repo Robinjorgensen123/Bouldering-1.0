@@ -154,7 +154,7 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
           overflow: "hidden",
           border: "1px solid",
           borderColor: "divider",
-          bgcolor: "grey.950",
+          bgcolor: "grey.900",
         }}
       >
         <Box
@@ -196,13 +196,18 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
       </Paper>
 
       {points.length > 0 && (
-        <Stack direction="row" spacing={1.5}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1.5}
+          sx={{ pt: 0.5 }}
+        >
           <Button
             type="button"
             onClick={handleUndo}
             variant="outlined"
             startIcon={<UndoRoundedIcon />}
             disabled={points.length === 0}
+            fullWidth
           >
             Undo Last Point
           </Button>
@@ -213,6 +218,7 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
             variant="outlined"
             color="error"
             startIcon={<RestartAltRoundedIcon />}
+            fullWidth
           >
             Reset Line
           </Button>

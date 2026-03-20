@@ -100,7 +100,7 @@ const AddBoulder: React.FC = () => {
     <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
       <Card
         elevation={0}
-        sx={{ borderRadius: 4, border: "1px solid", borderColor: "divider" }}
+        sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider" }}
       >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={3}>
@@ -163,7 +163,10 @@ const AddBoulder: React.FC = () => {
                   fullWidth
                 />
 
-                <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 2.5, borderRadius: 3, bgcolor: "background.paper" }}
+                >
                   <Stack spacing={1.5}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <ExploreRoundedIcon color="primary" fontSize="small" />
@@ -196,7 +199,10 @@ const AddBoulder: React.FC = () => {
                   </Stack>
                 </Paper>
 
-                <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 2.5, borderRadius: 3, bgcolor: "background.paper" }}
+                >
                   <Stack spacing={1.5}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <AddPhotoAlternateRoundedIcon
@@ -232,7 +238,14 @@ const AddBoulder: React.FC = () => {
                 </Paper>
 
                 {preview && (
-                  <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2.5,
+                      borderRadius: 3,
+                      bgcolor: "background.paper",
+                    }}
+                  >
                     <Stack spacing={1.5}>
                       <Typography variant="subtitle1" fontWeight={700}>
                         Draw Topo Line

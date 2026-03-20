@@ -12,14 +12,26 @@ const Navbar = () => {
   ];
 
   return (
-    <AppBar position="static" color="default" elevation={2}>
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+    <AppBar position="sticky" color="default" elevation={0}>
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", md: "center" },
+          py: { xs: 1.1, md: 0.8 },
+          gap: 1.25,
+          flexDirection: { xs: "column", md: "row" },
+        }}
+      >
         <Typography
           component={NavLink}
           to="/"
           variant="h6"
-          fontWeight="bold"
-          sx={{ textDecoration: "none", color: "inherit" }}
+          fontWeight={800}
+          sx={{
+            textDecoration: "none",
+            color: "inherit",
+            letterSpacing: -0.2,
+          }}
         >
           Bouldering App{" "}
           <Typography component="span" variant="caption" color="text.secondary">
@@ -27,7 +39,14 @@ const Navbar = () => {
           </Typography>
         </Typography>
 
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            flexWrap: "wrap",
+            width: { xs: "100%", md: "auto" },
+          }}
+        >
           {navItems.map(({ to, label, icon, end }) => (
             <Button
               key={to}
@@ -39,10 +58,20 @@ const Navbar = () => {
               disableRipple
               disableFocusRipple
               sx={{
-                textTransform: "none",
+                borderRadius: 99,
+                px: 1.4,
+                py: 0.6,
+                bgcolor: "rgba(36,90,75,0.04)",
                 "&.active": {
-                  color: "primary.main",
-                  fontWeight: "bold",
+                  color: "primary.contrastText",
+                  backgroundColor: "primary.main",
+                  fontWeight: 800,
+                },
+                "&:hover": {
+                  bgcolor: "rgba(36,90,75,0.12)",
+                },
+                "&.active:hover": {
+                  backgroundColor: "primary.dark",
                 },
               }}
             >

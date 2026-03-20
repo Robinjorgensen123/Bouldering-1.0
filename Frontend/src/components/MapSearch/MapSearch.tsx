@@ -10,7 +10,6 @@ import {
   Paper,
   TextField,
   Typography,
-  CircularProgress,
 } from "@mui/material";
 
 interface LocationResult {
@@ -67,7 +66,7 @@ const MapSearch = ({ onSelectLocation }: MapSearchProps) => {
       sx={{
         position: "absolute",
         top: 16,
-        left: 50,
+        left: { xs: 16, sm: 50 },
         zIndex: 1400,
         width: { xs: "calc(100% - 32px)", sm: 320 },
       }}
@@ -82,6 +81,9 @@ const MapSearch = ({ onSelectLocation }: MapSearchProps) => {
           bgcolor: "rgba(255,255,255,0.92)",
           backdropFilter: "blur(10px)",
           borderRadius: 2,
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 2,
+          },
         }}
         slotProps={{
           input: {
@@ -101,6 +103,8 @@ const MapSearch = ({ onSelectLocation }: MapSearchProps) => {
           sx={{
             mt: 1,
             borderRadius: 2,
+            border: "1px solid",
+            borderColor: "divider",
             maxHeight: 400,
             overflow: "auto",
           }}
@@ -110,6 +114,14 @@ const MapSearch = ({ onSelectLocation }: MapSearchProps) => {
               <ListItemButton
                 key={`${location.lat}-${location.lon}-${index}`}
                 onClick={() => handleSelectLocation(location)}
+                sx={{
+                  alignItems: "flex-start",
+                  py: 1,
+                  "&:not(:last-of-type)": {
+                    borderBottom: "1px solid",
+                    borderBottomColor: "divider",
+                  },
+                }}
               >
                 <LocationOnRoundedIcon
                   fontSize="small"
