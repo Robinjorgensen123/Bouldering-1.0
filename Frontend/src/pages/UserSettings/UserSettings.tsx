@@ -1,5 +1,5 @@
-import { useAuth } from "../../hooks/useAuth";
-import api from "../../services/api";
+import { useAuth } from "../../features/auth/hooks/useAuth";
+import { updateGradingSystem } from "../../features/auth/services/authApi";
 import {
   Box,
   Button,
@@ -19,11 +19,9 @@ const UserSettings = () => {
     if (user.gradingSystem === scale) return;
 
     try {
-      const response = await api.put("/user/settings", {
-        gradingSystem: scale,
-      });
-      if (response.data.success) {
-        updateUser(response.data.data);
+      const response = await updateGradingSystem(scale);
+      if (response.success) {
+        updateUser(response.data);
       }
     } catch (error) {
       console.error("Failed to update settings", error);
