@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
-import api from "../../services/api";
-import { type IBoulder } from "../../types/Boulder.types";
+import { useAuth } from "../../features/auth/hooks/useAuth";
+import { fetchBoulders as fetchBoulderList } from "../../features/boulders/services/boulderApi";
+import { type IBoulder } from "../../features/boulders/types/boulder.types";
 import { Link } from "react-router-dom";
 import BoulderMap from "../../components/BoulderMap/BoulderMap";
 import {
@@ -13,11 +13,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-
-interface ApiResponse {
-  success: boolean;
-  data: IBoulder[];
-}
 
 interface LocationGroup {
   locationKey: string;
@@ -50,8 +45,8 @@ const Home: React.FC = () => {
       if (!token) return;
 
       try {
-        const response = await api.get<ApiResponse>("/boulders");
-        const boulderData = response.data.data;
+        const response = await fetchBoulderList();
+        const boulderData = response.data;
 
         if (Array.isArray(boulderData)) {
           setAllBoulders(boulderData);

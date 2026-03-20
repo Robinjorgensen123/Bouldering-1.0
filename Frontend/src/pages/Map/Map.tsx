@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BoulderMap from "../../components/BoulderMap/BoulderMap";
-import api from "../../services/api";
-import { IBoulder } from "../../types/Boulder.types";
+import { fetchBoulders as fetchBoulderList } from "../../features/boulders/services/boulderApi";
+import { IBoulder } from "../../features/boulders/types/boulder.types";
 import {
   Box,
   Chip,
@@ -13,7 +13,7 @@ import {
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MapRoundedIcon from "@mui/icons-material/MapRounded";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 import MapSearch from "../../components/MapSearch/MapSearch";
 
 const Map = () => {
@@ -28,9 +28,9 @@ const Map = () => {
   useEffect(() => {
     const fetchBoulders = async () => {
       try {
-        const response = await api.get("/boulders");
-        if (response.data.success) {
-          setBoulders(response.data.data);
+        const response = await fetchBoulderList();
+        if (response.success) {
+          setBoulders(response.data);
         }
       } catch (error) {
         console.error("Error fetching boulders for map", error);
