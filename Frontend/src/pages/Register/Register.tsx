@@ -13,8 +13,10 @@ import {
   Typography,
 } from "@mui/material";
 import api from "../../services/api";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const Register = () => {
+  const { isMobile } = useDeviceType();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -35,7 +37,12 @@ const Register = () => {
   return (
     <Container
       maxWidth="sm"
-      sx={{ minHeight: "100vh", display: "flex", alignItems: "center", py: 4 }}
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        py: isMobile ? 2 : 4,
+      }}
     >
       <Card
         elevation={0}
@@ -46,11 +53,15 @@ const Register = () => {
           borderColor: "divider",
         }}
       >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+        <CardContent sx={{ p: isMobile ? 2 : { xs: 3, md: 4 } }}>
           <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={3}>
               <Box>
-                <Typography variant="h4" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant={isMobile ? "h5" : "h4"}
+                  fontWeight="bold"
+                  gutterBottom
+                >
                   Sign Up
                 </Typography>
                 <Typography variant="body1" color="text.secondary">

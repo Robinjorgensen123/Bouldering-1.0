@@ -23,8 +23,10 @@ import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
 import HikingRoundedIcon from "@mui/icons-material/HikingRounded";
 import NearMeRoundedIcon from "@mui/icons-material/NearMeRounded";
 import UploadRoundedIcon from "@mui/icons-material/UploadRounded";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const AddBoulder: React.FC = () => {
+  const { isMobile } = useDeviceType();
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -97,17 +99,17 @@ const AddBoulder: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+    <Container maxWidth="md" sx={{ py: isMobile ? 2 : { xs: 3, md: 5 } }}>
       <Card
         elevation={0}
         sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider" }}
       >
-        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+        <CardContent sx={{ p: isMobile ? 2 : { xs: 3, md: 4 } }}>
           <Stack spacing={3}>
             <Box>
               <Stack direction="row" spacing={1.5} alignItems="center" mb={1}>
                 <HikingRoundedIcon color="primary" />
-                <Typography variant="h4" fontWeight="bold">
+                <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
                   Add New Boulder
                 </Typography>
               </Stack>

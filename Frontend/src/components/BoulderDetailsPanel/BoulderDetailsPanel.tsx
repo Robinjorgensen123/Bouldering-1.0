@@ -19,6 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { IBoulder } from "../../types/Boulder.types";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 interface Props {
   boulder: IBoulder | null;
@@ -27,6 +28,7 @@ interface Props {
 }
 
 const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
+  const { isMobile, isDesktop } = useDeviceType();
   const [ascentType, setAscentType] = useState("");
   const [attempts, setAttempts] = useState(1);
   const [comment, setComment] = useState("");
@@ -74,8 +76,8 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
     <Drawer anchor="right" open={isOpen} onClose={onClose}>
       <Box
         sx={{
-          p: 2,
-          width: { xs: "100vw", sm: 420 },
+          p: isMobile ? 1.25 : 2,
+          width: isMobile ? "100vw" : isDesktop ? 440 : 420,
           height: "100dvh",
           bgcolor: "background.default",
           overflowY: "auto",
@@ -125,7 +127,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                 <TextField
                   label="Comment"
                   multiline
-                  rows={2}
+                  rows={isMobile ? 3 : 2}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />

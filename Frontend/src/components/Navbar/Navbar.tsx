@@ -1,13 +1,20 @@
 import { NavLink } from "react-router-dom";
 import { Map, PlusSquare, Home, Settings, History } from "lucide-react";
 import { AppBar, Toolbar, Box, Button, Typography } from "@mui/material";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const Navbar = () => {
+  const { isMobile } = useDeviceType();
+
   const navItems = [
     { to: "/", label: "Home", icon: <Home size={20} />, end: true },
     { to: "/map", label: "Map", icon: <Map size={20} /> },
     { to: "/history", label: "History", icon: <History size={20} /> },
-    { to: "/add", label: "Add New Boulder", icon: <PlusSquare size={20} /> },
+    {
+      to: "/add",
+      label: isMobile ? "Add" : "Add New Boulder",
+      icon: <PlusSquare size={20} />,
+    },
     { to: "/settings", label: "Settings", icon: <Settings size={20} /> },
   ];
 
@@ -17,7 +24,7 @@ const Navbar = () => {
         sx={{
           justifyContent: "space-between",
           alignItems: { xs: "flex-start", md: "center" },
-          py: { xs: 1.1, md: 0.8 },
+          py: isMobile ? 0.9 : { xs: 1.1, md: 0.8 },
           gap: 1.25,
           flexDirection: { xs: "column", md: "row" },
         }}
@@ -59,7 +66,7 @@ const Navbar = () => {
               disableFocusRipple
               sx={{
                 borderRadius: 99,
-                px: 1.4,
+                px: isMobile ? 1.1 : 1.4,
                 py: 0.6,
                 bgcolor: "rgba(36,90,75,0.04)",
                 "&.active": {

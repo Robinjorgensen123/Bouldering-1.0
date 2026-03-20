@@ -15,8 +15,10 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MapRoundedIcon from "@mui/icons-material/MapRounded";
 import { useAuth } from "../../hooks/useAuth";
 import MapSearch from "../../components/MapSearch/MapSearch";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const Map = () => {
+  const { isMobile, isDesktop } = useDeviceType();
   const { user } = useAuth();
   const [boulders, setBoulders] = useState<IBoulder[]>([]);
   const [focusLocation, setFocusLocation] = useState<[number, number] | null>(
@@ -66,8 +68,8 @@ const Map = () => {
     <Box
       sx={{
         width: "100%",
-        height: { xs: "calc(100vh - 60px)", md: "calc(100vh - 64px)" },
-        minHeight: { xs: "calc(100vh - 60px)", md: "calc(100vh - 64px)" },
+        height: isMobile ? "calc(100vh - 56px)" : "calc(100vh - 64px)",
+        minHeight: isMobile ? "calc(100vh - 56px)" : "calc(100vh - 64px)",
         position: "relative",
         isolation: "isolate",
         overflow: "hidden",
@@ -82,15 +84,15 @@ const Map = () => {
             top: 16,
             right: 16,
             zIndex: 1400,
-            px: 2,
-            py: 1.5,
+            px: isMobile ? 1.5 : 2,
+            py: isMobile ? 1.2 : 1.5,
             borderRadius: 3,
             bgcolor: "rgba(255,255,255,0.92)",
             backdropFilter: "blur(10px)",
             border: "1px solid",
             borderColor: "divider",
             boxShadow: "0 6px 16px rgba(24,58,55,0.14)",
-            maxWidth: { xs: "calc(100% - 32px)", sm: 320 },
+            maxWidth: isDesktop ? 320 : "calc(100% - 32px)",
           }}
         >
           <Stack direction="row" spacing={1} alignItems="center">

@@ -13,8 +13,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const Login = () => {
+  const { isMobile } = useDeviceType();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -59,10 +61,10 @@ const Login = () => {
           borderColor: "divider",
         }}
       >
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ p: isMobile ? 2 : 3 }}>
           <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={2}>
-              <Typography variant="h5" fontWeight={700}>
+              <Typography variant={isMobile ? "h6" : "h5"} fontWeight={700}>
                 Log In
               </Typography>
               <Typography variant="body2" color="text.secondary">

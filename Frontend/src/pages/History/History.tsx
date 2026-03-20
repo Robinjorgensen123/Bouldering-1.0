@@ -19,6 +19,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import SellRoundedIcon from "@mui/icons-material/SellRounded";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 interface HistoryRecord {
   _id: string;
@@ -33,6 +34,7 @@ interface HistoryRecord {
 }
 
 const History = () => {
+  const { isMobile } = useDeviceType();
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -66,10 +68,14 @@ const History = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+    <Container maxWidth="md" sx={{ py: isMobile ? 2 : { xs: 3, md: 5 } }}>
       <Stack spacing={3}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Typography
+            variant={isMobile ? "h5" : "h4"}
+            fontWeight="bold"
+            gutterBottom
+          >
             Climbing History
           </Typography>
           <Typography variant="body1" color="text.secondary">

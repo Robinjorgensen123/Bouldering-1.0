@@ -10,8 +10,10 @@ import {
   Typography,
 } from "@mui/material";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const UserSettings = () => {
+  const { isMobile } = useDeviceType();
   const { user, updateUser } = useAuth();
 
   const handleScaleChange = async (scale: "font" | "v-scale") => {
@@ -31,7 +33,7 @@ const UserSettings = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: { xs: 3, md: 5 } }}>
+    <Container maxWidth="sm" sx={{ py: isMobile ? 2 : { xs: 3, md: 5 } }}>
       <Card
         elevation={0}
         sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}
@@ -40,7 +42,7 @@ const UserSettings = () => {
           <Stack spacing={3}>
             <Stack direction="row" spacing={1} alignItems="center">
               <TuneRoundedIcon color="primary" />
-              <Typography variant="h4" fontWeight="bold">
+              <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold">
                 Settings
               </Typography>
             </Stack>

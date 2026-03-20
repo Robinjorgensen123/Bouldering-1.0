@@ -5,6 +5,7 @@ import { IBoulder } from "../../types/Boulder.types";
 import { useEffect, useState } from "react";
 import BoulderDetailsPanel from "../BoulderDetailsPanel/BoulderDetailsPanel";
 import { Box, Chip, Stack, Typography } from "@mui/material";
+import { useDeviceType } from "../../hooks/useDeviceType";
 
 const markerIcon = new URL(
   "leaflet/dist/images/marker-icon.png",
@@ -166,6 +167,7 @@ const BoulderMap = ({
   focusBoulder = null,
   focusLocation = null,
 }: Props) => {
+  const { isMobile } = useDeviceType();
   const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
 
@@ -199,7 +201,7 @@ const BoulderMap = ({
       ? [boulders[0].coordinates.lat, boulders[0].coordinates.lng]
       : defaultCenter;
 
-  const mapHeight = isFullScreen ? "100%" : "400px";
+  const mapHeight = isFullScreen ? "100%" : isMobile ? "340px" : "400px";
   const marginBottom = isFullScreen ? "0" : "2rem";
   const borderRadius = isFullScreen ? "0" : "14px";
 
@@ -241,7 +243,7 @@ const BoulderMap = ({
             icon={createGroupedMarkerIcon(group.boulders.length)}
           >
             <Popup>
-              <Box sx={{ width: 260, py: 0.5 }}>
+              <Box sx={{ width: isMobile ? 230 : 260, py: 0.5 }}>
                 <Stack spacing={0.75} sx={{ mb: 1.25 }}>
                   <Typography variant="subtitle1" fontWeight={800}>
                     {group.boulders.length > 1
@@ -263,7 +265,7 @@ const BoulderMap = ({
                 <Stack
                   spacing={1}
                   sx={{
-                    maxHeight: 260,
+                    maxHeight: isMobile ? 220 : 260,
                     overflowY: "auto",
                     pr: 0.5,
                   }}
@@ -295,8 +297,8 @@ const BoulderMap = ({
                           src={getPreviewImageSrc(boulder.imagesUrl)}
                           alt={boulder.name}
                           sx={{
-                            width: 62,
-                            height: 62,
+                            width: isMobile ? 54 : 62,
+                            height: isMobile ? 54 : 62,
                             borderRadius: 1.5,
                             objectFit: "cover",
                             flexShrink: 0,
@@ -305,8 +307,8 @@ const BoulderMap = ({
                       ) : (
                         <Box
                           sx={{
-                            width: 62,
-                            height: 62,
+                            width: isMobile ? 54 : 62,
+                            height: isMobile ? 54 : 62,
                             borderRadius: 1.5,
                             flexShrink: 0,
                             display: "grid",
