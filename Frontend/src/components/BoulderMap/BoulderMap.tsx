@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IBoulder } from "../../types/Boulder.types";
@@ -28,9 +28,52 @@ L.Marker.prototype.options.icon = DefaultIcon;
 interface Props {
   boulders: IBoulder[];
   isFullScreen?: boolean;
+  focusBoulder?: IBoulder | null;
+  focusLocation?: [number, number] | null;
 }
 
-const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
+const FlyToBoulder = ({
+  boulder,
+}: {
+  boulder: IBoulder | null | undefined;
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!boulder) return;
+
+    map.flyTo([boulder.coordinates.lat, boulder.coordinates.lng], 14, {
+      duration: 0.8,
+    });
+  }, [map, boulder?._id]);
+
+  return null;
+};
+
+const FlyToLocation = ({
+  coordinates,
+}: {
+  coordinates: [number, number] | null | undefined;
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!coordinates) return;
+
+    map.flyTo(coordinates, 12, {
+      duration: 0.8,
+    });
+  }, [map, coordinates]);
+
+  return null;
+};
+
+const BoulderMap = ({
+  boulders,
+  isFullScreen = false,
+  focusBoulder = null,
+  focusLocation = null,
+}: Props) => {
   const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
 
@@ -47,6 +90,13 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
       setIsDetailsPanelOpen(false);
     }
   }, [boulders, selectedBoulder?._id]);
+
+  useEffect(() => {
+    if (!focusBoulder?._id) return;
+
+    setSelectedBoulder(focusBoulder);
+    setIsDetailsPanelOpen(true);
+  }, [focusBoulder?._id]);
 
   //Default coordinates to Gothenburg
   const defaultCenter: [number, number] = [57.7089, 11.9746];
@@ -84,6 +134,8 @@ const BoulderMap = ({ boulders, isFullScreen = false }: Props) => {
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%", borderRadius: borderRadius }}
       >
+        <FlyToBoulder boulder={focusBoulder} />
+        <FlyToLocation coordinates={focusLocation} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -14,10 +14,14 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MapRoundedIcon from "@mui/icons-material/MapRounded";
 import { useAuth } from "../../hooks/useAuth";
+import MapSearch from "../../components/MapSearch/MapSearch";
 
 const Map = () => {
   const { user } = useAuth();
   const [boulders, setBoulders] = useState<IBoulder[]>([]);
+  const [focusLocation, setFocusLocation] = useState<[number, number] | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(true);
 
@@ -129,7 +133,13 @@ const Map = () => {
         />
       )}
 
-      <BoulderMap boulders={boulders} isFullScreen={true} />
+      <MapSearch onSelectLocation={setFocusLocation} />
+
+      <BoulderMap
+        boulders={boulders}
+        isFullScreen={true}
+        focusLocation={focusLocation}
+      />
     </Box>
   );
 };
