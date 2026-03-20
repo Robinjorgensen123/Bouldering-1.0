@@ -11,13 +11,43 @@ interface TopoCanvasProp {
 
 const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const pointsRef = useRef<ILinePoint[]>([]);
   const [points, setPoints] = useState<ILinePoint[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
+  const syncCanvasSizeToImage = () => {
+    const canvas = canvasRef.current;
+    const image = imageRef.current;
+    if (!canvas || !image) return;
+
+    const width = Math.round(image.clientWidth);
+    const height = Math.round(image.clientHeight);
+
+    if (!width || !height) return;
+
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+  };
+
   useEffect(() => {
     pointsRef.current = points;
   }, [points]);
+
+  useEffect(() => {
+    syncCanvasSizeToImage();
+
+    const handleResize = () => {
+      syncCanvasSizeToImage();
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [imageSrc]);
 
   const getCoords = (e: React.MouseEvent | React.TouchEvent): ILinePoint => {
     const canvas = canvasRef.current;
@@ -104,7 +134,11 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
         </Box>
         <Chip
           color={points.length > 0 ? "success" : "default"}
-          label={points.length > 0 ? `${points.length} points captured` : "No line drawn yet"}
+          label={
+            points.length > 0
+              ? `${points.length} points captured`
+              : "No line drawn yet"
+          }
           size="small"
         />
       </Stack>
@@ -125,8 +159,10 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
       >
         <Box
           component="img"
+          ref={imageRef}
           src={imageSrc}
           alt="preview"
+          onLoad={syncCanvasSizeToImage}
           sx={{
             width: "100%",
             height: "auto",
