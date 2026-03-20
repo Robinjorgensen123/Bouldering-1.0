@@ -75,13 +75,14 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
       <Box
         sx={{
           p: 2,
-          width: { xs: "100vw", sm: 390 },
-          height: "100%",
+          width: { xs: "100vw", sm: 420 },
+          height: "100dvh",
           bgcolor: "background.default",
+          overflowY: "auto",
         }}
       >
         {boulder && (
-          <Stack spacing={2} sx={{ height: "100%" }}>
+          <Stack spacing={2}>
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
               <Typography variant="h5" fontWeight={800}>
                 {boulder.name}
@@ -91,7 +92,13 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
               </Typography>
             </Paper>
 
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 2,
+                borderRadius: 3,
+              }}
+            >
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Typography variant="h6">Log Climb</Typography>
 
@@ -135,7 +142,10 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
 
             <Paper
               variant="outlined"
-              sx={{ p: 2, borderRadius: 3, overflow: "auto", flexGrow: 1 }}
+              sx={{
+                p: 2,
+                borderRadius: 3,
+              }}
             >
               <Typography variant="h6" gutterBottom>
                 Recent Activity
@@ -148,7 +158,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                   <CircularProgress size={24} />
                 </Box>
               ) : (
-                <List>
+                <List sx={{ pr: 0.5 }}>
                   {history.length > 0 ? (
                     history.map((log) => (
                       <ListItem
