@@ -35,7 +35,7 @@ describe("Boulder API - Create", () => {
   it("should save grade as Font even if user sends V-Scale (V6 => 7A)", async () => {
     await User.findOneAndUpdate(
       { email: "vscale-user@test.com" },
-      { gradingSystem: "v-scale" }
+      { gradingSystem: "v-scale" },
     );
 
     const newBoulder = {
@@ -68,6 +68,26 @@ describe("Boulder API - Create", () => {
       description: "Should not be created",
     });
     expect(response.status).toBe(401);
+  });
+
+  it("should return 400 if grade is invalid for a Font user", async () => {
+    const response = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${standardToken}`)
+      .send({
+        name: "Invalid Grade Boulder",
+        grade: "NOPE",
+        description: "invalid grade",
+        location: "Hono",
+        coordinates: {
+          lat: 57.7089,
+          lng: 11.9746,
+        },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/Invalid grade/i);
   });
 
   it("should save complete boulder with image, coordinates and topo data", async () => {
@@ -123,7 +143,7 @@ describe("Boulder API - Get All", () => {
     const userInDb = await User.findOneAndUpdate(
       { email: user.email },
       { gradingSystem: "v-scale" },
-      { new: true }
+      { new: true },
     );
 
     currentUserId = userInDb!._id.toString();
@@ -149,7 +169,7 @@ describe("Boulder API - Get All", () => {
 
     // Verifiera att graden konverterats i svaret
     const found = response.body.data.find(
-      (b: any) => b.name === "GET Test Boulder"
+      (b: any) => b.name === "GET Test Boulder",
     );
     expect(found).toBeDefined();
     expect(found.grade).toBe("V6"); // 7A i DB ska bli V6 i API-svaret
@@ -223,5 +243,20 @@ describe("Boulder API - Update", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.name).toBe("Updated Name");
+  });
+
+  it("should return 400 when updating with an invalid grade", async () => {
+    const response = await request(app)
+      .put(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "INVALID Grade Update",
+        grade: "INVALID",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/Invalid grade/i);
   });
 });

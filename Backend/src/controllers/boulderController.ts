@@ -3,7 +3,11 @@ import { type AuthRequest } from "../middleware/authMiddleware.js";
 import { type IBoulder } from "../types/Boulder.types.js";
 import { Boulder } from "../models/Boulder.js";
 import { User } from "../models/User.js";
-import { convertToFont, convertToVScale } from "../utils/gradeConverter.js";
+import {
+  convertToFont,
+  convertToVScale,
+  isValidGradeForSystem,
+} from "../utils/gradeConverter.js";
 
 export const createBoulder = async (req: AuthRequest, res: Response) => {
   try {
@@ -26,10 +30,24 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
     }
 
     const finalImageUrl = req.file ? req.file.path : imagesUrl;
+    const gradingSystem =
+      user.gradingSystem?.toLowerCase() === "v-scale" ? "v-scale" : "font";
+
+    if (!isValidGradeForSystem(grade, gradingSystem)) {
+      const expectedFormat =
+        gradingSystem === "v-scale"
+          ? "Expected V-scale (e.g. V0-V17)."
+          : "Expected Fontainebleau grade (e.g. 6A, 7B+, 8C+).";
+
+      return res.status(400).json({
+        message: `Invalid grade \"${grade}\" for ${gradingSystem}. ${expectedFormat}`,
+        success: false,
+      });
+    }
 
     let gradeToSave = grade;
 
-    if (user.gradingSystem?.toLowerCase() === "v-scale") {
+    if (gradingSystem === "v-scale") {
       gradeToSave = convertToFont(grade);
     }
 
@@ -152,8 +170,27 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
 
     if (req.body.grade) {
       const user = await User.findById(userId);
-      if (user?.gradingSystem?.toLowerCase() === "v-scale") {
+      const gradingSystem =
+        user?.gradingSystem?.toLowerCase() === "v-scale"
+          ? "v-scale"
+          : "font";
+
+      if (!isValidGradeForSystem(req.body.grade, gradingSystem)) {
+        const expectedFormat =
+          gradingSystem === "v-scale"
+            ? "Expected V-scale (e.g. V0-V17)."
+            : "Expected Fontainebleau grade (e.g. 6A, 7B+, 8C+).";
+
+        return res.status(400).json({
+          success: false,
+          message: `Invalid grade \"${req.body.grade}\" for ${gradingSystem}. ${expectedFormat}`,
+        });
+      }
+
+      if (gradingSystem === "v-scale") {
         updateFields.grade = convertToFont(req.body.grade.toUpperCase());
+      } else {
+        updateFields.grade = req.body.grade.toUpperCase();
       }
     }
 
