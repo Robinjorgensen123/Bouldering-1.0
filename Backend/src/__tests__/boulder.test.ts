@@ -35,7 +35,7 @@ describe("Boulder API - Create", () => {
   it("should save grade as Font even if user sends V-Scale (V6 => 7A)", async () => {
     await User.findOneAndUpdate(
       { email: "vscale-user@test.com" },
-      { gradingSystem: "v-scale" }
+      { gradingSystem: "v-scale" },
     );
 
     const newBoulder = {
@@ -143,7 +143,7 @@ describe("Boulder API - Get All", () => {
     const userInDb = await User.findOneAndUpdate(
       { email: user.email },
       { gradingSystem: "v-scale" },
-      { new: true }
+      { new: true },
     );
 
     currentUserId = userInDb!._id.toString();
@@ -169,7 +169,7 @@ describe("Boulder API - Get All", () => {
 
     // Verifiera att graden konverterats i svaret
     const found = response.body.data.find(
-      (b: any) => b.name === "GET Test Boulder"
+      (b: any) => b.name === "GET Test Boulder",
     );
     expect(found).toBeDefined();
     expect(found.grade).toBe("V6"); // 7A i DB ska bli V6 i API-svaret
@@ -250,6 +250,7 @@ describe("Boulder API - Update", () => {
       .put(`/api/boulders/${boulderId}`)
       .set("Authorization", `Bearer ${userToken}`)
       .send({
+        name: "INVALID Grade Update",
         grade: "INVALID",
         coordinates: { lat: 57.0, lng: 12.0 },
       });
