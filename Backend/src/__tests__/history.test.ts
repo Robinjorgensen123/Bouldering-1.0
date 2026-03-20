@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../server.js";
 import { History } from "../models/History.js";
+import { User } from "../models/User.js";
 
 describe("History Model", () => {
   it("should fail validation if ascentType is missing", async () => {
@@ -113,5 +114,24 @@ describe("History API", () => {
     expect(Array.isArray(res.body.data)).toBe(true);
     expect(res.body.data.length).toBeGreaterThan(0);
     expect(res.body.data[0].boulder).toBe(boulderId);
+  });
+
+  it("should convert history boulder grades to V-scale for users with that preference", async () => {
+    await User.findOneAndUpdate(
+      { email: "history-api@test.com" },
+      { gradingSystem: "v-scale" },
+    );
+
+    await request(app)
+      .post("/api/history")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ boulder: boulderId, ascentType: "onsight", attempts: 1 });
+
+    const res = await request(app)
+      .get("/api/history")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].boulder.grade).toBe("V3");
   });
 });

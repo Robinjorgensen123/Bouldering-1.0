@@ -70,6 +70,26 @@ describe("Boulder API - Create", () => {
     expect(response.status).toBe(401);
   });
 
+  it("should return 400 if grade is invalid for a Font user", async () => {
+    const response = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${standardToken}`)
+      .send({
+        name: "Invalid Grade Boulder",
+        grade: "NOPE",
+        description: "invalid grade",
+        location: "Hono",
+        coordinates: {
+          lat: 57.7089,
+          lng: 11.9746,
+        },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/Invalid grade/i);
+  });
+
   it("should save complete boulder with image, coordinates and topo data", async () => {
     const completeBoulder = {
       name: "The Highball",
@@ -223,5 +243,19 @@ describe("Boulder API - Update", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.name).toBe("Updated Name");
+  });
+
+  it("should return 400 when updating with an invalid grade", async () => {
+    const response = await request(app)
+      .put(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        grade: "INVALID",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/Invalid grade/i);
   });
 });
