@@ -17,6 +17,9 @@ import {
 import MapRoundedIcon from "@mui/icons-material/MapRounded";
 import TerrainRoundedIcon from "@mui/icons-material/TerrainRounded";
 import HikingRoundedIcon from "@mui/icons-material/HikingRounded";
+import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
+import RouteRoundedIcon from "@mui/icons-material/RouteRounded";
+import PhotoLibraryRoundedIcon from "@mui/icons-material/PhotoLibraryRounded";
 
 interface ApiResponse {
   success: boolean;
@@ -49,6 +52,36 @@ const getPreviewImageSrc = (imagesUrl?: string) => {
   }
 
   return `http://localhost:5000${imagesUrl}`;
+};
+
+const getTopoViewBoxSize = (boulder: IBoulder) => {
+  const points = boulder.topoData?.linePoints ?? [];
+  const holds = boulder.topoData?.holds ?? [];
+
+  const maxPoint = points.reduce(
+    (maxValue, point) => Math.max(maxValue, point.x, point.y),
+    0,
+  );
+  const maxHold = holds.reduce(
+    (maxValue, hold) =>
+      Math.max(maxValue, hold.position.x, hold.position.y),
+    0,
+  );
+
+  return Math.max(1000, maxPoint, maxHold) + 24;
+};
+
+const getHoldColor = (holdType: string) => {
+  switch (holdType) {
+    case "start":
+      return "#22C55E";
+    case "finish":
+      return "#EF4444";
+    case "foot":
+      return "#38BDF8";
+    default:
+      return "#F59E0B";
+  }
 };
 
 const Home: React.FC = () => {
@@ -139,6 +172,9 @@ const Home: React.FC = () => {
 
   const totalAreas = groups.length;
   const totalBoulders = allBoulders.length;
+  const topoViewBoxSize = selectedBoulder
+    ? getTopoViewBoxSize(selectedBoulder)
+    : 1000;
 
   return (
     <Box
@@ -442,7 +478,10 @@ const Home: React.FC = () => {
               <Box sx={{ px: 2.5, pb: 2.5 }}>
                 <Button
                   variant="contained"
-                  onClick={() => setSelectedGroup(null)}
+                  onClick={() => {
+                    setSelectedBoulder(null);
+                    setSelectedGroup(null);
+                  }}
                 >
                   Close
                 </Button>
@@ -499,11 +538,45 @@ const Home: React.FC = () => {
                         }}
                       />
 
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                          position: "absolute",
+                          top: 16,
+                          left: 16,
+                          right: 16,
+                          zIndex: 1,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Chip
+                          icon={<PhotoLibraryRoundedIcon />}
+                          label="Image available"
+                          sx={{
+                            bgcolor: "rgba(15,23,42,0.7)",
+                            color: "common.white",
+                            "& .MuiChip-icon": { color: "inherit" },
+                          }}
+                        />
+                        {selectedBoulder.topoData?.linePoints?.length ? (
+                          <Chip
+                            icon={<RouteRoundedIcon />}
+                            label={`${selectedBoulder.topoData.linePoints.length} topo points`}
+                            sx={{
+                              bgcolor: "rgba(15,23,42,0.7)",
+                              color: "common.white",
+                              "& .MuiChip-icon": { color: "inherit" },
+                            }}
+                          />
+                        ) : null}
+                      </Stack>
+
                       {selectedBoulder.topoData?.linePoints &&
                         selectedBoulder.topoData.linePoints.length > 1 && (
                           <Box
                             component="svg"
-                            viewBox="0 0 1000 1000"
+                            viewBox={`0 0 ${topoViewBoxSize} ${topoViewBoxSize}`}
                             preserveAspectRatio="none"
                             sx={{
                               position: "absolute",
@@ -517,7 +590,7 @@ const Home: React.FC = () => {
                               points={selectedBoulder.topoData.linePoints
                                 .map(
                                   (point) =>
-                                    `${Math.max(0, Math.min(1000, point.x))},${Math.max(0, Math.min(1000, point.y))}`,
+                                    `${Math.max(0, Math.min(topoViewBoxSize, point.x))},${Math.max(0, Math.min(topoViewBoxSize, point.y))}`,
                                 )
                                 .join(" ")}
                               fill="none"
@@ -527,6 +600,28 @@ const Home: React.FC = () => {
                               strokeLinejoin="round"
                               opacity="0.9"
                             />
+
+                            {(selectedBoulder.topoData?.holds ?? []).map(
+                              (hold, index) => (
+                                <g key={`${hold.type}-${index}`}>
+                                  <circle
+                                    cx={hold.position.x}
+                                    cy={hold.position.y}
+                                    r="14"
+                                    fill={getHoldColor(hold.type)}
+                                    opacity="0.95"
+                                  />
+                                  <circle
+                                    cx={hold.position.x}
+                                    cy={hold.position.y}
+                                    r="18"
+                                    fill="transparent"
+                                    stroke="rgba(255,255,255,0.9)"
+                                    strokeWidth="3"
+                                  />
+                                </g>
+                              ),
+                            )}
                           </Box>
                         )}
                     </>
@@ -547,15 +642,21 @@ const Home: React.FC = () => {
                 </Box>
 
                 <Box sx={{ width: { xs: "100%", md: "48%" }, p: 2.5 }}>
-                  <Stack spacing={2}>
+                  <Stack spacing={2.25}>
                     <Box>
+                      <Typography
+                        variant="overline"
+                        sx={{ color: "text.secondary", letterSpacing: 1.3 }}
+                      >
+                        Boulder details
+                      </Typography>
                       <Typography variant="h5" fontWeight={800}>
                         {selectedBoulder.name}
                       </Typography>
                       <Stack
-                        direction="row"
+                        direction={{ xs: "column", sm: "row" }}
                         spacing={1}
-                        alignItems="center"
+                        alignItems={{ xs: "flex-start", sm: "center" }}
                         sx={{ mt: 1 }}
                       >
                         <Chip
@@ -563,45 +664,89 @@ const Home: React.FC = () => {
                           color="warning"
                           label={selectedBoulder.grade}
                         />
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          icon={<MapRoundedIcon />}
+                          label={selectedBoulder.location}
+                        />
                         <Typography variant="body2" color="text.secondary">
-                          {selectedBoulder.location}
+                          {selectedBoulder.topoData?.holds?.length
+                            ? `${selectedBoulder.topoData.holds.length} hold markers`
+                            : "No hold markers added"}
                         </Typography>
                       </Stack>
                     </Box>
 
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25}>
+                      <Card variant="outlined" sx={{ flex: 1, borderRadius: 2.5 }}>
+                        <CardContent sx={{ py: 1.4 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Topo overlay
+                          </Typography>
+                          <Typography variant="subtitle2" fontWeight={700}>
+                            {selectedBoulder.topoData?.linePoints?.length
+                              ? "Available"
+                              : "Not added yet"}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                      <Card variant="outlined" sx={{ flex: 1, borderRadius: 2.5 }}>
+                        <CardContent sx={{ py: 1.4 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Comments
+                          </Typography>
+                          <Typography variant="subtitle2" fontWeight={700}>
+                            {historyLogs.length} entries
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Stack>
+
                     {selectedBoulder.description && (
-                      <Box>
+                      <Card variant="outlined" sx={{ borderRadius: 2.5 }}>
+                        <CardContent>
                         <Typography variant="subtitle2" color="text.secondary">
                           Description
                         </Typography>
                         <Typography variant="body1" sx={{ mt: 0.5 }}>
                           {selectedBoulder.description}
                         </Typography>
-                      </Box>
+                        </CardContent>
+                      </Card>
                     )}
 
-                    <Divider />
-
                     <Box>
-                      <Typography variant="subtitle1" fontWeight={700}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <ChatBubbleOutlineRoundedIcon color="primary" fontSize="small" />
+                        <Typography variant="subtitle1" fontWeight={700}>
                         Comments & activity
-                      </Typography>
+                        </Typography>
+                      </Stack>
 
                       <Stack spacing={1.25} sx={{ mt: 1.25 }}>
                         {loadingLogs ? (
-                          <Typography variant="body2" color="text.secondary">
-                            Loading comments...
-                          </Typography>
+                          <Card variant="outlined" sx={{ borderRadius: 2.5 }}>
+                            <CardContent>
+                              <Typography variant="body2" color="text.secondary">
+                                Loading comments...
+                              </Typography>
+                            </CardContent>
+                          </Card>
                         ) : historyLogs.length === 0 ? (
-                          <Typography variant="body2" color="text.secondary">
-                            No comments yet for this boulder.
-                          </Typography>
+                          <Card variant="outlined" sx={{ borderRadius: 2.5 }}>
+                            <CardContent>
+                              <Typography variant="body2" color="text.secondary">
+                                No comments yet for this boulder.
+                              </Typography>
+                            </CardContent>
+                          </Card>
                         ) : (
                           historyLogs.map((log) => (
                             <Card
                               key={log._id}
                               variant="outlined"
-                              sx={{ borderRadius: 2 }}
+                              sx={{ borderRadius: 2.5 }}
                             >
                               <CardContent sx={{ py: 1.25 }}>
                                 <Typography variant="body2" fontWeight={700}>
@@ -634,14 +779,17 @@ const Home: React.FC = () => {
                       </Stack>
                     </Box>
 
-                    <Box>
+                    <Stack direction="row" spacing={1.25}>
+                      <Button variant="outlined" onClick={() => setSelectedBoulder(null)}>
+                        Back to list
+                      </Button>
                       <Button
                         variant="contained"
                         onClick={() => setSelectedBoulder(null)}
                       >
                         Close details
                       </Button>
-                    </Box>
+                    </Stack>
                   </Stack>
                 </Box>
               </Stack>

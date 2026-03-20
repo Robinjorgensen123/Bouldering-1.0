@@ -1,9 +1,10 @@
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
 // 1. Fix för scrollIntoView
 if (typeof window !== "undefined") {
   window.HTMLElement.prototype.scrollIntoView = vi.fn();
+  window.URL.createObjectURL = vi.fn(() => "mock-url");
 
   Object.defineProperty(window, "matchMedia", {
     writable: true,

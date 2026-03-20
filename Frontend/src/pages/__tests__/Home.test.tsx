@@ -74,9 +74,7 @@ describe("Home Page", () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/2 boulders at this location/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/2 boulders at this location/i)).toBeTruthy();
     });
   });
   it("should toggle between grid and map view when buttons are clicked", async () => {
@@ -94,10 +92,72 @@ describe("Home Page", () => {
     const mapBtn = screen.getByRole("button", { name: /map/i });
     fireEvent.click(mapBtn);
 
-    expect(screen.getByTestId("mock-map")).toBeInTheDocument();
+    expect(screen.getByTestId("mock-map")).toBeTruthy();
 
     const areasBtn = screen.getByRole("button", { name: /areas/i });
     fireEvent.click(areasBtn);
-    expect(screen.queryByTestId("mock-map")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("mock-map")).toBeNull();
+  });
+
+  it("should open boulder details when clicking a boulder in the spot panel", async () => {
+    (api.get as any)
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: [
+            {
+              _id: "1",
+              name: "robin",
+              grade: "9B",
+              description: "Powerful moves on sharp holds.",
+              imagesUrl: "/robin.jpg",
+              location: "GothenBurg",
+              coordinates: { lat: 57.7, lng: 11.97 },
+              topoData: {
+                linePoints: [
+                  { x: 100, y: 200 },
+                  { x: 220, y: 160 },
+                ],
+                holds: [{ type: "start", position: { x: 100, y: 200 } }],
+              },
+            },
+          ],
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          data: [
+            {
+              _id: "h1",
+              ascentType: "redpoint",
+              attempts: 2,
+              comment: "Solid",
+              completedAt: new Date().toISOString(),
+              user: { email: "climber@example.com" },
+            },
+          ],
+        },
+      });
+
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <Home />
+        </AuthProvider>
+      </BrowserRouter>,
+    );
+
+    const groupCard = await screen.findByText(/spot: gothenburg/i);
+    fireEvent.click(groupCard);
+
+    const boulderInList = await screen.findByText(/robin \(9b\)/i);
+    fireEvent.click(boulderInList);
+
+    await waitFor(() => {
+      expect(screen.getByText(/boulder details/i)).toBeTruthy();
+      expect(screen.getByText(/powerful moves on sharp holds./i)).toBeTruthy();
+      expect(screen.getByText(/solid/i)).toBeTruthy();
+    });
   });
 });
