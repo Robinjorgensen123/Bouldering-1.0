@@ -17,7 +17,7 @@ describe("Auth API Register", () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty(
       "message",
-      "User registered successfully"
+      "User registered successfully",
     );
 
     const userInDb = await User.findOne({ email: newUser.email });
@@ -74,10 +74,8 @@ describe("Auth API Register", () => {
     await user.save();
     const initialHash = user.password;
 
-    // Ändra något ANNAT än lösenordet
     user.email = "new-line22@test.com";
-    await user.save(); // Nu triggas pre-save, och isModified("password") blir false
-
+    await user.save();
     expect(user.password).toBe(initialHash);
   });
 });
