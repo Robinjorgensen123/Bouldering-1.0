@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { fetchBoulders as fetchBoulderList } from "../services/boulderApi";
 import { type IBoulder } from "../types/boulder.types";
-import { Link } from "react-router-dom";
 import BoulderMap from "./BoulderMap";
+import BoulderDetailsPanel from "./BoulderDetailsPanel";
 import {
   Box,
   Button,
@@ -36,6 +36,8 @@ const HomePageContent: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<LocationGroup | null>(
     null,
   );
+  const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
+  const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
   const [view, setView] = useState<"grid" | "map">("grid");
 
   const { token, user } = useAuth();
@@ -85,6 +87,12 @@ const HomePageContent: React.FC = () => {
 
     setSelectedGroup(updatedGroup ?? null);
   }, [groups, selectedGroup?.locationKey]);
+
+  const handleOpenBoulderDetails = (boulder: IBoulder) => {
+    setSelectedGroup(null);
+    setSelectedBoulder(boulder);
+    setIsDetailsPanelOpen(true);
+  };
 
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: 3 }}>
@@ -247,19 +255,18 @@ const HomePageContent: React.FC = () => {
 
               <Stack spacing={1.25} sx={{ mb: 2 }}>
                 {selectedGroup.boulders.map((boulder) => (
-                  <Link
+                  <Card
                     key={boulder._id}
-                    to={`/boulder/${boulder._id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
+                    variant="outlined"
+                    sx={{ borderRadius: 2, cursor: "pointer" }}
+                    onClick={() => handleOpenBoulderDetails(boulder)}
                   >
-                    <Card variant="outlined" sx={{ borderRadius: 2 }}>
-                      <CardContent sx={{ py: 1.25 }}>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          {boulder.name} ({boulder.grade})
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                    <CardContent sx={{ py: 1.25 }}>
+                      <Typography variant="subtitle1" fontWeight={600}>
+                        {boulder.name} ({boulder.grade})
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 ))}
               </Stack>
 
@@ -268,6 +275,12 @@ const HomePageContent: React.FC = () => {
           </Card>
         </Box>
       )}
+
+      <BoulderDetailsPanel
+        boulder={selectedBoulder}
+        isOpen={isDetailsPanelOpen}
+        onClose={() => setIsDetailsPanelOpen(false)}
+      />
     </Box>
   );
 };

@@ -20,26 +20,6 @@ describe("Home Page", () => {
     localStorage.setItem("token", "mocked_token");
   });
 
-  const mockData = {
-    success: true,
-    data: [
-      {
-        _id: "1",
-        name: "Boulder A",
-        grade: "6A",
-        location: "Sektor A",
-        coordinates: { lat: 59.3, lng: 18.0 },
-      },
-      {
-        _id: "2",
-        name: "Boulder B",
-        grade: "7B",
-        location: "Sektor A",
-        coordinates: { lat: 59.3, lng: 18.0 },
-      },
-    ],
-  };
-
   it("should group boulders with same coordinates", async () => {
     (api.get as any).mockResolvedValue({
       data: {
@@ -52,6 +32,7 @@ describe("Home Page", () => {
             imagesUrl: "/img1.jpg",
             location: "Sektor A",
             coordinates: { lat: 59.3, lng: 18.0 },
+            author: "user1",
           },
           {
             _id: "2",
@@ -60,6 +41,7 @@ describe("Home Page", () => {
             imagesUrl: "/img2.jpg",
             location: "Sektor A",
             coordinates: { lat: 59.3, lng: 18.0 },
+            author: "user2",
           },
         ],
       },
@@ -77,6 +59,7 @@ describe("Home Page", () => {
       expect(screen.getByText(/2 boulders at this location/i)).toBeTruthy();
     });
   });
+
   it("should toggle between grid and map view when buttons are clicked", async () => {
     (api.get as any).mockResolvedValue({
       data: { success: true, data: [] },
@@ -118,6 +101,7 @@ describe("Home Page", () => {
               imagesUrl: "/robin.jpg",
               location: "GothenBurg",
               coordinates: { lat: 57.7, lng: 11.97 },
+              author: "user1",
               topoData: {
                 linePoints: [
                   { x: 100, y: 200 },
@@ -160,8 +144,9 @@ describe("Home Page", () => {
     fireEvent.click(boulderInList);
 
     await waitFor(() => {
-      expect(screen.getByText(/boulder details/i)).toBeTruthy();
-      expect(screen.getByText(/powerful moves on sharp holds./i)).toBeTruthy();
+      expect(screen.getByText(/^robin$/i)).toBeTruthy();
+      expect(screen.getByText(/log climb/i)).toBeTruthy();
+      expect(screen.getByText(/9b\s*-\s*gothenburg/i)).toBeTruthy();
       expect(screen.getByText(/solid/i)).toBeTruthy();
     });
   });
