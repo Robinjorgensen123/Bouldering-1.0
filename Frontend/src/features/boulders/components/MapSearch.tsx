@@ -10,7 +10,6 @@ import {
   Paper,
   TextField,
   Typography,
-  CircularProgress,
 } from "@mui/material";
 
 interface LocationResult {

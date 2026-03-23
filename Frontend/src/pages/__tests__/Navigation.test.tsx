@@ -1,9 +1,16 @@
 import { MemoryRouter } from "react-router-dom";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import App from "../../App";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
+
+vi.mock("../../features/boulders/services/boulderApi", () => ({
+  fetchBoulders: vi.fn().mockResolvedValue({
+    success: true,
+    data: [],
+  }),
+}));
 
 it("should navigate to the full map page via URL", async () => {
   render(

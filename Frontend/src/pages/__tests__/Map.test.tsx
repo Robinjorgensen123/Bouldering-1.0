@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import BoulderMap from "../../components/BoulderMap/BoulderMap";
-import { IBoulder } from "../../types/Boulder.types";
+import BoulderMap from "../../features/boulders/components/BoulderMap";
+import { IBoulder } from "../../features/boulders/types/boulder.types";
 import { BrowserRouter } from "react-router-dom";
 
 const mockBoulders: IBoulder[] = [

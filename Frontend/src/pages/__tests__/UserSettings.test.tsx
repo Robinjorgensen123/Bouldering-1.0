@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import UserSettings from "../UserSettings/UserSettings";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
 import api from "../../services/api";
 import "@testing-library/jest-dom";
 

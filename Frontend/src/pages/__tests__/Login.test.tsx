@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import api from "../../services/api";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "../Login/Login";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import TopoCanvas from "../AddBoulder/TopoCanvas";
+import TopoCanvas from "../../features/boulders/components/TopoCanvas";
 
 describe("TopoCanvas Unit Test", () => {
   const mockOnSavedPoints = vi.fn();
