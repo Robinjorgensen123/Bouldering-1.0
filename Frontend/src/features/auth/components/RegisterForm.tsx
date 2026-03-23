@@ -41,9 +41,11 @@ const RegisterForm = () => {
         elevation={0}
         sx={{
           width: "100%",
-          borderRadius: 4,
+          borderRadius: 6,
           border: "1px solid",
           borderColor: "divider",
+          background:
+            "linear-gradient(180deg, rgba(255,250,244,0.94), rgba(250,243,234,0.78))",
         }}
       >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>

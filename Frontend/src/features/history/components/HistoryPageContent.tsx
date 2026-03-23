@@ -68,15 +68,36 @@ const HistoryPageContent = () => {
   return (
     <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
       <Stack spacing={3}>
-        <Box>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Climbing History
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Review your recent sends, attempts, and notes across logged
-            boulders.
-          </Typography>
-        </Box>
+        <Card
+          elevation={0}
+          sx={{
+            borderRadius: 6,
+            border: "1px solid",
+            borderColor: "divider",
+            background:
+              "linear-gradient(135deg, rgba(255,250,244,0.94), rgba(236,227,214,0.72))",
+          }}
+        >
+          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+            <Stack spacing={1.5}>
+              <Chip
+                label="Your logbook"
+                color="secondary"
+                variant="outlined"
+                sx={{ alignSelf: "flex-start" }}
+              />
+              <Box>
+                <Typography variant="h4" fontWeight="bold" gutterBottom>
+                  Climbing History
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Review your recent sends, attempts, and notes across logged
+                  boulders.
+                </Typography>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
 
         {historyRecords.length === 0 ? (
           <Alert severity="info">No history records found.</Alert>
@@ -88,9 +109,10 @@ const HistoryPageContent = () => {
                   elevation={0}
                   sx={{
                     width: "100%",
-                    borderRadius: 3,
+                    borderRadius: 5,
                     border: "1px solid",
                     borderColor: "divider",
+                    backgroundColor: "rgba(255,250,244,0.72)",
                   }}
                 >
                   <CardContent>
@@ -114,6 +136,7 @@ const HistoryPageContent = () => {
                               record.completedAt,
                             ).toLocaleDateString()}
                             variant="outlined"
+                            color="secondary"
                             sx={{
                               alignSelf: { xs: "flex-start", sm: "center" },
                             }}
@@ -125,13 +148,21 @@ const HistoryPageContent = () => {
 
                       <Stack spacing={1.25}>
                         {record.ascentType && (
-                          <Stack direction="row" spacing={1} alignItems="center">
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
                             <SellRoundedIcon fontSize="small" color="primary" />
                             <Typography>{record.ascentType}</Typography>
                           </Stack>
                         )}
                         {record.attempts !== undefined && (
-                          <Stack direction="row" spacing={1} alignItems="center">
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
                             <EmojiEventsRoundedIcon
                               fontSize="small"
                               color="primary"

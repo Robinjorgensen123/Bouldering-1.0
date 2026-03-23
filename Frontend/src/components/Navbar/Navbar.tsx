@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { Map, PlusSquare, Home, Settings, History } from "lucide-react";
-import { AppBar, Toolbar, Box, Button, Typography } from "@mui/material";
+import { AppBar, Toolbar, Box, Button, Chip, Typography } from "@mui/material";
 
 const Navbar = () => {
   const navItems = [
@@ -16,28 +16,52 @@ const Navbar = () => {
       <Toolbar
         sx={{
           justifyContent: "space-between",
+          gap: 2,
           alignItems: { xs: "flex-start", md: "center" },
-          py: { xs: 1.1, md: 0.8 },
-          gap: 1.25,
           flexDirection: { xs: "column", md: "row" },
+          px: { xs: 2, md: 3 },
+          py: 1.5,
         }}
       >
-        <Typography
+        <Box
           component={NavLink}
           to="/"
-          variant="h6"
-          fontWeight={800}
           sx={{
             textDecoration: "none",
             color: "inherit",
-            letterSpacing: -0.2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
           }}
         >
-          Bouldering App{" "}
-          <Typography component="span" variant="caption" color="text.secondary">
-            Version 1.0
-          </Typography>
-        </Typography>
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: "16px",
+              background:
+                "linear-gradient(135deg, rgba(201,107,50,0.18), rgba(53,92,77,0.22))",
+              border: "1px solid rgba(91, 69, 52, 0.12)",
+              display: "grid",
+              placeItems: "center",
+              fontFamily: '"Space Grotesk", "Segoe UI", sans-serif',
+              fontWeight: 700,
+            }}
+          >
+            B
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight={700} lineHeight={1}>
+              Bouldering App
+            </Typography>
+            <Chip
+              label="Version 1.0"
+              size="small"
+              variant="outlined"
+              sx={{ mt: 0.75, height: 24 }}
+            />
+          </Box>
+        </Box>
 
         <Box
           sx={{
@@ -58,20 +82,17 @@ const Navbar = () => {
               disableRipple
               disableFocusRipple
               sx={{
-                borderRadius: 99,
-                px: 1.4,
-                py: 0.6,
-                bgcolor: "rgba(36,90,75,0.04)",
+                textTransform: "none",
+                justifyContent: "flex-start",
+                px: 1.8,
+                bgcolor: "rgba(255,255,255,0.46)",
+                border: "1px solid rgba(91, 69, 52, 0.1)",
+                width: { xs: "calc(50% - 4px)", sm: "auto" },
                 "&.active": {
-                  color: "primary.contrastText",
-                  backgroundColor: "primary.main",
-                  fontWeight: 800,
-                },
-                "&:hover": {
-                  bgcolor: "rgba(36,90,75,0.12)",
-                },
-                "&.active:hover": {
-                  backgroundColor: "primary.dark",
+                  color: "primary.dark",
+                  fontWeight: "bold",
+                  bgcolor: "rgba(201,107,50,0.14)",
+                  borderColor: "rgba(201,107,50,0.24)",
                 },
               }}
             >

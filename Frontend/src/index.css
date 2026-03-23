@@ -1,39 +1,169 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
 
 :root {
   color-scheme: light;
-  --app-bg-a: #f6f9f5;
-  --app-bg-b: #eaf1ed;
-  --app-bg-c: #dde9e2;
-  --app-text: #182322;
+  --surface: rgba(214, 230, 206, 0.74);
+  --surface-strong: rgba(236, 245, 231, 0.92);
+  --surface-border: rgba(46, 79, 62, 0.16);
+  --text-main: #1d2a21;
+  --text-muted: #4b6255;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  min-height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
+  min-width: 320px;
+  color: var(--text-main);
   font-family: "Manrope", "Segoe UI", sans-serif;
-  color: var(--app-text);
+}
+
+a {
+  color: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.page-shell {
+  position: relative;
+}
+
+.page-shell::before,
+.page-shell::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 999px;
+  filter: blur(16px);
+  pointer-events: none;
+}
+
+.page-shell::before {
+  top: 90px;
+  left: -80px;
+  width: 240px;
+  height: 240px;
+  background: rgba(106, 147, 94, 0.14);
+}
+
+.page-shell::after {
+  right: -60px;
+  bottom: 40px;
+  width: 220px;
+  height: 220px;
+  background: rgba(58, 98, 78, 0.14);
+}
+
+.leaflet-container {
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+.boulder-marker-shell {
+  background: transparent;
+  border: none;
+}
+
+.boulder-marker-core {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 31px;
+  border-radius: 64% 46% 58% 54% / 56% 62% 40% 44%;
   background:
-    radial-gradient(circle at 10% 8%, rgba(217, 119, 6, 0.2), transparent 34%),
-    radial-gradient(circle at 90% 18%, rgba(36, 90, 75, 0.2), transparent 32%),
-    radial-gradient(circle at 18% 88%, rgba(245, 158, 11, 0.14), transparent 30%),
-    radial-gradient(circle at 82% 82%, rgba(61, 122, 105, 0.14), transparent 30%),
-    linear-gradient(180deg, var(--app-bg-a), var(--app-bg-b) 60%, var(--app-bg-c)),
-    repeating-linear-gradient(
-      120deg,
-      rgba(255, 255, 255, 0.12) 0,
-      rgba(255, 255, 255, 0.12) 2px,
-      transparent 2px,
-      transparent 18px
-    );
-  background-attachment: fixed;
+    radial-gradient(
+      10px 7px at 28% 32%,
+      rgba(95, 124, 36, 0.72),
+      transparent 72%
+    ),
+    radial-gradient(
+      8px 6px at 62% 56%,
+      rgba(120, 123, 118, 0.36),
+      transparent 75%
+    ),
+    linear-gradient(145deg, #66ac44 0%, #3f7c10 46%, #2b4e02 100%);
+  border: 2px solid rgba(214, 216, 210, 0.92);
+  box-shadow:
+    0 0 0 6px rgba(78, 83, 76, 0.22),
+    0 14px 20px rgba(26, 30, 26, 0.36),
+    inset -4px -6px 8px rgba(29, 34, 28, 0.24);
+  transform: translateZ(0);
+}
+
+.boulder-marker-core::after {
+  content: "";
+  position: absolute;
+  inset: auto 8px -9px;
+  height: 11px;
+  border-radius: 999px;
+  background: rgba(30, 35, 30, 0.38);
+  filter: blur(2.4px);
+}
+
+.boulder-marker-ridge {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  width: 15px;
+  height: 8px;
+  border-radius: 9px;
+  background: rgba(230, 232, 227, 0.64);
+  transform: rotate(-14deg);
+}
+
+.boulder-marker-chip {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: rgba(205, 208, 202, 0.72);
+}
+
+.boulder-marker-chip-one {
+  width: 6px;
+  height: 6px;
+  top: 11px;
+  right: 8px;
+}
+
+.boulder-marker-chip-two {
+  width: 5px;
+  height: 5px;
+  bottom: 8px;
+  left: 11px;
+}
+
+.boulder-marker-crack {
+  position: absolute;
+  display: block;
+  width: 14px;
+  height: 2px;
+  right: 9px;
+  bottom: 10px;
+  border-radius: 999px;
+  background: rgba(35, 40, 35, 0.5);
+  transform: rotate(-22deg);
+}
+
+.leaflet-marker-icon:hover .boulder-marker-core {
+  box-shadow:
+    0 0 0 8px rgba(88, 94, 86, 0.24),
+    0 18px 24px rgba(26, 30, 26, 0.44),
+    inset -4px -6px 8px rgba(29, 34, 28, 0.24);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.leaflet-tooltip {
+  border-radius: 999px;
+  border: 1px solid rgba(91, 69, 52, 0.2);
+  background: rgba(255, 250, 244, 0.95);
+  color: #1f1a17;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(51, 31, 17, 0.14);
 }

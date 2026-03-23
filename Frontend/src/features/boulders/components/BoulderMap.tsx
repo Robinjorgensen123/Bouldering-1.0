@@ -1,4 +1,11 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Tooltip,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "react-router-dom";
@@ -7,24 +14,13 @@ import { Box, Typography } from "@mui/material";
 import { IBoulder } from "../types/boulder.types";
 import BoulderDetailsPanel from "./BoulderDetailsPanel";
 
-const markerIcon = new URL(
-  "leaflet/dist/images/marker-icon.png",
-  import.meta.url,
-).href;
-const markerShadow = new URL(
-  "leaflet/dist/images/marker-shadow.png",
-  import.meta.url,
-).href;
-
-const DefaultIcon = L.icon({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
+const BoulderMarkerIcon = L.divIcon({
+  className: "boulder-marker-shell",
+  html: '<span class="boulder-marker-core"><span class="boulder-marker-ridge"></span><span class="boulder-marker-chip boulder-marker-chip-one"></span><span class="boulder-marker-chip boulder-marker-chip-two"></span><span class="boulder-marker-crack"></span></span>',
+  iconSize: [40, 36],
+  iconAnchor: [20, 22],
+  popupAnchor: [0, -18],
 });
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 interface Props {
   boulders: IBoulder[];
@@ -143,11 +139,15 @@ const BoulderMap = ({
         {boulders.map((boulder) => (
           <Marker
             key={boulder._id}
+            icon={BoulderMarkerIcon}
             position={[boulder.coordinates.lat, boulder.coordinates.lng]}
             eventHandlers={{
               click: () => handleMarkerClick(boulder),
             }}
           >
+            <Tooltip direction="top" offset={[0, -10]}>
+              {boulder.name}
+            </Tooltip>
             <Popup>
               <Box>
                 <Typography variant="subtitle1" fontWeight="bold">

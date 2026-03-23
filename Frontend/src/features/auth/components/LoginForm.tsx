@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Stack,
   TextField,
   Typography,
@@ -36,19 +37,42 @@ const LoginForm = () => {
   return (
     <Box
       sx={{
-        minHeight: "70vh",
+        minHeight: "76vh",
         display: "grid",
         placeItems: "center",
         px: 2,
       }}
     >
-      <Card sx={{ width: "100%", maxWidth: 460, borderRadius: 3 }}>
-        <CardContent sx={{ p: 3 }}>
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: 500,
+          borderRadius: 6,
+          border: "1px solid",
+          borderColor: "divider",
+          background:
+            "linear-gradient(180deg, rgba(255,250,244,0.94), rgba(250,243,234,0.78))",
+        }}
+      >
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Box component="form" onSubmit={handleSubmit}>
-            <Stack spacing={2}>
-              <Typography variant="h5" fontWeight={700}>
-                Log In
-              </Typography>
+            <Stack spacing={2.5}>
+              <Chip
+                label="Welcome back"
+                color="secondary"
+                variant="outlined"
+                sx={{ alignSelf: "flex-start" }}
+              />
+
+              <Box>
+                <Typography variant="h4" fontWeight={700} gutterBottom>
+                  Log In
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Continue tracking sends, grades, and climbing sessions from
+                  one place.
+                </Typography>
+              </Box>
 
               {error && <Alert severity="error">{error}</Alert>}
 
@@ -72,7 +96,7 @@ const LoginForm = () => {
                 fullWidth
               />
 
-              <Button type="submit" variant="contained" size="large">
+              <Button type="submit" variant="contained" size="large" fullWidth>
                 Log In
               </Button>
 

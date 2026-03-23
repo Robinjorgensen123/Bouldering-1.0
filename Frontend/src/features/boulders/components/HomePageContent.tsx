@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   Chip,
+  Divider,
   Stack,
   Typography,
 } from "@mui/material";
@@ -87,32 +88,59 @@ const HomePageContent: React.FC = () => {
 
   return (
     <Box sx={{ px: { xs: 2, md: 4 }, py: 3 }}>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        spacing={2}
-        sx={{ mb: 3 }}
+      <Card
+        elevation={0}
+        sx={{
+          mb: 3,
+          borderRadius: 6,
+          border: "1px solid",
+          borderColor: "divider",
+          overflow: "hidden",
+          background:
+            "linear-gradient(135deg, rgba(255,250,244,0.95), rgba(228,220,206,0.72))",
+        }}
       >
-        <Typography variant="h4" fontWeight={700}>
-          Boulder Areas
-        </Typography>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            justifyContent="space-between"
+            alignItems={{ xs: "flex-start", md: "flex-end" }}
+            spacing={3}
+          >
+            <Stack spacing={1.5} sx={{ maxWidth: 620 }}>
+              <Chip
+                label="Explore spots"
+                color="secondary"
+                variant="outlined"
+                sx={{ alignSelf: "flex-start" }}
+              />
+              <Typography variant="h3" fontWeight={700}>
+                Boulder Areas
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Browse climbing areas, switch to map view, and inspect grouped
+                problems by location.
+              </Typography>
+            </Stack>
 
-        <Stack direction="row" spacing={1}>
-          <Button
-            variant={view === "grid" ? "contained" : "outlined"}
-            onClick={() => setView("grid")}
-          >
-            Areas
-          </Button>
-          <Button
-            variant={view === "map" ? "contained" : "outlined"}
-            onClick={() => setView("map")}
-          >
-            Map
-          </Button>
-        </Stack>
-      </Stack>
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant={view === "grid" ? "contained" : "outlined"}
+                onClick={() => setView("grid")}
+              >
+                Areas
+              </Button>
+              <Button
+                variant={view === "map" ? "contained" : "outlined"}
+                color={view === "map" ? "secondary" : "inherit"}
+                onClick={() => setView("map")}
+              >
+                Map
+              </Button>
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
 
       {view === "map" ? (
         <BoulderMap boulders={allBoulders} />
@@ -132,7 +160,18 @@ const HomePageContent: React.FC = () => {
             <Card
               key={group.locationKey}
               onClick={() => setSelectedGroup(group)}
-              sx={{ cursor: "pointer", borderRadius: 2 }}
+              sx={{
+                cursor: "pointer",
+                borderRadius: 5,
+                border: "1px solid",
+                borderColor: "divider",
+                backgroundColor: "rgba(255,250,244,0.7)",
+                transition: "transform 180ms ease, box-shadow 180ms ease",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: "0 24px 40px rgba(78, 55, 37, 0.14)",
+                },
+              }}
             >
               {group.boulders[0]?.imagesUrl ? (
                 <Box
@@ -157,17 +196,27 @@ const HomePageContent: React.FC = () => {
               )}
 
               <CardContent>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  spacing={1}
-                >
-                  <Typography variant="h6">Spot: {group.locationKey}</Typography>
-                  <Chip size="small" label={group.boulders[0]?.grade || "?"} />
+                <Stack spacing={1.5}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    spacing={1}
+                    alignItems="flex-start"
+                  >
+                    <Typography variant="h6">
+                      Spot: {group.locationKey}
+                    </Typography>
+                    <Chip
+                      size="small"
+                      color="primary"
+                      label={group.boulders[0]?.grade || "?"}
+                    />
+                  </Stack>
+                  <Divider />
+                  <Typography color="text.secondary">
+                    {group.boulders.length} boulders at this location
+                  </Typography>
                 </Stack>
-                <Typography color="text.secondary" sx={{ mt: 1 }}>
-                  {group.boulders.length} boulders at this location
-                </Typography>
               </CardContent>
             </Card>
           ))}
@@ -189,7 +238,7 @@ const HomePageContent: React.FC = () => {
         >
           <Card
             onClick={(e) => e.stopPropagation()}
-            sx={{ width: "min(560px, 100%)", borderRadius: 2 }}
+            sx={{ width: "min(560px, 100%)", borderRadius: 5 }}
           >
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>

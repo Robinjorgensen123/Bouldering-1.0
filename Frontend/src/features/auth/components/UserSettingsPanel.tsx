@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Container,
   Stack,
   Typography,
@@ -32,14 +33,31 @@ const UserSettingsPanel = () => {
     <Container maxWidth="sm" sx={{ py: { xs: 3, md: 5 } }}>
       <Card
         elevation={0}
-        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 6,
+          background:
+            "linear-gradient(180deg, rgba(255,250,244,0.94), rgba(250,243,234,0.78))",
+        }}
       >
-        <CardContent>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={3}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <TuneRoundedIcon color="primary" />
-              <Typography variant="h4" fontWeight="bold">
-                Settings
+            <Stack spacing={1.5}>
+              <Chip
+                label="Personal preferences"
+                color="secondary"
+                variant="outlined"
+                sx={{ alignSelf: "flex-start" }}
+              />
+              <Stack direction="row" spacing={1} alignItems="center">
+                <TuneRoundedIcon color="primary" />
+                <Typography variant="h4" fontWeight="bold">
+                  Settings
+                </Typography>
+              </Stack>
+              <Typography variant="body1" color="text.secondary">
+                Adjust how grades are displayed throughout the app.
               </Typography>
             </Stack>
 
@@ -63,6 +81,7 @@ const UserSettingsPanel = () => {
                   }
                   onClick={() => handleScaleChange("font")}
                   fullWidth
+                  color="primary"
                 >
                   Fontainebleau
                 </Button>
@@ -74,6 +93,7 @@ const UserSettingsPanel = () => {
                   }
                   onClick={() => handleScaleChange("v-scale")}
                   fullWidth
+                  color="secondary"
                 >
                   V-Scale
                 </Button>
