@@ -80,8 +80,24 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
   };
 
   return (
-    <Drawer anchor="right" open={isOpen} onClose={onClose}>
-      <Box sx={{ p: 3, width: { xs: "100vw", sm: 350 }, height: "100%" }}>
+    <Drawer
+      anchor="right"
+      open={isOpen}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: { xs: "100vw", sm: 460, md: 560 },
+          maxWidth: "100vw",
+          borderTopLeftRadius: { sm: 20 },
+          borderBottomLeftRadius: { sm: 20 },
+          background:
+            "linear-gradient(180deg, rgba(248,252,245,0.96), rgba(236,245,231,0.88))",
+          borderLeft: "1px solid",
+          borderColor: "divider",
+        },
+      }}
+    >
+      <Box sx={{ p: { xs: 2.5, sm: 3.5 }, height: "100%" }}>
         {boulder && (
           <>
             <Typography variant="h5" fontWeight="bold">
@@ -91,9 +107,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
               {boulder.grade} - {boulder.location}
             </Typography>
 
-            <Box
-              sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
-            >
+            <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography variant="h6">Log Climb</Typography>
 
               <FormControl fullWidth>
@@ -128,6 +142,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                 variant="contained"
                 color="success"
                 onClick={handleLogSubmit}
+                sx={{ alignSelf: "flex-start", px: 3 }}
               >
                 Save
               </Button>
