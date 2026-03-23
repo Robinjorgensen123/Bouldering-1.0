@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import History from "../History/History";
 import api from "../../services/api";
 import { MemoryRouter } from "react-router-dom";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
 
 vi.mock("../../services/api", () => ({
   default: {

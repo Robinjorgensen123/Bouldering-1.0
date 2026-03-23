@@ -101,7 +101,7 @@ describe("AuthProvider", () => {
           <span data-testid="token">{token}</span>
           <span data-testid="email">{user?.email}</span>
           <span data-testid="count">{count}</span>
-          <button type="button" onClick={() => setCount((c) => c + 1)}>
+          <button type="button" onClick={() => setCount((value) => value + 1)}>
             Inc
           </button>
         </div>

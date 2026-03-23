@@ -3,9 +3,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import Home from "../Home/Home";
 import api from "../../services/api";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
 
-vi.mock("../../components/BoulderMap/BoulderMap", () => ({
+vi.mock("../../features/boulders/components/BoulderMap", () => ({
   default: () => <div data-testid="mock-map">Map View Active</div>,
 }));
 
@@ -81,6 +81,7 @@ describe("Home Page", () => {
     (api.get as any).mockResolvedValue({
       data: { success: true, data: [] },
     });
+
     render(
       <BrowserRouter>
         <AuthProvider>
@@ -88,6 +89,10 @@ describe("Home Page", () => {
         </AuthProvider>
       </BrowserRouter>,
     );
+
+    await waitFor(() => {
+      expect(api.get).toHaveBeenCalledTimes(1);
+    });
 
     const mapBtn = screen.getByRole("button", { name: /map/i });
     fireEvent.click(mapBtn);

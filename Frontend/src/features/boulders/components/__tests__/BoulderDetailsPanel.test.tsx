@@ -1,11 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import BoulderDetailsPanel from "../BoulderDetailsPanel";
-import api from "../../../services/api";
+import api from "../../../../services/api";
 import { MemoryRouter } from "react-router-dom";
 
-// Mocka API:et
-vi.mock("../../../services/api", () => ({
+vi.mock("../../../../services/api", () => ({
   default: {
     get: vi.fn(),
     post: vi.fn(),
@@ -54,7 +53,6 @@ describe("BoulderDetailsPanel", () => {
       </MemoryRouter>,
     );
 
-    // 1. Vänta på att ClimberDave dyker upp (viktigt för att veta att useEffect kört)
     const climber = await screen.findByText(
       /ClimberDave/i,
       {},
@@ -62,7 +60,6 @@ describe("BoulderDetailsPanel", () => {
     );
     expect(climber).toBeInTheDocument();
 
-    // 2. Fyll i formuläret
     const ascentTypeSelect = screen.getByLabelText(/ascent/i);
     fireEvent.change(ascentTypeSelect, { target: { value: "flash" } });
 
@@ -73,10 +70,8 @@ describe("BoulderDetailsPanel", () => {
       target: { value: "Nice" },
     });
 
-    // 3. Klicka på Spara
     fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
-    // 4. Verifiera anropet
     await waitFor(
       () => {
         expect(api.post).toHaveBeenCalledWith(

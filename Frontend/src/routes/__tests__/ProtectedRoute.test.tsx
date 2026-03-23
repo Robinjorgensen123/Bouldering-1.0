@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import ProtectedRoute from "../ProtectedRoute";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
 import "@testing-library/jest-dom";
 
 const MockAddBoulder = () => <div>Add Boulder Page</div>;
