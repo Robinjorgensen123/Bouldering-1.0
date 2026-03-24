@@ -2,14 +2,17 @@ import axios from "axios";
 
 let authToken: string | null = null;
 
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 export const setAuthToken = (token: string | null) => {
   authToken = token;
 };
-// create an axios instance with the base URL of the backend API
+
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: apiBaseUrl,
 });
-// Handles token in headers for all requests
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
