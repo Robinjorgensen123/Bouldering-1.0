@@ -87,7 +87,7 @@ const Navbar = () => {
               Bouldering App
             </Typography>
             <Chip
-              label="Version 1.0"
+              label="Version 1.6"
               size="small"
               variant="outlined"
               sx={{ mt: 0.75, height: 24 }}
@@ -208,7 +208,9 @@ const Navbar = () => {
                           },
                         }}
                       >
-                        <ListItemIcon sx={{ minWidth: 36 }}>{icon}</ListItemIcon>
+                        <ListItemIcon sx={{ minWidth: 36 }}>
+                          {icon}
+                        </ListItemIcon>
                         <ListItemText primary={label} />
                       </ListItemButton>
                     </ListItem>
