@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
 import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
-import { ILinePoint } from "../types/boulder.types";
+import { type ILinePoint } from "../types/boulder.types";
 
 interface TopoCanvasProp {
   imageSrc: string;

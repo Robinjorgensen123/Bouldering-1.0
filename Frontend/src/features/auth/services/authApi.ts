@@ -1,5 +1,5 @@
 import api from "../../../services/api";
-import { AuthResponse, GradingSystem, IUser } from "../types/auth.types";
+import type { AuthResponse, GradingSystem, IUser } from "../types/auth.types";
 
 export const loginUser = async (email: string, password: string) => {
   const response = await api.post<AuthResponse>("/auth/login", {

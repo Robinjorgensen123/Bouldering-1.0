@@ -19,7 +19,7 @@ import HikingRoundedIcon from "@mui/icons-material/HikingRounded";
 import NearMeRoundedIcon from "@mui/icons-material/NearMeRounded";
 import UploadRoundedIcon from "@mui/icons-material/UploadRounded";
 import { useGeolocation } from "../../../hooks/useGeolocation";
-import { ILinePoint } from "../types/boulder.types";
+import { type ILinePoint } from "../types/boulder.types";
 import { createBoulder, getUploadErrorMessage } from "../services/boulderApi";
 import TopoCanvas from "./TopoCanvas";
 
