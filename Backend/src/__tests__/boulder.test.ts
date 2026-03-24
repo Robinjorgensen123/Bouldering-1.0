@@ -35,13 +35,14 @@ describe("Boulder API - Create", () => {
   it("should save grade as Font even if user sends V-Scale (V6 => 7A)", async () => {
     await User.findOneAndUpdate(
       { email: "vscale-user@test.com" },
-      { gradingSystem: "v-scale" }
+      { gradingSystem: "v-scale" },
     );
 
     const newBoulder = {
       name: "test V-Scale Boulder",
       grade: "V6",
       description: "Mountain",
+      location: "Hönö",
       coordinates: {
         lat: 57.7089,
         lng: 11.9746,
@@ -54,7 +55,7 @@ describe("Boulder API - Create", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.data.grade).toBe("7A");
-    expect(response.body.data.location.lat).toBe(57.7089);
+    expect(response.body.data.coordinates.lat).toBe(57.7089);
 
     const boulderInDb = await Boulder.findOne({ name: "test V-Scale Boulder" });
     expect(boulderInDb?.grade).toBe("7A");
@@ -69,11 +70,32 @@ describe("Boulder API - Create", () => {
     expect(response.status).toBe(401);
   });
 
+  it("should return 400 if grade is invalid for a Font user", async () => {
+    const response = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${standardToken}`)
+      .send({
+        name: "Invalid Grade Boulder",
+        grade: "NOPE",
+        description: "invalid grade",
+        location: "Hono",
+        coordinates: {
+          lat: 57.7089,
+          lng: 11.9746,
+        },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/Invalid grade/i);
+  });
+
   it("should save complete boulder with image, coordinates and topo data", async () => {
     const completeBoulder = {
       name: "The Highball",
       grade: "6C+",
       description: "A challenging highball boulder problem.",
+      location: "Gothenburg",
       coordinates: {
         lat: 59.3293,
         lng: 18.0683,
@@ -99,10 +121,142 @@ describe("Boulder API - Create", () => {
       .send(completeBoulder);
 
     expect(response.status).toBe(201);
-    expect(response.body.data.location.lat).toBe(59.3293);
+    expect(response.body.data.coordinates.lat).toBe(59.3293);
     expect(response.body.data.topoData.holds[0].type).toBe("start");
 
     const boulderInDb = await Boulder.findOne({ name: "The Highball" });
     expect(boulderInDb?.topoData?.linePoints).toHaveLength(2);
+  });
+});
+
+describe("Boulder API - Get All", () => {
+  let vScaleToken: string;
+  let currentUserId: string;
+
+  beforeEach(async () => {
+    // Setup för en specifik användare som gillar V-Scale
+    const user = { email: "get-test@test.com", password: "password123" };
+    await request(app).post("/api/auth/register").send(user);
+    const login = await request(app).post("/api/auth/login").send(user);
+    vScaleToken = login.body.token;
+
+    const userInDb = await User.findOneAndUpdate(
+      { email: user.email },
+      { gradingSystem: "v-scale" },
+      { new: true },
+    );
+
+    currentUserId = userInDb!._id.toString();
+  });
+
+  it("should get all boulders and convert grades to V-scale if user preference is set", async () => {
+    // Skapa en boulder som ligger i databasen som Font (7A)
+    const testBoulder = new Boulder({
+      name: "GET Test Boulder",
+      grade: "7A",
+      location: "Hönö",
+      coordinates: { lat: 58.0, lng: 15.0 },
+      author: currentUserId,
+      topoData: { linePoints: [], holds: [] },
+    });
+    await testBoulder.save();
+
+    const response = await request(app)
+      .get("/api/boulders")
+      .set("Authorization", `Bearer ${vScaleToken}`);
+
+    expect(response.status).toBe(200);
+
+    // Verifiera att graden konverterats i svaret
+    const found = response.body.data.find(
+      (b: any) => b.name === "GET Test Boulder",
+    );
+    expect(found).toBeDefined();
+    expect(found.grade).toBe("V6"); // 7A i DB ska bli V6 i API-svaret
+  });
+});
+
+describe("Boulder API - Delete", () => {
+  let userToken: string;
+  let boulderId: string;
+
+  beforeEach(async () => {
+    const user = { email: "delete-test@test.com", password: "password123" };
+    await request(app).post("/api/auth/register").send(user);
+    const login = await request(app).post("/api/auth/login").send(user);
+    userToken = login.body.token;
+
+    const boulder = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "Delete Me",
+        grade: "6A",
+        location: "Varberg",
+        coordinates: { lat: 57.0, lng: 12.0 },
+        description: "Testing delete",
+      });
+
+    boulderId = boulder.body.data._id;
+  });
+
+  it("should delete a boulder and return 200", async () => {
+    const response = await request(app)
+      .delete(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`);
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("Boulder API - Update", () => {
+  let userToken: string;
+  let boulderId: string;
+
+  beforeEach(async () => {
+    const testUser = { email: "update-test@test.com", password: "password123" };
+    await request(app).post("/api/auth/register").send(testUser);
+    const login = await request(app).post("/api/auth/login").send(testUser);
+    userToken = login.body.token;
+
+    const boulder = await request(app)
+      .post("/api/boulders")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "Old Name",
+        grade: "6A",
+        location: "Kjugekull",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
+    boulderId = boulder.body.data._id;
+  });
+
+  it("should update a boulder and return 200", async () => {
+    const response = await request(app)
+      .put(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "Updated Name",
+        grade: "6B",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.name).toBe("Updated Name");
+  });
+
+  it("should return 400 when updating with an invalid grade", async () => {
+    const response = await request(app)
+      .put(`/api/boulders/${boulderId}`)
+      .set("Authorization", `Bearer ${userToken}`)
+      .send({
+        name: "INVALID Grade Update",
+        grade: "INVALID",
+        coordinates: { lat: 57.0, lng: 12.0 },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toMatch(/Invalid grade/i);
   });
 });

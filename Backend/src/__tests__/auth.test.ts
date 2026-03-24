@@ -2,7 +2,6 @@ import request from "supertest";
 import { describe, it, expect } from "vitest";
 import { app } from "../server.js";
 import { User } from "../models/User.js";
-import { response } from "express";
 
 describe("Auth API Register", () => {
   it("should register a new user and return 201", async () => {
@@ -18,7 +17,7 @@ describe("Auth API Register", () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty(
       "message",
-      "User registered successfully"
+      "User registered successfully",
     );
 
     const userInDb = await User.findOne({ email: newUser.email });
@@ -32,7 +31,7 @@ describe("Auth API Register", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("success", false);
-    expect(response.body).toHaveProperty("message", "Error registering user");
+    expect(response.body).toHaveProperty("message", '"password" is required');
   });
 
   it("should not re-hash password if it is not modified", async () => {
@@ -75,10 +74,8 @@ describe("Auth API Register", () => {
     await user.save();
     const initialHash = user.password;
 
-    // Ändra något ANNAT än lösenordet
     user.email = "new-line22@test.com";
-    await user.save(); // Nu triggas pre-save, och isModified("password") blir false
-
+    await user.save();
     expect(user.password).toBe(initialHash);
   });
 });
@@ -130,40 +127,5 @@ describe("Auth API login", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.message).toBe("Invalid email or password");
-  });
-});
-
-describe("User Settings", () => {
-  it("should update user grading system preference", async () => {
-    const settingsUser = {
-      email: "settings-test@test.com",
-      password: "validpassword",
-    };
-    await request(app).post("/api/auth/register").send(settingsUser);
-    const loginResponse = await request(app).post("/api/auth/login").send({
-      email: "settings-test@test.com",
-      password: "validpassword",
-    });
-    const token = loginResponse.body.token;
-
-    const response = await request(app)
-      .put("/api/auth/settings")
-      .set("Authorization", `Bearer ${token}`)
-      .send({ gradingSystem: "v-scale" });
-
-    expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.gradingSystem).toBe("v-scale");
-
-    const user = await User.findOne({ email: "settings-test@test.com" });
-    expect(user?.gradingSystem).toBe("v-scale");
-  });
-  it("should fail to update settings without a token", async () => {
-    const response = await request(app)
-      .put("/api/auth/settings")
-      .send({ gradingSystem: "v-scale" });
-
-    expect(response.status).toBe(401);
-    expect(response.body.success).toBe(false);
   });
 });

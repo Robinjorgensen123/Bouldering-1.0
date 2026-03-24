@@ -1,0 +1,37 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
+import AddBoulder from "../pages/AddBoulder/AddBoulder";
+import Home from "../pages/Home/Home";
+import ProtectedRoute from "./ProtectedRoute";
+import Map from "../pages/Map/Map";
+import UserSettings from "../pages/UserSettings/UserSettings";
+import History from "../pages/History/History";
+
+const AppRoutes = () => {
+  return (
+    <Routes>
+      {/**Open routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/map" element={<Map />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/settings" element={<UserSettings />} />
+      <Route path="/history" element={<History />} />
+
+      {/**Protected Routes*/}
+      <Route
+        path="/add"
+        element={
+          <ProtectedRoute>
+            <AddBoulder />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+export default AppRoutes;

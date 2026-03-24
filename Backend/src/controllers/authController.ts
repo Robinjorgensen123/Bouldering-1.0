@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 import { User } from "../models/User.js";
 import jwt from "jsonwebtoken";
-import { type AuthRequest } from "../middleware/authMiddleware.js";
+import { type AuthResponse } from "../types/User.types.js";
 
 /// Login controller
 export const login = async (req: Request, res: Response) => {
@@ -25,13 +25,20 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || "fallback_secret",
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
-    res.status(200).json({
-      message: "Login successful",
-      success: true,
+
+    const responseData: AuthResponse = {
       token,
-    });
+      success: true,
+      message: "Login successful",
+      user: {
+        _id: user._id.toString(),
+        email: user.email,
+        gradingSystem: user.gradingSystem,
+      },
+    };
+    res.status(200).json(responseData);
   } catch (error) {
     res.status(500).json({
       message: "Server error",
@@ -56,35 +63,5 @@ export const register = async (req: Request, res: Response) => {
       message: "Error registering user",
       success: false,
     });
-  }
-};
-// Update user settings controller
-export const updateSetting = async (req: AuthRequest, res: Response) => {
-  try {
-    const { gradingSystem } = req.body;
-
-    const userId = req.userId;
-
-    if (!["font", "v-scale"].includes(gradingSystem)) {
-      return res
-        .status(400)
-        .json({ message: "Invalid grading system", success: false });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found", success: false });
-    }
-    user.gradingSystem = gradingSystem;
-    await user.save();
-    res.status(200).json({
-      message: "Settings updated successfully",
-      success: true,
-      gradingSystem: user.gradingSystem,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", success: false });
   }
 };
