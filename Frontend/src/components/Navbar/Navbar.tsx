@@ -158,12 +158,14 @@ const Navbar = () => {
                 anchor="right"
                 open={isMobileMenuOpen}
                 onClose={() => setIsMobileMenuOpen(false)}
-                PaperProps={{
-                  sx: {
-                    width: "min(88vw, 320px)",
-                    p: 1.5,
-                    borderTopLeftRadius: 16,
-                    borderBottomLeftRadius: 16,
+                slotProps={{
+                  paper: {
+                    sx: {
+                      width: "min(88vw, 320px)",
+                      p: 1.5,
+                      borderTopLeftRadius: 16,
+                      borderBottomLeftRadius: 16,
+                    },
                   },
                 }}
               >
