@@ -1,6 +1,6 @@
 import axios from "axios";
 import api from "../../../services/api";
-import { BoulderListResponse } from "../types/boulder.types";
+import { type BoulderListResponse } from "../types/boulder.types";
 
 export const fetchBoulders = async () => {
   const response = await api.get<BoulderListResponse>("/boulders");

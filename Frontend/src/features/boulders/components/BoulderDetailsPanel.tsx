@@ -3,6 +3,7 @@ import {
   Box,
   Typography,
   Button,
+  IconButton,
   TextField,
   MenuItem,
   Select,
@@ -14,9 +15,10 @@ import {
   ListItemText,
   Divider,
 } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
-import { IBoulder } from "../types/boulder.types";
+import { type IBoulder } from "../types/boulder.types";
 
 interface HistoryItem {
   _id: string;
@@ -100,14 +102,36 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
       <Box sx={{ p: { xs: 2.5, sm: 3.5 }, height: "100%" }}>
         {boulder && (
           <>
-            <Typography variant="h5" fontWeight="bold">
-              {boulder.name}
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: 2,
+              }}
+            >
+              <Typography variant="h5" fontWeight="bold">
+                {boulder.name}
+              </Typography>
+              <IconButton
+                aria-label="Close log climb panel"
+                onClick={onClose}
+                sx={{
+                  display: { xs: "inline-flex", sm: "none" },
+                  mt: -0.5,
+                  mr: -0.5,
+                }}
+              >
+                <CloseRoundedIcon />
+              </IconButton>
+            </Box>
             <Typography color="textSecondary" gutterBottom>
               {boulder.grade} - {boulder.location}
             </Typography>
 
-            <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box
+              sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
+            >
               <Typography variant="h6">Log Climb</Typography>
 
               <FormControl fullWidth>

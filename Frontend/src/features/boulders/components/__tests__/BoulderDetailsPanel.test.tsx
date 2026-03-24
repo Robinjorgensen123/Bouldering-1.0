@@ -83,4 +83,26 @@ describe("BoulderDetailsPanel", () => {
       { timeout: 4000 },
     );
   }, 20000);
+
+  it("should close the panel when the mobile close button is pressed", async () => {
+    const handleClose = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <BoulderDetailsPanel
+          boulder={mockBoulder as any}
+          isOpen={true}
+          onClose={handleClose}
+        />
+      </MemoryRouter>,
+    );
+
+    const closeButton = await screen.findByRole("button", {
+      name: /close log climb panel/i,
+    });
+
+    fireEvent.click(closeButton);
+
+    expect(handleClose).toHaveBeenCalledTimes(1);
+  });
 });
