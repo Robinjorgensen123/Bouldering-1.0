@@ -14,7 +14,10 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Modal,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
@@ -38,11 +41,14 @@ interface Props {
 }
 
 const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [ascentType, setAscentType] = useState("");
   const [attempts, setAttempts] = useState(1);
   const [comment, setComment] = useState("");
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [isImageFullscreen, setIsImageFullscreen] = useState(false);
 
   const fetchHistory = async () => {
     if (!boulder?._id) return;
@@ -82,141 +88,208 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
   };
 
   return (
-    <Drawer
-      anchor="right"
-      open={isOpen}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: { xs: "100vw", sm: 460, md: 560 },
-          maxWidth: "100vw",
-          borderTopLeftRadius: { sm: 20 },
-          borderBottomLeftRadius: { sm: 20 },
-          background:
-            "linear-gradient(180deg, rgba(248,252,245,0.96), rgba(236,245,231,0.88))",
-          borderLeft: "1px solid",
-          borderColor: "divider",
-        },
-      }}
-    >
-      <Box sx={{ p: { xs: 2.5, sm: 3.5 }, height: "100%" }}>
-        {boulder && (
-          <>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                gap: 2,
-              }}
-            >
-              <Typography variant="h5" fontWeight="bold">
-                {boulder.name}
-              </Typography>
-              <IconButton
-                aria-label="Close log climb panel"
-                onClick={onClose}
+    <>
+      <Drawer
+        anchor="right"
+        open={isOpen}
+        onClose={onClose}
+        slotProps={{
+          paper: {
+            sx: {
+              width: { xs: "100vw", sm: 460, md: 560 },
+              maxWidth: "100vw",
+              borderTopLeftRadius: { sm: 20 },
+              borderBottomLeftRadius: { sm: 20 },
+              background:
+                "linear-gradient(180deg, rgba(248,252,245,0.96), rgba(236,245,231,0.88))",
+              borderLeft: "1px solid",
+              borderColor: "divider",
+            },
+          },
+        }}
+      >
+        <Box sx={{ p: { xs: 2.5, sm: 3.5 }, height: "100%", overflow: "auto" }}>
+          {boulder && (
+            <>
+              {boulder.imagesUrl && (
+                <Box
+                  component="img"
+                  src={boulder.imagesUrl}
+                  alt={boulder.name}
+                  onClick={() => {
+                    if (isMobile) {
+                      setIsImageFullscreen(true);
+                    }
+                  }}
+                  sx={{
+                    width: "100%",
+                    height: "auto",
+                    maxHeight: 250,
+                    objectFit: "cover",
+                    borderRadius: 2,
+                    marginBottom: 2.5,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
+                    cursor: isMobile ? "pointer" : "default",
+                    transition: "opacity 0.2s ease",
+                    "&:hover": isMobile
+                      ? {
+                          opacity: 0.9,
+                        }
+                      : {},
+                  }}
+                />
+              )}
+              <Box
                 sx={{
-                  display: { xs: "inline-flex", sm: "none" },
-                  mt: -0.5,
-                  mr: -0.5,
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 2,
                 }}
               >
-                <CloseRoundedIcon />
-              </IconButton>
-            </Box>
-            <Typography color="textSecondary" gutterBottom>
-              {boulder.grade} - {boulder.location}
-            </Typography>
-
-            <Box
-              sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
-            >
-              <Typography variant="h6">Log Climb</Typography>
-
-              <FormControl fullWidth>
-                <InputLabel>Ascent</InputLabel>
-                <Select
-                  value={ascentType}
-                  label="Ascent"
-                  onChange={(e) => setAscentType(e.target.value)}
+                <Typography variant="h5" fontWeight="bold">
+                  {boulder.name}
+                </Typography>
+                <IconButton
+                  aria-label="Close log climb panel"
+                  onClick={onClose}
+                  sx={{
+                    display: { xs: "inline-flex", sm: "none" },
+                    mt: -0.5,
+                    mr: -0.5,
+                  }}
                 >
-                  <MenuItem value="flash">Flash</MenuItem>
-                  <MenuItem value="onsight">Onsight</MenuItem>
-                  <MenuItem value="redpoint">Redpoint</MenuItem>
-                </Select>
-              </FormControl>
-
-              <TextField
-                label="Attempts"
-                type="number"
-                value={attempts}
-                onChange={(e) => setAttempts(Number(e.target.value))}
-              />
-
-              <TextField
-                label="Comment"
-                multiline
-                rows={2}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleLogSubmit}
-                sx={{ alignSelf: "flex-start", px: 3 }}
-              >
-                Save
-              </Button>
-            </Box>
-
-            <Divider sx={{ my: 4 }} />
-
-            <Typography variant="h6" gutterBottom>
-              Recent Activity
-            </Typography>
-
-            {loadingHistory ? (
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgress size={24} />
+                  <CloseRoundedIcon />
+                </IconButton>
               </Box>
-            ) : (
-              <List>
-                {history.length > 0 ? (
-                  history.map((log) => (
-                    <ListItem key={log._id} sx={{ px: 0 }}>
-                      <ListItemText
-                        primary={`${log.user?.username || log.user?.email || "Climber"} - ${log.ascentType}`}
-                        secondary={
-                          <>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="textPrimary"
-                            >
-                              {log.comment}
-                            </Typography>
-                            <Typography component="span" variant="caption">
-                              {new Date(log.completedAt).toLocaleDateString()}
-                            </Typography>
-                          </>
-                        }
-                      />
-                    </ListItem>
-                  ))
-                ) : (
-                  <Typography variant="body2" color="textSecondary">
-                    No logs yet.
-                  </Typography>
-                )}
-              </List>
-            )}
-          </>
-        )}
-      </Box>
-    </Drawer>
+              <Typography color="textSecondary" gutterBottom>
+                {boulder.grade} - {boulder.location}
+              </Typography>
+
+              <Box
+                sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
+              >
+                <Typography variant="h6">Log Climb</Typography>
+
+                <FormControl fullWidth>
+                  <InputLabel>Ascent</InputLabel>
+                  <Select
+                    value={ascentType}
+                    label="Ascent"
+                    onChange={(e) => setAscentType(e.target.value)}
+                  >
+                    <MenuItem value="flash">Flash</MenuItem>
+                    <MenuItem value="onsight">Onsight</MenuItem>
+                    <MenuItem value="redpoint">Redpoint</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label="Attempts"
+                  type="number"
+                  value={attempts}
+                  onChange={(e) => setAttempts(Number(e.target.value))}
+                />
+
+                <TextField
+                  label="Comment"
+                  multiline
+                  rows={2}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleLogSubmit}
+                  sx={{ alignSelf: "flex-start", px: 3 }}
+                >
+                  Save
+                </Button>
+              </Box>
+
+              <Divider sx={{ my: 4 }} />
+
+              <Typography variant="h6" gutterBottom>
+                Recent Activity
+              </Typography>
+
+              {loadingHistory ? (
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : (
+                <List>
+                  {history.length > 0 ? (
+                    history.map((log) => (
+                      <ListItem key={log._id} sx={{ px: 0 }}>
+                        <ListItemText
+                          primary={`${log.user?.username || log.user?.email || "Climber"} - ${log.ascentType}`}
+                          secondary={
+                            <>
+                              <Typography
+                                component="span"
+                                variant="body2"
+                                color="textPrimary"
+                              >
+                                {log.comment}
+                              </Typography>
+                              <Typography component="span" variant="caption">
+                                {new Date(log.completedAt).toLocaleDateString()}
+                              </Typography>
+                            </>
+                          }
+                        />
+                      </ListItem>
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="textSecondary">
+                      No logs yet.
+                    </Typography>
+                  )}
+                </List>
+              )}
+            </>
+          )}
+        </Box>
+      </Drawer>
+
+      <Modal
+        open={isImageFullscreen}
+        onClose={() => setIsImageFullscreen(false)}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1300,
+        }}
+      >
+        <Box
+          sx={{
+            position: "relative",
+            width: { xs: "100vw", sm: "90vw", md: "80vw" },
+            height: { xs: "100vh", sm: "90vh" },
+            maxWidth: { xs: "100vw", sm: 1000 },
+            maxHeight: { xs: "100vh", sm: "90vh" },
+          }}
+        >
+          <Box
+            component="img"
+            src={boulder?.imagesUrl}
+            alt={boulder?.name}
+            onClick={() => setIsImageFullscreen(false)}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              borderRadius: { xs: 0, sm: 2 },
+              cursor: "pointer",
+            }}
+          />
+        </Box>
+      </Modal>
+    </>
   );
 };
 
