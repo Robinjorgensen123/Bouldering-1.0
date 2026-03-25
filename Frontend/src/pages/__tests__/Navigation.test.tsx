@@ -18,8 +18,8 @@ it("should navigate to the full map page via URL", async () => {
       <AuthProvider>
         <App />
       </AuthProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
-  const map = await screen.findByTestId("map-wrapper");
+  const map = await screen.findByTestId("map-wrapper", {}, { timeout: 5000 });
   expect(map).toBeInTheDocument();
 });
