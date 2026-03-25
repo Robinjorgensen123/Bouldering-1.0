@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import UserSettings from "../UserSettings/UserSettings";
 import { AuthProvider } from "../../features/auth/context/AuthContext";
 import api from "../../services/api";
+import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 
 vi.mock("../../services/api", () => ({
@@ -42,9 +43,11 @@ describe("UserSettings Page", () => {
 
   it("should render the grading system options", () => {
     render(
-      <AuthProvider>
-        <UserSettings />
-      </AuthProvider>,
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText(/Grading System/i)).toBeInTheDocument();
@@ -54,9 +57,11 @@ describe("UserSettings Page", () => {
 
   it("should update localstorage when a scale is selected", async () => {
     render(
-      <AuthProvider>
-        <UserSettings />
-      </AuthProvider>,
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
     );
 
     const vScaleButton = screen.getByLabelText(/V-Scale/i);
@@ -75,9 +80,11 @@ describe("UserSettings Page", () => {
 
   it("shold show the active class on the selected scale", async () => {
     render(
-      <AuthProvider>
-        <UserSettings />
-      </AuthProvider>,
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
     );
 
     const fontButton = screen.getByText(/Fontainebleau/i);
@@ -92,5 +99,20 @@ describe("UserSettings Page", () => {
       expect(vButton).toHaveClass("active");
       expect(fontButton).not.toHaveClass("active");
     });
+  });
+
+  it("should clear auth data when logout is clicked", () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /log out/i }));
+
+    expect(localStorage.getItem("token")).toBeNull();
+    expect(localStorage.getItem("user")).toBeNull();
   });
 });
