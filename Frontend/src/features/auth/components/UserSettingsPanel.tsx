@@ -11,9 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
+import { useNavigate } from "react-router-dom";
 
 const UserSettingsPanel = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleScaleChange = async (scale: "font" | "v-scale") => {
     if (!user) return;
@@ -27,6 +29,11 @@ const UserSettingsPanel = () => {
     } catch (error) {
       console.error("Failed to update settings", error);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -98,6 +105,24 @@ const UserSettingsPanel = () => {
                   V-Scale
                 </Button>
               </Stack>
+            </Box>
+
+            <Box>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 1.2 }}
+              >
+                Sign out from this device.
+              </Typography>
+              <Button
+                variant="outlined"
+                color="error"
+                fullWidth
+                onClick={handleLogout}
+              >
+                Log out
+              </Button>
             </Box>
           </Stack>
         </CardContent>
