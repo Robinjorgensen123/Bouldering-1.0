@@ -19,18 +19,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import SellRoundedIcon from "@mui/icons-material/SellRounded";
-
-interface HistoryRecord {
-  _id: string;
-  ascentType?: string;
-  attempts?: number;
-  comment?: string;
-  completedAt?: string;
-  boulder: {
-    name: string;
-    grade: string;
-  } | null;
-}
+import { type HistoryRecord } from "../types/history.types";
 
 const HistoryPageContent = () => {
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
