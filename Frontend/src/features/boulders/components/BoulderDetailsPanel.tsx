@@ -22,17 +22,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useEffect, useState } from "react";
 import api from "../../../services/api";
 import { type IBoulder } from "../types/boulder.types";
-
-interface HistoryItem {
-  _id: string;
-  ascentType?: string;
-  comment?: string;
-  completedAt: string;
-  user?: {
-    username?: string;
-    email?: string;
-  };
-}
+import { type HistoryItem } from "../../history/types/history.types";
 
 interface Props {
   boulder: IBoulder | null;
