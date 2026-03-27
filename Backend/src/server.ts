@@ -21,13 +21,13 @@ if (process.env.NODE_ENV !== "test") {
 
 const allowedOrigins = process.env.FRONTEND_URL
   ? [process.env.FRONTEND_URL]
-  : ["http://localhost:5173"];
+  : ["http://localhost:5173", "https://boulderingapp.vercel.app"];
 
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 
