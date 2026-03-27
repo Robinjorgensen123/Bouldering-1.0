@@ -5,6 +5,7 @@ import { type IBoulder } from "../types/boulder.types";
 import BoulderMap from "./BoulderMap";
 import BoulderDetailsPanel from "./BoulderDetailsPanel";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -39,6 +40,7 @@ const HomePageContent: React.FC = () => {
   const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
   const [view, setView] = useState<"grid" | "map">("grid");
+  const [error, setError] = useState<string | null>(null);
 
   const { token, user } = useAuth();
 
@@ -47,6 +49,7 @@ const HomePageContent: React.FC = () => {
       if (!token) return;
 
       try {
+        setError(null);
         const response = await fetchBoulderList();
         const boulderData = response.data;
 
@@ -72,6 +75,7 @@ const HomePageContent: React.FC = () => {
         }
       } catch (err) {
         console.error("Kunde inte hämta data:", err);
+        setError("Could not load boulders right now. Please try again.");
       }
     };
 
@@ -149,6 +153,12 @@ const HomePageContent: React.FC = () => {
           </Stack>
         </CardContent>
       </Card>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {view === "map" ? (
         <BoulderMap boulders={allBoulders} />

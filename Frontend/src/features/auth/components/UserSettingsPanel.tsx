@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { updateGradingSystem } from "../services/authApi";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -16,18 +18,24 @@ import { useNavigate } from "react-router-dom";
 const UserSettingsPanel = () => {
   const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleScaleChange = async (scale: "font" | "v-scale") => {
     if (!user) return;
     if (user.gradingSystem === scale) return;
+    setError(null);
+    setSuccess(null);
 
     try {
       const response = await updateGradingSystem(scale);
       if (response.success) {
         updateUser(response.data);
+        setSuccess("Settings updated.");
       }
     } catch (error) {
       console.error("Failed to update settings", error);
+      setError("Could not update settings. Please try again.");
     }
   };
 
@@ -50,6 +58,9 @@ const UserSettingsPanel = () => {
       >
         <CardContent sx={{ p: { xs: 3, md: 4 } }}>
           <Stack spacing={3}>
+            {error && <Alert severity="error">{error}</Alert>}
+            {success && <Alert severity="success">{success}</Alert>}
+
             <Stack spacing={1.5}>
               <Chip
                 label="Personal preferences"

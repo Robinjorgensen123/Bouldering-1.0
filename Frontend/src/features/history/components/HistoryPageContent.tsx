@@ -24,17 +24,20 @@ import { type HistoryRecord } from "../types/history.types";
 const HistoryPageContent = () => {
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
+        setError(null);
         const response = await api.get("/history");
         if (response.data.success) {
           setHistoryRecords(response.data.data);
         }
       } catch (err) {
         console.error("Error fetching history:", err);
+        setError("Could not load history right now. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -88,7 +91,9 @@ const HistoryPageContent = () => {
           </CardContent>
         </Card>
 
-        {historyRecords.length === 0 ? (
+        {error ? (
+          <Alert severity="error">{error}</Alert>
+        ) : historyRecords.length === 0 ? (
           <Alert severity="info">No history records found.</Alert>
         ) : (
           <List disablePadding sx={{ display: "grid", gap: 2 }}>
