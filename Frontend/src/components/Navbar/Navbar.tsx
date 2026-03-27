@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  Map,
-  PlusSquare,
-  Home,
-  Settings,
-  History,
-  Menu,
-  X,
-} from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   AppBar,
   Toolbar,
@@ -27,6 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { navItems } from "../navigation/navItems";
 
 const MOBILE_NAV_ENABLED = true;
 
@@ -34,14 +27,6 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
-
-  const navItems = [
-    { to: "/", label: "Home", icon: <Home size={20} />, end: true },
-    { to: "/map", label: "Map", icon: <Map size={20} /> },
-    { to: "/history", label: "History", icon: <History size={20} /> },
-    { to: "/add", label: "Add New Boulder", icon: <PlusSquare size={20} /> },
-    { to: "/settings", label: "Settings", icon: <Settings size={20} /> },
-  ];
 
   return (
     <AppBar position="sticky" color="default" elevation={0}>
