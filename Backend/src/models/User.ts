@@ -4,13 +4,17 @@ import { type IUser as IUserBase } from "../types/User.types.js";
 
 export interface IUserDocument extends Omit<IUserBase, "_id">, Document {
   password: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   comparePassword(password: string): Promise<boolean>;
 }
 
 const UserSchema: Schema<IUserDocument> = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true },
+    passwordResetToken: { type: String },
+    passwordResetExpires: { type: Date },
     gradingSystem: { type: String, enum: ["font", "v-scale"], default: "font" },
   },
   { timestamps: true }

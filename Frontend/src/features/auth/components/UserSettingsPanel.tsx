@@ -15,11 +15,9 @@ import {
   Typography,
 } from "@mui/material";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
-import { useNavigate } from "react-router-dom";
 
 const UserSettingsPanel = () => {
-  const { user, updateUser, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
   const [success, setSuccess] = useState<string | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -43,11 +41,6 @@ const UserSettingsPanel = () => {
       console.error("Failed to update settings", error);
       setErrorToast("Could not update settings. Please try again.");
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
   };
 
   const handlePasswordChange = async () => {
@@ -184,24 +177,6 @@ const UserSettingsPanel = () => {
                   V-Scale
                 </Button>
               </Stack>
-            </Box>
-
-            <Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mb: 1.2 }}
-              >
-                Sign out from this device.
-              </Typography>
-              <Button
-                variant="outlined"
-                color="error"
-                fullWidth
-                onClick={handleLogout}
-              >
-                Log out
-              </Button>
             </Box>
 
             <Box
