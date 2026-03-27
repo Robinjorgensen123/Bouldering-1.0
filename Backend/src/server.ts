@@ -6,6 +6,10 @@ import boulderRoutes from "./routes/boulderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import historyRoutes from "./routes/historyRoutes.js";
 import connectDB from "./config/db.js";
+import {
+  globalErrorHandler,
+  notFoundHandler,
+} from "./middleware/errorHandler.js";
 
 dotenv.config();
 
@@ -15,7 +19,16 @@ if (process.env.NODE_ENV !== "test") {
   connectDB();
 }
 
-app.use(cors());
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL]
+  : ["http://localhost:5173"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/api/user", userRoutes);
@@ -26,6 +39,9 @@ app.use("/api/history", historyRoutes);
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
+
+app.use(notFoundHandler);
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 5000;
 

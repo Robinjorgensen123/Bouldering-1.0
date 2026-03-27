@@ -1,5 +1,4 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig as defineVitestConfig } from "vitest/config";
 
@@ -13,6 +12,16 @@ export default defineVitestConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
+      exclude: [
+        "**/*.d.ts",
+        "src/**/types/*.ts",
+        "src/vite-env.d.ts",
+        "src/vitest.d.ts",
+        "src/main.tsx",
+        "src/theme.ts",
+        "src/**/__tests__/**",
+        "src/**/test/**",
+      ],
     },
   },
 });

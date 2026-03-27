@@ -1,36 +1,73 @@
+import { Suspense, lazy } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "../pages/Login/Login";
-import Register from "../pages/Register/Register";
-import AddBoulder from "../pages/AddBoulder/AddBoulder";
-import Home from "../pages/Home/Home";
 import ProtectedRoute from "./ProtectedRoute";
-import Map from "../pages/Map/Map";
-import UserSettings from "../pages/UserSettings/UserSettings";
-import History from "../pages/History/History";
+
+const Login = lazy(() => import("../pages/Login/Login"));
+const Register = lazy(() => import("../pages/Register/Register"));
+const ForgotPassword = lazy(
+  () => import("../pages/ForgotPassword/ForgotPassword"),
+);
+const ResetPassword = lazy(() => import("../pages/ResetPassword/ResetPassword"));
+const AddBoulder = lazy(() => import("../pages/AddBoulder/AddBoulder"));
+const Home = lazy(() => import("../pages/Home/Home"));
+const Map = lazy(() => import("../pages/Map/Map"));
+const UserSettings = lazy(() => import("../pages/UserSettings/UserSettings"));
+const History = lazy(() => import("../pages/History/History"));
+
+const RouteFallback = () => (
+  <Box
+    sx={{
+      minHeight: "50vh",
+      display: "grid",
+      placeItems: "center",
+    }}
+  >
+    <CircularProgress />
+  </Box>
+);
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      {/**Open routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/map" element={<Map />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/settings" element={<UserSettings />} />
-      <Route path="/history" element={<History />} />
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        {/**Open routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-      {/**Protected Routes*/}
-      <Route
-        path="/add"
-        element={
-          <ProtectedRoute>
-            <AddBoulder />
-          </ProtectedRoute>
-        }
-      />
+        {/**Protected Routes*/}
+        <Route
+          path="/add"
+          element={
+            <ProtectedRoute>
+              <AddBoulder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <UserSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <History />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 };
 

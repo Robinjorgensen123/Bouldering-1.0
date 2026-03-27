@@ -12,13 +12,17 @@ vi.mock("../../features/boulders/services/boulderApi", () => ({
   }),
 }));
 
+vi.mock("../../pages/Map/Map", () => ({
+  default: () => <div data-testid="map-wrapper" />,
+}));
+
 it("should navigate to the full map page via URL", async () => {
   render(
     <MemoryRouter initialEntries={["/map"]}>
       <AuthProvider>
         <App />
       </AuthProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
   const map = await screen.findByTestId("map-wrapper");
   expect(map).toBeInTheDocument();

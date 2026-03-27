@@ -6,16 +6,19 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider } from "./features/auth/context/AuthContext";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "./theme";
+import AppErrorBoundary from "./components/ErrorBoundary/AppErrorBoundary";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </Router>
+      <AppErrorBoundary>
+        <Router>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </Router>
+      </AppErrorBoundary>
     </ThemeProvider>
   </StrictMode>,
 );

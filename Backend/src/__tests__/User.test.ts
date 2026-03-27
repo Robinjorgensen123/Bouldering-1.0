@@ -58,4 +58,47 @@ describe("User Settings API", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
   });
+
+  it("should change password with correct current password", async () => {
+    const response = await request(app)
+      .put("/api/user/change-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        currentPassword: "validpassword",
+        newPassword: "newValidPassword123",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
+    const loginWithOldPassword = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "settings-test@test.com",
+        password: "validpassword",
+      });
+    expect(loginWithOldPassword.status).toBe(400);
+
+    const loginWithNewPassword = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: "settings-test@test.com",
+        password: "newValidPassword123",
+      });
+    expect(loginWithNewPassword.status).toBe(200);
+  });
+
+  it("should fail password change when current password is wrong", async () => {
+    const response = await request(app)
+      .put("/api/user/change-password")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        currentPassword: "wrongPassword",
+        newPassword: "newValidPassword123",
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toBe("Current password is incorrect");
+  });
 });

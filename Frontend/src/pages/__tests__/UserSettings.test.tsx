@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import UserSettings from "../UserSettings/UserSettings";
 import { AuthProvider } from "../../features/auth/context/AuthContext";
 import api from "../../services/api";
+import { MemoryRouter } from "react-router-dom";
 import "@testing-library/jest-dom";
 
 vi.mock("../../services/api", () => ({
@@ -24,7 +25,16 @@ describe("UserSettings Page", () => {
     localStorage.setItem("user", JSON.stringify(mockUser));
     localStorage.setItem("token", "mock-token");
     vi.clearAllMocks();
-    vi.mocked(api.put).mockImplementation(async (_url, data) => {
+    vi.mocked(api.put).mockImplementation(async (url, data) => {
+      if (url === "/user/change-password") {
+        return {
+          data: {
+            success: true,
+            message: "Password updated successfully",
+          },
+        };
+      }
+
       const body = (data as { gradingSystem?: string } | undefined) ?? {};
 
       return {
@@ -42,9 +52,11 @@ describe("UserSettings Page", () => {
 
   it("should render the grading system options", () => {
     render(
-      <AuthProvider>
-        <UserSettings />
-      </AuthProvider>,
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText(/Grading System/i)).toBeInTheDocument();
@@ -54,9 +66,11 @@ describe("UserSettings Page", () => {
 
   it("should update localstorage when a scale is selected", async () => {
     render(
-      <AuthProvider>
-        <UserSettings />
-      </AuthProvider>,
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
     );
 
     const vScaleButton = screen.getByLabelText(/V-Scale/i);
@@ -75,9 +89,11 @@ describe("UserSettings Page", () => {
 
   it("shold show the active class on the selected scale", async () => {
     render(
-      <AuthProvider>
-        <UserSettings />
-      </AuthProvider>,
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
     );
 
     const fontButton = screen.getByText(/Fontainebleau/i);
@@ -91,6 +107,50 @@ describe("UserSettings Page", () => {
     await waitFor(() => {
       expect(vButton).toHaveClass("active");
       expect(fontButton).not.toHaveClass("active");
+    });
+  });
+
+  it("should not render a logout button in settings", () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByRole("button", { name: /log out/i })).toBeNull();
+  });
+
+  it("should change password from settings", async () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText(/current password/i), {
+      target: { value: "oldpassword" },
+    });
+    fireEvent.change(screen.getByLabelText(/^new password$/i), {
+      target: { value: "newpassword123" },
+    });
+    fireEvent.change(screen.getByLabelText(/confirm new password/i), {
+      target: { value: "newpassword123" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /update password/i }));
+
+    await waitFor(() => {
+      expect(api.put).toHaveBeenCalledWith("/user/change-password", {
+        currentPassword: "oldpassword",
+        newPassword: "newpassword123",
+      });
+      expect(
+        screen.getByText(/password changed successfully/i),
+      ).toBeInTheDocument();
     });
   });
 });

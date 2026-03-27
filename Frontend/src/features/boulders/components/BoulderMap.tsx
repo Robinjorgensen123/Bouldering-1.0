@@ -9,8 +9,9 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { IBoulder } from "../types/boulder.types";
+import { Box, Typography, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { type IBoulder } from "../types/boulder.types";
 import BoulderDetailsPanel from "./BoulderDetailsPanel";
 
 const BoulderMarkerIcon = L.divIcon({
@@ -132,6 +133,8 @@ const BoulderMap = ({
   focusBoulder = null,
   focusLocation = null,
 }: Props) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedBoulder, setSelectedBoulder] = useState<IBoulder | null>(null);
   const [isDetailsPanelOpen, setIsDetailsPanelOpen] = useState(false);
 
@@ -194,6 +197,7 @@ const BoulderMap = ({
       <MapContainer
         center={center}
         zoom={11}
+        zoomControl={!isMobile}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%", borderRadius: borderRadius }}
       >

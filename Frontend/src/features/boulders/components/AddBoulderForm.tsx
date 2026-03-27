@@ -19,7 +19,7 @@ import HikingRoundedIcon from "@mui/icons-material/HikingRounded";
 import NearMeRoundedIcon from "@mui/icons-material/NearMeRounded";
 import UploadRoundedIcon from "@mui/icons-material/UploadRounded";
 import { useGeolocation } from "../../../hooks/useGeolocation";
-import { ILinePoint } from "../types/boulder.types";
+import { type ILinePoint } from "../types/boulder.types";
 import { createBoulder, getUploadErrorMessage } from "../services/boulderApi";
 import TopoCanvas from "./TopoCanvas";
 
@@ -35,6 +35,8 @@ const AddBoulderForm: React.FC = () => {
   const [lng, setLng] = useState<number | null>(null);
   const [topoPoints, setTopoPoints] = useState<ILinePoint[]>([]);
   const [location, setLocation] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const { getLocation, loading: geoLoading } = useGeolocation();
 
@@ -47,20 +49,23 @@ const AddBoulderForm: React.FC = () => {
   };
 
   const handleGetCoordinates = async () => {
+    setErrorMessage(null);
     try {
       const coords = await getLocation();
       setLat(coords.lat);
       setLng(coords.lng);
     } catch (err) {
-      alert("could not retrieve location:" + err);
+      setErrorMessage(`Could not retrieve location: ${String(err)}`);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
     if (lat == null || lng === null) {
-      alert("Pleace acquire coordinates before uploading!");
+      setErrorMessage("Please acquire coordinates before uploading.");
       return;
     }
 
@@ -84,11 +89,12 @@ const AddBoulderForm: React.FC = () => {
     try {
       const response = await createBoulder(formData);
       if (response.status === 200 || response.status === 201) {
+        setSuccessMessage("Boulder uploaded successfully.");
         navigate("/");
       }
     } catch (error) {
       const message = getUploadErrorMessage(error);
-      alert(message);
+      setErrorMessage(message);
       console.error("Upload failed", error);
     }
   };
@@ -118,6 +124,11 @@ const AddBoulderForm: React.FC = () => {
 
             <Box component="form" onSubmit={handleSubmit}>
               <Stack spacing={3}>
+                {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+                {successMessage && (
+                  <Alert severity="success">{successMessage}</Alert>
+                )}
+
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
                     id="name"

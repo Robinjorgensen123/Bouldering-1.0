@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import BoulderMap from "./BoulderMap";
 import { fetchBoulders as fetchBoulderList } from "../services/boulderApi";
-import { IBoulder } from "../types/boulder.types";
+import { type IBoulder } from "../types/boulder.types";
 import {
+  Alert,
   Box,
   Chip,
   CircularProgress,
@@ -24,16 +25,19 @@ const MapPageContent = () => {
   );
   const [loading, setLoading] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBoulders = async () => {
       try {
+        setError(null);
         const response = await fetchBoulderList();
         if (response.success) {
           setBoulders(response.data);
         }
       } catch (error) {
         console.error("Error fetching boulders for map", error);
+        setError("Could not load boulders right now. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -79,7 +83,7 @@ const MapPageContent = () => {
           spacing={1}
           sx={{
             position: "absolute",
-            top: 16,
+            top: { xs: 78, sm: 16 },
             right: 16,
             zIndex: 1400,
             px: 2,
@@ -124,13 +128,28 @@ const MapPageContent = () => {
           onClick={() => setIsInfoOpen(true)}
           sx={{
             position: "absolute",
-            top: 16,
+            top: { xs: 78, sm: 16 },
             right: 16,
             zIndex: 1400,
             bgcolor: "rgba(255,255,255,0.92)",
             backdropFilter: "blur(8px)",
           }}
         />
+      )}
+
+      {error && (
+        <Alert
+          severity="error"
+          sx={{
+            position: "absolute",
+            top: { xs: 12, sm: 16 },
+            left: 16,
+            zIndex: 1450,
+            maxWidth: { xs: "calc(100% - 32px)", sm: 420 },
+          }}
+        >
+          {error}
+        </Alert>
       )}
 
       <MapSearch onSelectLocation={setFocusLocation} />

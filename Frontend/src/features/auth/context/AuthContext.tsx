@@ -1,5 +1,10 @@
-import React, { createContext, useEffect, useState, ReactNode } from "react";
-import { AuthContextType, IUser } from "../types/auth.types";
+import React, {
+  createContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import { type AuthContextType, type IUser } from "../types/auth.types";
 import { setAuthToken } from "../../../services/api";
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -17,7 +22,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser && savedUser !== "undefined") {
-      setUser(JSON.parse(savedUser));
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch {
+        localStorage.removeItem("user");
+      }
     }
 
     setAuthToken(localStorage.getItem("token"));

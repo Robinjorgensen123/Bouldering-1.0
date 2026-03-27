@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../../services/api";
 import { useAuth } from "../../auth/hooks/useAuth";
 import {
@@ -19,33 +19,25 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import SellRoundedIcon from "@mui/icons-material/SellRounded";
-
-interface HistoryRecord {
-  _id: string;
-  ascentType?: string;
-  attempts?: number;
-  comment?: string;
-  completedAt?: string;
-  boulder: {
-    name: string;
-    grade: string;
-  } | null;
-}
+import { type HistoryRecord } from "../types/history.types";
 
 const HistoryPageContent = () => {
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
+        setError(null);
         const response = await api.get("/history");
         if (response.data.success) {
           setHistoryRecords(response.data.data);
         }
       } catch (err) {
         console.error("Error fetching history:", err);
+        setError("Could not load history right now. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -99,7 +91,9 @@ const HistoryPageContent = () => {
           </CardContent>
         </Card>
 
-        {historyRecords.length === 0 ? (
+        {error ? (
+          <Alert severity="error">{error}</Alert>
+        ) : historyRecords.length === 0 ? (
           <Alert severity="info">No history records found.</Alert>
         ) : (
           <List disablePadding sx={{ display: "grid", gap: 2 }}>
