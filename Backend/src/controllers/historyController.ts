@@ -47,7 +47,7 @@ export const createHistoryRecord = async (req: AuthRequest, res: Response) => {
       data: newRecord,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message || "Error creating history record",
     });
@@ -76,7 +76,7 @@ export const getHistoryByBoulder = async (req: AuthRequest, res: Response) => {
       data: history,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message || "Error fetching history for boulder",
     });
@@ -121,7 +121,7 @@ export const getUserHistory = async (req: AuthRequest, res: Response) => {
       data: formattedHistory,
     });
   } catch (error: any) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: error.message || "Error fetching history",
     });
