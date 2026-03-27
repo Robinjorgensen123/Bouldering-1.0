@@ -79,7 +79,7 @@ const MapPageContent = () => {
           spacing={1}
           sx={{
             position: "absolute",
-            top: 16,
+            top: { xs: 78, sm: 16 },
             right: 16,
             zIndex: 1400,
             px: 2,
@@ -124,7 +124,7 @@ const MapPageContent = () => {
           onClick={() => setIsInfoOpen(true)}
           sx={{
             position: "absolute",
-            top: 16,
+            top: { xs: 78, sm: 16 },
             right: 16,
             zIndex: 1400,
             bgcolor: "rgba(255,255,255,0.92)",
