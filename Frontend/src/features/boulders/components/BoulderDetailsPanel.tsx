@@ -15,6 +15,8 @@ import {
   ListItemText,
   Divider,
   Modal,
+  Alert,
+  Snackbar,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -39,6 +41,15 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [isImageFullscreen, setIsImageFullscreen] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    open: boolean;
+    severity: "success" | "error";
+    message: string;
+  }>({
+    open: false,
+    severity: "success",
+    message: "",
+  });
 
   const fetchHistory = async () => {
     if (!boulder?._id) return;
@@ -68,12 +79,20 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
         comment,
         completedAt: new Date().toISOString(),
       });
-      alert("Climb logged successfully!");
+      setFeedback({
+        open: true,
+        severity: "success",
+        message: "Climb logged successfully!",
+      });
       setComment("");
       fetchHistory();
     } catch (err) {
       console.error("Error logging climb:", err);
-      alert("Failed to log climb. Please try again.");
+      setFeedback({
+        open: true,
+        severity: "error",
+        message: "Failed to log climb. Please try again.",
+      });
     }
   };
 
@@ -279,6 +298,22 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
           />
         </Box>
       </Modal>
+
+      <Snackbar
+        open={feedback.open}
+        autoHideDuration={3000}
+        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
+          severity={feedback.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {feedback.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

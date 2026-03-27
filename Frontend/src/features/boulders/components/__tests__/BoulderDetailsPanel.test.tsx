@@ -34,8 +34,6 @@ describe("BoulderDetailsPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.spyOn(window, "alert").mockImplementation(() => {});
-
     (api.get as any).mockResolvedValue({
       data: { success: true, data: mockHistory },
     });
@@ -78,7 +76,9 @@ describe("BoulderDetailsPanel", () => {
           "/history",
           expect.objectContaining({ ascentType: "flash", attempts: 3 }),
         );
-        expect(window.alert).toHaveBeenCalledWith("Climb logged successfully!");
+        expect(
+          screen.getByText("Climb logged successfully!"),
+        ).toBeInTheDocument();
       },
       { timeout: 4000 },
     );
