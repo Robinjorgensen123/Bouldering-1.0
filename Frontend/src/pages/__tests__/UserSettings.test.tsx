@@ -110,7 +110,7 @@ describe("UserSettings Page", () => {
     });
   });
 
-  it("should clear auth data when logout is clicked", () => {
+  it("should not render a logout button in settings", () => {
     render(
       <MemoryRouter>
         <AuthProvider>
@@ -119,10 +119,7 @@ describe("UserSettings Page", () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /log out/i }));
-
-    expect(localStorage.getItem("token")).toBeNull();
-    expect(localStorage.getItem("user")).toBeNull();
+    expect(screen.queryByRole("button", { name: /log out/i })).toBeNull();
   });
 
   it("should change password from settings", async () => {

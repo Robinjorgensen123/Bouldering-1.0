@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { LogOut, Menu, X } from "lucide-react";
 import {
   AppBar,
   Toolbar,
@@ -20,13 +20,22 @@ import {
   useTheme,
 } from "@mui/material";
 import { navItems } from "../navigation/navItems";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 
 const MOBILE_NAV_ENABLED = true;
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
+    navigate("/login", { replace: true });
+  };
 
   return (
     <AppBar position="sticky" color="default" elevation={0}>
@@ -124,6 +133,25 @@ const Navbar = () => {
                 {label}
               </Button>
             ))}
+
+            <Button
+              color="inherit"
+              variant="outlined"
+              startIcon={<LogOut size={18} />}
+              onClick={handleLogout}
+              sx={{
+                textTransform: "none",
+                borderColor: "rgba(167, 54, 40, 0.35)",
+                color: "error.dark",
+                bgcolor: "rgba(167, 54, 40, 0.07)",
+                "&:hover": {
+                  borderColor: "rgba(167, 54, 40, 0.5)",
+                  bgcolor: "rgba(167, 54, 40, 0.12)",
+                },
+              }}
+            >
+              Log out
+            </Button>
           </Box>
 
           {MOBILE_NAV_ENABLED && !isDesktop && (
@@ -200,6 +228,23 @@ const Navbar = () => {
                       </ListItemButton>
                     </ListItem>
                   ))}
+
+                  <ListItem disablePadding sx={{ mt: 1 }}>
+                    <ListItemButton
+                      onClick={handleLogout}
+                      sx={{
+                        borderRadius: 2,
+                        border: "1px solid rgba(167, 54, 40, 0.25)",
+                        color: "error.dark",
+                        bgcolor: "rgba(167, 54, 40, 0.08)",
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>
+                        <LogOut size={18} />
+                      </ListItemIcon>
+                      <ListItemText primary="Log out" />
+                    </ListItemButton>
+                  </ListItem>
                 </List>
               </Drawer>
             </>
