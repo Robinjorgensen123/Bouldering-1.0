@@ -5,6 +5,10 @@ import ProtectedRoute from "./ProtectedRoute";
 
 const Login = lazy(() => import("../pages/Login/Login"));
 const Register = lazy(() => import("../pages/Register/Register"));
+const ForgotPassword = lazy(
+  () => import("../pages/ForgotPassword/ForgotPassword"),
+);
+const ResetPassword = lazy(() => import("../pages/ResetPassword/ResetPassword"));
 const AddBoulder = lazy(() => import("../pages/AddBoulder/AddBoulder"));
 const Home = lazy(() => import("../pages/Home/Home"));
 const Map = lazy(() => import("../pages/Map/Map"));
@@ -32,6 +36,8 @@ const AppRoutes = () => {
         <Route path="/map" element={<Map />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/**Protected Routes*/}
         <Route

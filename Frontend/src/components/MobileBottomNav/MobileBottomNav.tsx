@@ -2,7 +2,7 @@ import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { navItems } from "../navigation/navItems";
 
-const HIDDEN_PATHS = new Set(["/login", "/register"]);
+const HIDDEN_PATHS = new Set(["/login", "/register", "/forgot-password"]);
 
 const MobileBottomNav = () => {
   const location = useLocation();
@@ -13,7 +13,10 @@ const MobileBottomNav = () => {
     bottomNavItems.find((item) => location.pathname.startsWith(item.to))?.to ||
     false;
 
-  if (HIDDEN_PATHS.has(location.pathname)) {
+  if (
+    HIDDEN_PATHS.has(location.pathname) ||
+    location.pathname.startsWith("/reset-password")
+  ) {
     return null;
   }
 

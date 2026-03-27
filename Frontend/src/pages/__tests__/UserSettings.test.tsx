@@ -25,7 +25,16 @@ describe("UserSettings Page", () => {
     localStorage.setItem("user", JSON.stringify(mockUser));
     localStorage.setItem("token", "mock-token");
     vi.clearAllMocks();
-    vi.mocked(api.put).mockImplementation(async (_url, data) => {
+    vi.mocked(api.put).mockImplementation(async (url, data) => {
+      if (url === "/user/change-password") {
+        return {
+          data: {
+            success: true,
+            message: "Password updated successfully",
+          },
+        };
+      }
+
       const body = (data as { gradingSystem?: string } | undefined) ?? {};
 
       return {
@@ -114,5 +123,37 @@ describe("UserSettings Page", () => {
 
     expect(localStorage.getItem("token")).toBeNull();
     expect(localStorage.getItem("user")).toBeNull();
+  });
+
+  it("should change password from settings", async () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <UserSettings />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText(/current password/i), {
+      target: { value: "oldpassword" },
+    });
+    fireEvent.change(screen.getByLabelText(/^new password$/i), {
+      target: { value: "newpassword123" },
+    });
+    fireEvent.change(screen.getByLabelText(/confirm new password/i), {
+      target: { value: "newpassword123" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /update password/i }));
+
+    await waitFor(() => {
+      expect(api.put).toHaveBeenCalledWith("/user/change-password", {
+        currentPassword: "oldpassword",
+        newPassword: "newpassword123",
+      });
+      expect(
+        screen.getByText(/password changed successfully/i),
+      ).toBeInTheDocument();
+    });
   });
 });
