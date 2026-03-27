@@ -74,7 +74,7 @@ const HomePageContent: React.FC = () => {
           setGroups(groupedArray);
         }
       } catch (err) {
-        console.error("Kunde inte hämta data:", err);
+        console.error("Could not fetch data:", err);
         setError("Could not load boulders right now. Please try again.");
       }
     };

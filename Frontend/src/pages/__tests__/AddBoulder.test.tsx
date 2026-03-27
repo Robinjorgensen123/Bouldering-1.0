@@ -95,7 +95,6 @@ describe("AddBoulder test", () => {
     const input = screen.getByLabelText(/select image/i);
     fireEvent.change(input, { target: { files: [file] } });
 
-    // Canvasen hittas via aria-label
     const canvas = screen.getByLabelText("topo-canvas");
 
     fireEvent.touchStart(canvas, { touches: [{ clientX: 100, clientY: 100 }] });
