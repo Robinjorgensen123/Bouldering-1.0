@@ -42,6 +42,24 @@ describe("AuthProvider", () => {
     });
   });
 
+  it("should ignore and clear invalid user data from localStorage", async () => {
+    localStorage.setItem("token", "saved-token");
+    localStorage.setItem("user", "{invalid-json");
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("token")).toHaveTextContent("saved-token");
+      expect(screen.getByTestId("email")).toHaveTextContent("");
+    });
+
+    expect(localStorage.getItem("user")).toBeNull();
+  });
+
   it("should update token + user in state after calling login", async () => {
     const LoginConsumer = () => {
       const { token, user, login } = useAuth();
