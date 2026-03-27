@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import MapRoundedIcon from "@mui/icons-material/MapRounded";
 import { useAuth } from "../../auth/hooks/useAuth";
 import MapSearch from "./MapSearch";
 
@@ -96,7 +95,16 @@ const MapPageContent = () => {
           }}
         >
           <Stack direction="row" spacing={1} alignItems="center">
-            <MapRoundedIcon color="primary" />
+            <img
+              src="/apple-touch-icon.png"
+              alt="Map icon"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                objectFit: "cover",
+              }}
+            />
             <Typography variant="h6" fontWeight={700} sx={{ flexGrow: 1 }}>
               Boulder Map
             </Typography>
