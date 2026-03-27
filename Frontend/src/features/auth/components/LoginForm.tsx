@@ -96,6 +96,10 @@ const LoginForm = () => {
                 fullWidth
               />
 
+              <Typography variant="body2" textAlign="right">
+                <Link to="/forgot-password">Forgot password?</Link>
+              </Typography>
+
               <Button type="submit" variant="contained" size="large" fullWidth>
                 Log In
               </Button>
