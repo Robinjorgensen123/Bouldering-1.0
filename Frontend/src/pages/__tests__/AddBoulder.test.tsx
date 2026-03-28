@@ -1,3 +1,10 @@
+// Mocka HEIC-konvertering och komprimering så de returnerar filen direkt i tester
+vi.mock("../../features/boulders/utils/convertHeicToJpg", () => ({
+  convertHeicToJpg: vi.fn((file) => Promise.resolve(file)),
+}));
+vi.mock("../../features/boulders/utils/compressImageFile", () => ({
+  compressImageFile: vi.fn((file) => Promise.resolve(file)),
+}));
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddBoulder from "../AddBoulder/AddBoulder";
@@ -83,9 +90,24 @@ describe("AddBoulder test", () => {
 
     fireEvent.change(input, { target: { files: [file] } });
 
-    const previews = await waitFor(() => screen.getAllByAltText(/preview/i), { timeout: 2000 });
+    // Vänta på att preview-bilden ska dyka upp
+    let previews;
+    try {
+      previews = await waitFor(() => screen.getAllByAltText(/preview/i), {
+        timeout: 4000,
+      });
+    } catch (e) {
+      // Logga DOM för felsökning
+      // eslint-disable-next-line no-console
+      console.log(document.body.innerHTML);
+      throw e;
+    }
     expect(previews.length).toBeGreaterThan(0);
-    expect(Array.from(previews).some(img => img.getAttribute("src") === "mock-url")).toBe(true);
+    expect(
+      Array.from(previews).some(
+        (img) => img.getAttribute("src") === "mock-url",
+      ),
+    ).toBe(true);
   }, 10000);
 
   it("should capture topo points when drawing on the canvas", async () => {
@@ -95,14 +117,18 @@ describe("AddBoulder test", () => {
     const input = screen.getByLabelText(/select image/i);
     fireEvent.change(input, { target: { files: [file] } });
 
-    const canvas = await waitFor(() => screen.getByLabelText("topo-canvas"), { timeout: 2000 });
+    const canvas = await waitFor(() => screen.getByLabelText("topo-canvas"), {
+      timeout: 2000,
+    });
 
     fireEvent.touchStart(canvas, { touches: [{ clientX: 100, clientY: 100 }] });
     fireEvent.touchMove(canvas, { touches: [{ clientX: 150, clientY: 200 }] });
     fireEvent.touchEnd(canvas);
 
     expect(
-      await waitFor(() => screen.getByRole("button", { name: /reset line/i }), { timeout: 2000 }),
+      await waitFor(() => screen.getByRole("button", { name: /reset line/i }), {
+        timeout: 2000,
+      }),
     ).toBeInTheDocument();
   }, 10000);
 

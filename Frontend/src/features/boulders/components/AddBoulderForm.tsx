@@ -66,6 +66,13 @@ const AddBoulderForm: React.FC = () => {
         return;
       }
 
+      // Guard: säkerställ att det är ett File-objekt med name/type
+      if (!(selectedFile instanceof File)) {
+        selectedFile = new File([selectedFile], "image.jpg", { type: "image/jpeg" });
+      }
+      // Logga för felsökning
+      console.log("Preview file:", selectedFile, selectedFile instanceof File, selectedFile.type, selectedFile.name);
+
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
     }
@@ -260,6 +267,7 @@ const AddBoulderForm: React.FC = () => {
                         id="image"
                         type="file"
                         accept="image/*"
+                        aria-label="select image"
                         onChange={handleFileChange}
                       />
                     </Box>
@@ -279,6 +287,7 @@ const AddBoulderForm: React.FC = () => {
                       <img
                         src={preview}
                         alt="preview"
+                        data-testid="preview-image"
                         style={{
                           maxWidth: "100%",
                           borderRadius: 8,
