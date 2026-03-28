@@ -83,9 +83,9 @@ describe("AddBoulder test", () => {
 
     fireEvent.change(input, { target: { files: [file] } });
 
-    const preview = screen.getByAltText(/preview/i);
-    expect(preview).toBeInTheDocument();
-    expect(preview).toHaveAttribute("src", "mock-url");
+    const previews = await waitFor(() => screen.getAllByAltText(/preview/i), { timeout: 2000 });
+    expect(previews.length).toBeGreaterThan(0);
+    expect(Array.from(previews).some(img => img.getAttribute("src") === "mock-url")).toBe(true);
   }, 10000);
 
   it("should capture topo points when drawing on the canvas", async () => {
@@ -95,14 +95,14 @@ describe("AddBoulder test", () => {
     const input = screen.getByLabelText(/select image/i);
     fireEvent.change(input, { target: { files: [file] } });
 
-    const canvas = screen.getByLabelText("topo-canvas");
+    const canvas = await waitFor(() => screen.getByLabelText("topo-canvas"), { timeout: 2000 });
 
     fireEvent.touchStart(canvas, { touches: [{ clientX: 100, clientY: 100 }] });
     fireEvent.touchMove(canvas, { touches: [{ clientX: 150, clientY: 200 }] });
     fireEvent.touchEnd(canvas);
 
     expect(
-      screen.getByRole("button", { name: /reset line/i }),
+      await waitFor(() => screen.getByRole("button", { name: /reset line/i }), { timeout: 2000 }),
     ).toBeInTheDocument();
   }, 10000);
 

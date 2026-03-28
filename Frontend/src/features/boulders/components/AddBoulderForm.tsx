@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { convertHeicToJpg } from "../utils/convertHeicToJpg";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -40,9 +41,18 @@ const AddBoulderForm: React.FC = () => {
 
   const { getLocation, loading: geoLoading } = useGeolocation();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setErrorMessage(null);
     if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
+      let selectedFile = e.target.files[0];
+      try {
+        selectedFile = await convertHeicToJpg(selectedFile);
+      } catch (err) {
+        setErrorMessage(
+          "Kunde inte konvertera HEIC-bild. Försök med en annan bild.",
+        );
+        return;
+      }
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
     }
@@ -50,12 +60,14 @@ const AddBoulderForm: React.FC = () => {
 
   const handleGetCoordinates = async () => {
     setErrorMessage(null);
+    setSuccessMessage(null);
     try {
       const coords = await getLocation();
       setLat(coords.lat);
       setLng(coords.lng);
+      setSuccessMessage("Koordinater hämtade!");
     } catch (err) {
-      setErrorMessage(`Could not retrieve location: ${String(err)}`);
+      setErrorMessage("Kunde inte hämta plats: " + err);
     }
   };
 
@@ -65,22 +77,19 @@ const AddBoulderForm: React.FC = () => {
     setSuccessMessage(null);
 
     if (lat == null || lng === null) {
-      setErrorMessage("Please acquire coordinates before uploading.");
+      setErrorMessage("Hämta koordinater innan uppladdning!");
       return;
     }
 
     const formData = new FormData();
-
     formData.append("name", name);
     formData.append("location", location);
     formData.append("grade", grade);
     formData.append("description", description);
     formData.append("coordinates", JSON.stringify({ lat, lng }));
-
     if (file) {
       formData.append("image", file);
     }
-
     formData.append(
       "topoData",
       JSON.stringify({ linePoints: topoPoints, holds: [] }),
@@ -89,8 +98,8 @@ const AddBoulderForm: React.FC = () => {
     try {
       const response = await createBoulder(formData);
       if (response.status === 200 || response.status === 201) {
-        setSuccessMessage("Boulder uploaded successfully.");
-        navigate("/");
+        setSuccessMessage("Boulder uppladdad!");
+        setTimeout(() => navigate("/"), 1200);
       }
     } catch (error) {
       const message = getUploadErrorMessage(error);
@@ -124,11 +133,6 @@ const AddBoulderForm: React.FC = () => {
 
             <Box component="form" onSubmit={handleSubmit}>
               <Stack spacing={3}>
-                {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-                {successMessage && (
-                  <Alert severity="success">{successMessage}</Alert>
-                )}
-
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                   <TextField
                     id="name"
@@ -171,6 +175,16 @@ const AddBoulderForm: React.FC = () => {
                   fullWidth
                 />
 
+                {errorMessage && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {errorMessage}
+                  </Alert>
+                )}
+                {successMessage && (
+                  <Alert severity="success" sx={{ mb: 2 }}>
+                    {successMessage}
+                  </Alert>
+                )}
                 <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
                   <Stack spacing={1.5}>
                     <Stack direction="row" spacing={1} alignItems="center">
@@ -249,6 +263,15 @@ const AddBoulderForm: React.FC = () => {
                         Mark the movement line on the image to save the route
                         path.
                       </Typography>
+                      <img
+                        src={preview}
+                        alt="preview"
+                        style={{
+                          maxWidth: "100%",
+                          borderRadius: 8,
+                          marginBottom: 12,
+                        }}
+                      />
                       <TopoCanvas
                         imageSrc={preview}
                         onSavedPoints={(points) => setTopoPoints(points)}
