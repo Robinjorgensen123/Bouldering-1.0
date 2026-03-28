@@ -1,6 +1,4 @@
-import { compressImageFile } from "../utils/compressImageFile";
 import React, { useState } from "react";
-import { convertHeicToJpg } from "../utils/convertHeicToJpg";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -47,23 +45,10 @@ const AddBoulderForm: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       let selectedFile = e.target.files[0];
 
-      // 1. Convert HEIC to JPG if needed (iOS default format)
-      try {
-        selectedFile = await convertHeicToJpg(selectedFile);
-      } catch (err) {
-        setErrorMessage("Could not convert HEIC image: " + err);
-        return;
-      }
-
-      // 2. Compress the image to reduce file size before upload
-      try {
-        selectedFile = await compressImageFile(selectedFile, {
-          maxSizeMB: 2,
-          maxWidthOrHeight: 1600,
+      if (!(selectedFile instanceof File)) {
+        selectedFile = new File([selectedFile], "image.jpg", {
+          type: "image/jpeg",
         });
-      } catch (err) {
-        setErrorMessage("Could not compress image: " + err);
-        return;
       }
 
       setFile(selectedFile);
@@ -260,6 +245,7 @@ const AddBoulderForm: React.FC = () => {
                         id="image"
                         type="file"
                         accept="image/*"
+                        aria-label="select image"
                         onChange={handleFileChange}
                       />
                     </Box>
@@ -279,6 +265,7 @@ const AddBoulderForm: React.FC = () => {
                       <img
                         src={preview}
                         alt="preview"
+                        data-testid="preview-image"
                         style={{
                           maxWidth: "100%",
                           borderRadius: 8,

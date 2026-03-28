@@ -123,7 +123,11 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
               {boulder.imagesUrl && (
                 <Box
                   component="img"
-                  src={boulder.imagesUrl}
+                  src={
+                    boulder.imagesUrl && boulder.imagesUrl.includes("res.cloudinary.com")
+                      ? boulder.imagesUrl.replace("/upload/", "/upload/f_auto,q_auto/")
+                      : boulder.imagesUrl
+                  }
                   alt={boulder.name}
                   onClick={() => {
                     if (isMobile) {
@@ -285,7 +289,11 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
         >
           <Box
             component="img"
-            src={boulder?.imagesUrl}
+            src={
+              boulder?.imagesUrl && boulder?.imagesUrl.includes("res.cloudinary.com")
+                ? boulder.imagesUrl.replace("/upload/", "/upload/f_auto,q_auto/")
+                : boulder?.imagesUrl
+            }
             alt={boulder?.name}
             onClick={() => setIsImageFullscreen(false)}
             sx={{

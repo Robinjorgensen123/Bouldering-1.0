@@ -197,7 +197,12 @@ const HomePageContent: React.FC = () => {
               {group.boulders[0]?.imagesUrl ? (
                 <Box
                   component="img"
-                  src={getPreviewImageSrc(group.boulders[0].imagesUrl)}
+                  src={(() => {
+                    const url = getPreviewImageSrc(group.boulders[0].imagesUrl);
+                    return url && url.includes("res.cloudinary.com")
+                      ? url.replace("/upload/", "/upload/f_auto,q_auto/")
+                      : url;
+                  })()}
                   alt="Area preview"
                   sx={{ width: "100%", height: 170, objectFit: "cover" }}
                 />
