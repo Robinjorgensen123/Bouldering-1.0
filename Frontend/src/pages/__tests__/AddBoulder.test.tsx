@@ -1,10 +1,4 @@
-// Mocka HEIC-konvertering och komprimering så de returnerar filen direkt i tester
-vi.mock("../../features/boulders/utils/convertHeicToJpg", () => ({
-  convertHeicToJpg: vi.fn((file) => Promise.resolve(file)),
-}));
-vi.mock("../../features/boulders/utils/compressImageFile", () => ({
-  compressImageFile: vi.fn((file) => Promise.resolve(file)),
-}));
+// ...existing code...
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddBoulder from "../AddBoulder/AddBoulder";

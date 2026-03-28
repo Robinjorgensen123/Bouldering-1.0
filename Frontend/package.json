@@ -18,7 +18,6 @@
     "@mui/icons-material": "^7.3.9",
     "@mui/material": "^7.3.9",
     "axios": "^1.13.2",
-    "browser-image-compression": "^2.0.2",
     "heic2any": "^0.0.4",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",

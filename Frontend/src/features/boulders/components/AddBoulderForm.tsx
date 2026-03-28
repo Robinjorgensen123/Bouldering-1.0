@@ -1,6 +1,4 @@
-import { compressImageFile } from "../utils/compressImageFile";
 import React, { useState } from "react";
-import { convertHeicToJpg } from "../utils/convertHeicToJpg";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -47,31 +45,11 @@ const AddBoulderForm: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       let selectedFile = e.target.files[0];
 
-      // 1. Convert HEIC to JPG if needed (iOS default format)
-      try {
-        selectedFile = await convertHeicToJpg(selectedFile);
-      } catch (err) {
-        setErrorMessage("Could not convert HEIC image: " + err);
-        return;
-      }
-
-      // 2. Compress the image to reduce file size before upload
-      try {
-        selectedFile = await compressImageFile(selectedFile, {
-          maxSizeMB: 2,
-          maxWidthOrHeight: 1600,
-        });
-      } catch (err) {
-        setErrorMessage("Could not compress image: " + err);
-        return;
-      }
-
-      // Guard: säkerställ att det är ett File-objekt med name/type
       if (!(selectedFile instanceof File)) {
-        selectedFile = new File([selectedFile], "image.jpg", { type: "image/jpeg" });
+        selectedFile = new File([selectedFile], "image.jpg", {
+          type: "image/jpeg",
+        });
       }
-      // Logga för felsökning
-      console.log("Preview file:", selectedFile, selectedFile instanceof File, selectedFile.type, selectedFile.name);
 
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
