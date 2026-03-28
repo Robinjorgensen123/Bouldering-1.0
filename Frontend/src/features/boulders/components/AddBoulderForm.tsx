@@ -1,3 +1,4 @@
+import { compressImageFile } from "../utils/compressImageFile";
 import React, { useState } from "react";
 import { convertHeicToJpg } from "../utils/convertHeicToJpg";
 import { useNavigate } from "react-router-dom";
@@ -45,14 +46,26 @@ const AddBoulderForm: React.FC = () => {
     setErrorMessage(null);
     if (e.target.files && e.target.files[0]) {
       let selectedFile = e.target.files[0];
+
+      // 1. Convert HEIC to JPG if needed (iOS default format)
       try {
         selectedFile = await convertHeicToJpg(selectedFile);
       } catch (err) {
-        setErrorMessage(
-          "Kunde inte konvertera HEIC-bild. Försök med en annan bild.",
-        );
+        setErrorMessage("Could not convert HEIC image: " + err);
         return;
       }
+
+      // 2. Compress the image to reduce file size before upload
+      try {
+        selectedFile = await compressImageFile(selectedFile, {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 1600,
+        });
+      } catch (err) {
+        setErrorMessage("Could not compress image: " + err);
+        return;
+      }
+
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
     }
@@ -65,9 +78,9 @@ const AddBoulderForm: React.FC = () => {
       const coords = await getLocation();
       setLat(coords.lat);
       setLng(coords.lng);
-      setSuccessMessage("Koordinater hämtade!");
+      setSuccessMessage("Coordinates retrieved!");
     } catch (err) {
-      setErrorMessage("Kunde inte hämta plats: " + err);
+      setErrorMessage("Could not retrieve location: " + err);
     }
   };
 
@@ -77,7 +90,7 @@ const AddBoulderForm: React.FC = () => {
     setSuccessMessage(null);
 
     if (lat == null || lng === null) {
-      setErrorMessage("Hämta koordinater innan uppladdning!");
+      setErrorMessage("Retrieve coordinates before uploading!");
       return;
     }
 
@@ -98,7 +111,7 @@ const AddBoulderForm: React.FC = () => {
     try {
       const response = await createBoulder(formData);
       if (response.status === 200 || response.status === 201) {
-        setSuccessMessage("Boulder uppladdad!");
+        setSuccessMessage("Boulder uploaded!");
         setTimeout(() => navigate("/"), 1200);
       }
     } catch (error) {
