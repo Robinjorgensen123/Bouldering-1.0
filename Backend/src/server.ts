@@ -19,9 +19,18 @@ if (process.env.NODE_ENV !== "test") {
   connectDB();
 }
 
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL]
-  : ["http://localhost:5173", "https://boulderingapp.vercel.app"];
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://boulderingapp.vercel.app",
+];
+
+let allowedOrigins = defaultOrigins;
+if (process.env.FRONTEND_URL) {
+  allowedOrigins = [
+    ...process.env.FRONTEND_URL.split(","),
+    ...defaultOrigins,
+  ].filter((value, index, self) => self.indexOf(value) === index);
+}
 
 app.use(
   cors({
