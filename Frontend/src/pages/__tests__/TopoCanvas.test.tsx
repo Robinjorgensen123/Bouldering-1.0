@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import TopoCanvas from "../../features/boulders/components/TopoCanvas";
+import TopoCanvas from "../../features/topo/components/TopoCanvas";
 
 describe("TopoCanvas Unit Test", () => {
   const mockOnSavedPoints = vi.fn();
@@ -8,7 +8,7 @@ describe("TopoCanvas Unit Test", () => {
 
   it("should render the image and the canvas with correct aria-label", () => {
     render(
-      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />,
     );
 
     expect(screen.getByAltText(/preview/i)).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe("TopoCanvas Unit Test", () => {
 
   it("should start with no points and no reset button", () => {
     render(
-      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />,
     );
 
     const resetBtn = screen.queryByRole("button", {
@@ -28,7 +28,7 @@ describe("TopoCanvas Unit Test", () => {
 
   it("should call onSavePoints when user draws with touch events", () => {
     render(
-      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />,
     );
     const canvas = screen.getByLabelText("topo-canvas");
 
@@ -45,7 +45,7 @@ describe("TopoCanvas Unit Test", () => {
 
   it("should show the reset button after drawing and clear everything on click", () => {
     render(
-      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />
+      <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />,
     );
     const canvas = screen.getByLabelText("topo-canvas");
 

@@ -1,6 +1,6 @@
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { navItems } from "../navigation/navItems";
+import { navItems } from "../NavItems";
 
 const HIDDEN_PATHS = new Set(["/login", "/register", "/forgot-password"]);
 

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import BoulderMap from "../../features/boulders/components/BoulderMap";
+import BoulderMap from "../../features/map/components/BoulderMap";
 import type { IBoulder } from "../../features/boulders/types/boulder.types";
 import { BrowserRouter } from "react-router-dom";
 

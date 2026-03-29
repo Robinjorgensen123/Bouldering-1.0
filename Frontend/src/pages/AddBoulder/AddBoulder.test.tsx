@@ -1,4 +1,3 @@
-// ...existing code...
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AddBoulder from "../AddBoulder/AddBoulder";
