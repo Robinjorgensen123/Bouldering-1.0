@@ -36,3 +36,8 @@ export interface BoulderListResponse {
   success: boolean;
   data: IBoulder[];
 }
+
+export interface LocationGroup {
+  locationKey: string;
+  boulders: IBoulder[];
+}

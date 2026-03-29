@@ -5,7 +5,7 @@ import api from "../../services/api";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "../../features/auth/context/AuthContext";
 
-vi.mock("../../features/boulders/components/BoulderMap", () => ({
+vi.mock("../../features/map/components/BoulderMap", () => ({
   default: () => <div data-testid="mock-map">Map View Active</div>,
 }));
 
@@ -77,12 +77,12 @@ describe("Home Page", () => {
       expect(api.get).toHaveBeenCalledTimes(1);
     });
 
-    const mapBtn = screen.getByRole("button", { name: /map/i });
+    const mapBtn = screen.getByTestId("map-btn");
     fireEvent.click(mapBtn);
 
     expect(screen.getByTestId("mock-map")).toBeTruthy();
 
-    const areasBtn = screen.getByRole("button", { name: /areas/i });
+    const areasBtn = screen.getByTestId("areas-btn");
     fireEvent.click(areasBtn);
     expect(screen.queryByTestId("mock-map")).toBeNull();
   });

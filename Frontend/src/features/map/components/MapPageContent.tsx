@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BoulderMap from "./BoulderMap";
-import { fetchBoulders as fetchBoulderList } from "../services/boulderApi";
-import { type IBoulder } from "../types/boulder.types";
+import { fetchBoulders as fetchBoulderList } from "../../boulders/services/boulderApi";
+import { type IBoulder } from "../../boulders/types/boulder.types";
 import {
   Alert,
   Box,

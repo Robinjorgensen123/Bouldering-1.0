@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { fetchBoulders as fetchBoulderList } from "../services/boulderApi";
-import { type IBoulder } from "../types/boulder.types";
-import BoulderMap from "./BoulderMap";
+import type { IBoulder, LocationGroup } from "../types/boulder.types";
+import BoulderMap from "../../map/components/BoulderMap";
+import { getPreviewImageSrc } from "../utils/imageUtils";
 import BoulderDetailsPanel from "./BoulderDetailsPanel";
+import { groupBouldersByLocation } from "../utils/boulderHelpers";
 import {
   Alert,
   Box,
@@ -15,24 +17,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-
-interface LocationGroup {
-  locationKey: string;
-  boulders: IBoulder[];
-}
-
-const getPreviewImageSrc = (imagesUrl?: string) => {
-  if (!imagesUrl) return "";
-
-  if (/^https?:\/\//i.test(imagesUrl)) {
-    return imagesUrl;
-  }
-  const envBase = import.meta.env.VITE_API_BASE_URL;
-  const baseUrl = envBase
-    ? envBase.replace(/\/api$/, "")
-    : "http://localhost:5000";
-  return `${baseUrl}${imagesUrl}`;
-};
 
 const HomePageContent: React.FC = () => {
   const [allBoulders, setAllBoulders] = useState<IBoulder[]>([]);
@@ -59,20 +43,7 @@ const HomePageContent: React.FC = () => {
         if (Array.isArray(boulderData)) {
           setAllBoulders(boulderData);
 
-          const map: { [key: string]: IBoulder[] } = {};
-
-          boulderData.forEach((boulder) => {
-            const key = boulder.location || "Unknown Location";
-            if (!map[key]) {
-              map[key] = [];
-            }
-            map[key].push(boulder);
-          });
-
-          const groupedArray = Object.keys(map).map((key) => ({
-            locationKey: key,
-            boulders: map[key],
-          }));
+          const groupedArray = groupBouldersByLocation(boulderData);
 
           setGroups(groupedArray);
         }
@@ -142,6 +113,8 @@ const HomePageContent: React.FC = () => {
               <Button
                 variant={view === "grid" ? "contained" : "outlined"}
                 onClick={() => setView("grid")}
+                data-testid="areas-btn"
+                aria-label="Areas"
               >
                 Areas
               </Button>
@@ -149,6 +122,8 @@ const HomePageContent: React.FC = () => {
                 variant={view === "map" ? "contained" : "outlined"}
                 color={view === "map" ? "secondary" : "inherit"}
                 onClick={() => setView("map")}
+                data-testid="map-btn"
+                aria-label="Map"
               >
                 Map
               </Button>

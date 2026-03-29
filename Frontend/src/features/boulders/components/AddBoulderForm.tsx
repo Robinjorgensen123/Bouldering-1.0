@@ -21,7 +21,7 @@ import UploadRoundedIcon from "@mui/icons-material/UploadRounded";
 import { useGeolocation } from "../../../hooks/useGeolocation";
 import { type ILinePoint } from "../types/boulder.types";
 import { createBoulder, getUploadErrorMessage } from "../services/boulderApi";
-import TopoCanvas from "./TopoCanvas";
+import TopoCanvas from "../../topo/components/TopoCanvas";
 
 const AddBoulderForm: React.FC = () => {
   const navigate = useNavigate();

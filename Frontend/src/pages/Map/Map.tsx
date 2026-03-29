@@ -1,4 +1,4 @@
-import MapPageContent from "../../features/boulders/components/MapPageContent";
+import MapPageContent from "../../features/map/components/MapPageContent";
 
 const Map = () => <MapPageContent />;
 

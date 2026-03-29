@@ -19,7 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { navItems } from "../navigation/navItems";
+import { navItems } from "../Navbar/NavItems";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 
 const MOBILE_NAV_ENABLED = true;
