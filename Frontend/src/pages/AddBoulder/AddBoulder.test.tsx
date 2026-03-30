@@ -133,6 +133,7 @@ describe("AddBoulder test", () => {
 
     renderWithRouter();
 
+    // Fyll i textfält
     fireEvent.change(screen.getByLabelText(/name/i), {
       target: { value: "Midnight Lightning" },
     });
@@ -146,11 +147,13 @@ describe("AddBoulder test", () => {
       target: { value: "Yosemite" },
     });
 
+    // Välj bild
     const file = new File(["image"], "boulder.png", { type: "image/png" });
     fireEvent.change(screen.getByLabelText(/select image/i), {
       target: { files: [file] },
     });
 
+    // Hämta koordinater
     const getCoordsBtn = screen.getByRole("button", {
       name: /get coordinates/i,
     });
@@ -161,10 +164,27 @@ describe("AddBoulder test", () => {
       expect(screen.getByText(/11\.9746/)).toBeInTheDocument();
     });
 
+    const img = await screen.findByAltText(/preview/i);
+    Object.defineProperty(img, "naturalWidth", { value: 1000 });
+    Object.defineProperty(img, "naturalHeight", { value: 1000 });
+    Object.defineProperty(img, "clientWidth", { value: 1000 });
+    Object.defineProperty(img, "clientHeight", { value: 1000 });
+    Object.defineProperty(img, "width", { value: 1000 });
+    Object.defineProperty(img, "height", { value: 1000 });
+    fireEvent.load(img);
+
     const canvas = screen.getByLabelText("topo-canvas");
     fireEvent.touchStart(canvas, { touches: [{ clientX: 50, clientY: 50 }] });
+    fireEvent.touchMove(canvas, { touches: [{ clientX: 400, clientY: 400 }] });
     fireEvent.touchEnd(canvas);
 
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /reset line/i }),
+      ).toBeInTheDocument();
+    });
+
+    
     const submitBtn = screen.getByRole("button", { name: /upload/i });
     fireEvent.click(submitBtn);
 
@@ -182,8 +202,7 @@ describe("AddBoulder test", () => {
         expect(topoDataRaw).toBeDefined();
 
         const topoData = JSON.parse(topoDataRaw as string);
-
-        expect(topoData.linePoints.length).toBeGreaterThan(0);
+        expect(topoData.linePoints.length).toBeGreaterThan(0); // Nu kommer denna vara > 0!
       },
       { timeout: 4000 },
     );
