@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import BoulderDetailsPanel from "../BoulderDetailsPanel";
+import BoulderDetailsPanel from "../BoulderDetails/BoulderDetailsPanel";
 import api from "../../../../services/api";
 import { MemoryRouter } from "react-router-dom";
 
