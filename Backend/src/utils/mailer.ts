@@ -14,15 +14,21 @@ export const sendPasswordResetEmail = async (
   toEmail: string,
   resetUrl: string,
 ) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-    to: toEmail,
-    subject: "Password Reset",
-    html: `
-      <p>You requested a password reset.</p>
-      <p>Click the link below to set a new password. The link is valid for 30 minutes.</p>
-      <p><a href="${resetUrl}">${resetUrl}</a></p>
-      <p>If you did not request this, you can safely ignore this email.</p>
-    `,
-  });
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: toEmail,
+      subject: "Password Reset",
+      html: `
+        <p>You requested a password reset.</p>
+        <p>Click the link below to set a new password. The link is valid for 30 minutes.</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>If you did not request this, you can safely ignore this email.</p>
+      `,
+    });
+    console.log(`Password reset email sent to ${toEmail}`);
+  } catch (error) {
+    console.error("Failed to send password reset email:", error);
+    throw error;
+  }
 };

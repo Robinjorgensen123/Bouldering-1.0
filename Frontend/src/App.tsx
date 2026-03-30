@@ -1,6 +1,6 @@
 import AppRoutes from "./routes/AppRoutes";
 import Navbar from "./components/Navbar/Navbar";
-import MobileBottomNav from "./components/MobileBottomNav/MobileBottomNav";
+import MobileBottomNav from "./components/Navbar/MobileNavBar/MobileBottomNav";
 import { Box, Container } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
