@@ -1,2 +1,0 @@
-// Komprimeringsbibliotek för bilder i webbläsaren
-// https://www.npmjs.com/package/browser-image-compression

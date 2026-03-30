@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Chip, Paper, Stack } from "@mui/material";
 import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import { type ILinePoint } from "../../boulders/types/boulder.types";
