@@ -1,4 +1,4 @@
-import { toAbsolutePoints } from "../../topo/utils/topoLine";
+import { toAbsolutePoints } from "../../../topo/utils/topoLine";
 import {
   Drawer,
   Box,
@@ -6,6 +6,10 @@ import {
   Button,
   IconButton,
   TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
   CircularProgress,
   List,
   ListItem,
@@ -18,10 +22,9 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { useEffect, useState } from "react";
-import api from "../../../services/api";
-import { type IBoulder } from "../types/boulder.types";
-import { type HistoryItem } from "../../history/types/history.types";
+import { useState } from "react";
+import { type IBoulder } from "../../types/boulder.types";
+import { useBoulderDetails } from "../../hooks/useBoulderDetails";
 
 interface Props {
   boulder: IBoulder | null;
@@ -32,75 +35,16 @@ interface Props {
 const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [ascentType, setAscentType] = useState("");
-  const [attempts, setAttempts] = useState(1);
-  const [comment, setComment] = useState("");
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
   const [isImageFullscreen, setIsImageFullscreen] = useState(false);
-  const [feedback, setFeedback] = useState<{
-    open: boolean;
-    severity: "success" | "error";
-    message: string;
-  }>({
-    open: false,
-    severity: "success",
-    message: "",
-  });
 
-  const fetchHistory = async () => {
-    if (!boulder?._id) return;
-    setLoadingHistory(true);
-    try {
-      const response = await api.get(`/history/boulder/${boulder._id}`);
-      setHistory(response.data.data || []);
-    } catch (err) {
-      console.error("Error fetching history:", err);
-    } finally {
-      setLoadingHistory(false);
-    }
-  };
+  const { state, handlers } = useBoulderDetails(boulder?._id, isOpen);
 
-  useEffect(() => {
-    if (isOpen && boulder) {
-      fetchHistory();
-    }
-  }, [isOpen, boulder?._id]);
-
-  const handleLogSubmit = async () => {
-    try {
-      await api.post("/history", {
-        boulder: boulder?._id,
-        ascentType,
-        attempts,
-        comment,
-        completedAt: new Date().toISOString(),
-      });
-      setFeedback({
-        open: true,
-        severity: "success",
-        message: "Climb logged successfully!",
-      });
-      setComment("");
-      fetchHistory();
-    } catch (err) {
-      console.error("Error logging climb:", err);
-      setFeedback({
-        open: true,
-        severity: "error",
-        message: "Failed to log climb. Please try again.",
-      });
-    }
-  };
-
-  // --- Beräkna absoluta punkter för SVG ---
   let absPoints: { x: number; y: number }[] = [];
   if (
     boulder?.topoData?.linePoints &&
     Array.isArray(boulder.topoData.linePoints) &&
     boulder.topoData.linePoints.length > 1
   ) {
-    // Hämta bild-elementet för att få naturlig storlek
     const img =
       typeof window !== "undefined"
         ? (document.querySelector(
@@ -114,7 +58,6 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
         img.naturalHeight,
       );
     } else {
-      // fallback: använd "normaliserade" punkter i 1000x1000
       absPoints = boulder.topoData.linePoints.map((pt: any) => ({
         x: pt.x * 1000,
         y: pt.y * 1000,
@@ -151,14 +94,12 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                   sx={{
                     position: "relative",
                     width: "100%",
-                    maxHeight: 250,
                     marginBottom: 2.5,
                   }}
                 >
                   <Box
                     component="img"
                     src={
-                      boulder.imagesUrl &&
                       boulder.imagesUrl.includes("res.cloudinary.com")
                         ? boulder.imagesUrl.replace(
                             "/upload/",
@@ -167,11 +108,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                         : boulder.imagesUrl
                     }
                     alt={boulder.name}
-                    onClick={() => {
-                      if (isMobile) {
-                        setIsImageFullscreen(true);
-                      }
-                    }}
+                    onClick={() => isMobile && setIsImageFullscreen(true)}
                     sx={{
                       width: "100%",
                       height: "auto",
@@ -181,31 +118,22 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
                       cursor: isMobile ? "pointer" : "default",
                       transition: "opacity 0.2s ease",
-                      "&:hover": isMobile
-                        ? {
-                            opacity: 0.9,
-                          }
-                        : {},
+                      "&:hover": isMobile ? { opacity: 0.9 } : {},
                     }}
                   />
-                  {/* SVG-linje ovanpå bilden */}
                   {absPoints.length > 1 && (
                     <Box
                       sx={{
                         position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
+                        inset: 0,
                         pointerEvents: "none",
                       }}
                     >
                       <svg
                         width="100%"
                         height="100%"
-                        viewBox={`0 0 1000 1000`}
+                        viewBox="0 0 1000 1000"
                         preserveAspectRatio="none"
-                        style={{ position: "absolute", inset: 0 }}
                       >
                         <polyline
                           points={absPoints
@@ -222,6 +150,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                   )}
                 </Box>
               )}
+
               <Box
                 sx={{
                   display: "flex",
@@ -234,8 +163,8 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                   {boulder.name}
                 </Typography>
                 <IconButton
-                  aria-label="Close log climb panel"
                   onClick={onClose}
+                  aria-label="Close log climb panel"
                   sx={{
                     display: { xs: "inline-flex", sm: "none" },
                     mt: -0.5,
@@ -244,18 +173,48 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                 >
                   <CloseRoundedIcon />
                 </IconButton>
+              </Box>
+              <Typography color="textSecondary" gutterBottom>
+                {boulder.grade} - {boulder.location}
+              </Typography>
+
+              <Box
+                sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
+              >
+                <Typography variant="h6">Log Climb</Typography>
+
+                <FormControl fullWidth>
+                  <InputLabel>Ascent</InputLabel>
+                  <Select
+                    value={state.ascentType}
+                    label="Ascent"
+                    onChange={(e) => handlers.setAscentType(e.target.value)}
+                  >
+                    <MenuItem value="flash">Flash</MenuItem>
+                    <MenuItem value="onsight">Onsight</MenuItem>
+                    <MenuItem value="redpoint">Redpoint</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <TextField
+                  label="Attempts"
+                  type="number"
+                  value={state.attempts}
+                  onChange={(e) => handlers.setAttempts(Number(e.target.value))}
+                />
+
                 <TextField
                   label="Comment"
                   multiline
                   rows={2}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
+                  value={state.comment}
+                  onChange={(e) => handlers.setComment(e.target.value)}
                 />
 
                 <Button
                   variant="contained"
                   color="success"
-                  onClick={handleLogSubmit}
+                  onClick={handlers.handleLogSubmit}
                   sx={{ alignSelf: "flex-start", px: 3 }}
                 >
                   Save
@@ -268,14 +227,14 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                 Recent Activity
               </Typography>
 
-              {loadingHistory ? (
+              {state.loadingHistory ? (
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <CircularProgress size={24} />
                 </Box>
               ) : (
                 <List>
-                  {history.length > 0 ? (
-                    history.map((log) => (
+                  {state.history.length > 0 ? (
+                    state.history.map((log: any) => (
                       <ListItem key={log._id} sx={{ px: 0 }}>
                         <ListItemText
                           primary={`${log.user?.username || log.user?.email || "Climber"} - ${log.ascentType}`}
@@ -288,6 +247,7 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                               >
                                 {log.comment}
                               </Typography>
+                              <br />
                               <Typography component="span" variant="caption">
                                 {new Date(log.completedAt).toLocaleDateString()}
                               </Typography>
@@ -323,15 +283,13 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
             position: "relative",
             width: { xs: "100vw", sm: "90vw", md: "80vw" },
             height: { xs: "100vh", sm: "90vh" },
-            maxWidth: { xs: "100vw", sm: 1000 },
-            maxHeight: { xs: "100vh", sm: "90vh" },
+            maxWidth: 1000,
           }}
         >
           <Box
             component="img"
             src={
-              boulder?.imagesUrl &&
-              boulder?.imagesUrl.includes("res.cloudinary.com")
+              boulder?.imagesUrl?.includes("res.cloudinary.com")
                 ? boulder.imagesUrl.replace(
                     "/upload/",
                     "/upload/f_auto,q_auto/",
@@ -344,7 +302,6 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
               width: "100%",
               height: "100%",
               objectFit: "contain",
-              borderRadius: { xs: 0, sm: 2 },
               cursor: "pointer",
             }}
           />
@@ -352,18 +309,18 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
       </Modal>
 
       <Snackbar
-        open={feedback.open}
+        open={state.feedback.open}
         autoHideDuration={3000}
-        onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
+        onClose={handlers.closeFeedback}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          onClose={() => setFeedback((prev) => ({ ...prev, open: false }))}
-          severity={feedback.severity}
+          onClose={handlers.closeFeedback}
+          severity={state.feedback.severity}
           variant="filled"
           sx={{ width: "100%" }}
         >
-          {feedback.message}
+          {state.feedback.message}
         </Alert>
       </Snackbar>
     </>

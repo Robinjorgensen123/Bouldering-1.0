@@ -75,7 +75,7 @@ export function useTopoDrawing(onSavedPoints: (points: ILinePoint[]) => void) {
     if (!canvas || !ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (points.length < 2) return;
-    ctx.strokeStyle = "#39FF14";
+    ctx.strokeStyle = "#e53935";
     ctx.lineWidth = 4;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";

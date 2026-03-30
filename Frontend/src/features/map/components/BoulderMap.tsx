@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { useMapState } from "../hooks/useMapState";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 import { type IBoulder } from "../../boulders/types/boulder.types";
-import BoulderDetailsPanel from "../../boulders/components/BoulderDetailsPanel";
+import BoulderDetailsPanel from "../../boulders/components/BoulderDetails/BoulderDetailsPanel";
 import { BoulderMarkerIcon } from "./BoulderMarker";
 import { groupNearbyBoulders } from "../utils/mapUtils";
 import { FlyToBoulder, FlyToLocation } from "./MapControllers";

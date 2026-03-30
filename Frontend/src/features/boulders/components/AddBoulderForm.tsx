@@ -262,16 +262,7 @@ const AddBoulderForm: React.FC = () => {
                         Mark the movement line on the image to save the route
                         path.
                       </Typography>
-                      <img
-                        src={preview}
-                        alt="preview"
-                        data-testid="preview-image"
-                        style={{
-                          maxWidth: "100%",
-                          borderRadius: 8,
-                          marginBottom: 12,
-                        }}
-                      />
+                      {/* Endast TopoCanvas-bilden behövs, preview tas bort */}
                       <TopoCanvas
                         imageSrc={preview}
                         onSavedPoints={(points) => setTopoPoints(points)}

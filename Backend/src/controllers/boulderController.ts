@@ -20,6 +20,15 @@ export const createBoulder = async (req: AuthRequest, res: Response) => {
       imagesUrl,
       topoData,
     } = req.body;
+
+    // Parsa topoData om det är en sträng (från FormData)
+    if (typeof topoData === "string") {
+      try {
+        topoData = JSON.parse(topoData);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid topoData format", success: false });
+      }
+    }
     const userId = req.userId;
 
     const user = await User.findById(userId);
