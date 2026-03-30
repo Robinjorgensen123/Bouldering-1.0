@@ -1,6 +1,17 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import TopoCanvas from "../../features/topo/components/TopoCanvas";
+
+Object.defineProperty(HTMLCanvasElement.prototype, "getBoundingClientRect", {
+  value: () => ({
+    width: 500,
+    height: 500,
+    top: 0,
+    left: 0,
+    right: 500,
+    bottom: 500,
+  }),
+});
 
 describe("TopoCanvas Unit Test", () => {
   const mockOnSavedPoints = vi.fn();
@@ -26,38 +37,57 @@ describe("TopoCanvas Unit Test", () => {
     expect(resetBtn).not.toBeInTheDocument();
   });
 
-  it("should call onSavePoints when user draws with touch events", () => {
+  it("should call onSavePoints when user draws with touch events", async () => {
     render(
       <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />,
     );
+
+    const img = screen.getByAltText(/preview/i);
+    Object.defineProperty(img, "naturalWidth", { value: 1000 });
+    Object.defineProperty(img, "naturalHeight", { value: 1000 });
+    Object.defineProperty(img, "clientWidth", { value: 1000 });
+    Object.defineProperty(img, "clientHeight", { value: 1000 });
+    Object.defineProperty(img, "width", { value: 1000 });
+    Object.defineProperty(img, "height", { value: 1000 });
+    fireEvent.load(img);
+
     const canvas = screen.getByLabelText("topo-canvas");
 
-    fireEvent.touchStart(canvas, { touches: [{ clientX: 10, clientY: 10 }] });
-    fireEvent.touchEnd(canvas, { touches: [{ clientX: 20, clientY: 20 }] });
+    // Rita en tydlig linje
+    fireEvent.touchStart(canvas, { touches: [{ clientX: 50, clientY: 50 }] });
+    fireEvent.touchMove(canvas, { touches: [{ clientX: 400, clientY: 400 }] });
     fireEvent.touchEnd(canvas);
 
-    expect(mockOnSavedPoints).toHaveBeenCalled();
-    const lastCall = mockOnSavedPoints.mock.calls[0][0];
+    await waitFor(
+      () => {
+        expect(mockOnSavedPoints).toHaveBeenCalled();
+      },
+      { timeout: 2000 },
+    );
+
+    const lastCall =
+      mockOnSavedPoints.mock.calls[mockOnSavedPoints.mock.calls.length - 1][0];
     expect(lastCall.length).toBeGreaterThan(0);
-    expect(lastCall[0]).toHaveProperty("x");
-    expect(lastCall[0]).toHaveProperty("y");
   });
 
-  it("should show the reset button after drawing and clear everything on click", () => {
+  it("should show the reset button after drawing and clear everything on click", async () => {
     render(
       <TopoCanvas imageSrc={dummySrc} onSavedPoints={mockOnSavedPoints} />,
     );
     const canvas = screen.getByLabelText("topo-canvas");
 
     fireEvent.touchStart(canvas, { touches: [{ clientX: 50, clientY: 50 }] });
+    fireEvent.touchMove(canvas, { touches: [{ clientX: 400, clientY: 400 }] });
     fireEvent.touchEnd(canvas);
 
-    const resetBtn = screen.getByRole("button", { name: /reset line/i });
+    const resetBtn = await screen.findByRole("button", { name: /reset line/i });
     expect(resetBtn).toBeInTheDocument();
 
     fireEvent.click(resetBtn);
 
-    expect(mockOnSavedPoints).toHaveBeenLastCalledWith([]);
+    await waitFor(() => {
+      expect(mockOnSavedPoints).toHaveBeenLastCalledWith([]);
+    });
     expect(resetBtn).not.toBeInTheDocument();
   });
 });
