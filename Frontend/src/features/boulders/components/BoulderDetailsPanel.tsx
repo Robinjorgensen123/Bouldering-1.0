@@ -1,3 +1,4 @@
+import { toAbsolutePoints } from "../../topo/utils/topoLine";
 import {
   Drawer,
   Box,
@@ -5,10 +6,6 @@ import {
   Button,
   IconButton,
   TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   CircularProgress,
   List,
   ListItem,
@@ -96,6 +93,35 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
     }
   };
 
+  // --- Beräkna absoluta punkter för SVG ---
+  let absPoints: { x: number; y: number }[] = [];
+  if (
+    boulder?.topoData?.linePoints &&
+    Array.isArray(boulder.topoData.linePoints) &&
+    boulder.topoData.linePoints.length > 1
+  ) {
+    // Hämta bild-elementet för att få naturlig storlek
+    const img =
+      typeof window !== "undefined"
+        ? (document.querySelector(
+            '[alt="' + boulder.name + '"]',
+          ) as HTMLImageElement)
+        : null;
+    if (img && img.naturalWidth && img.naturalHeight) {
+      absPoints = toAbsolutePoints(
+        boulder.topoData.linePoints,
+        img.naturalWidth,
+        img.naturalHeight,
+      );
+    } else {
+      // fallback: använd "normaliserade" punkter i 1000x1000
+      absPoints = boulder.topoData.linePoints.map((pt: any) => ({
+        x: pt.x * 1000,
+        y: pt.y * 1000,
+      }));
+    }
+  }
+
   return (
     <>
       <Drawer
@@ -122,35 +148,79 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
             <>
               {boulder.imagesUrl && (
                 <Box
-                  component="img"
-                  src={
-                    boulder.imagesUrl && boulder.imagesUrl.includes("res.cloudinary.com")
-                      ? boulder.imagesUrl.replace("/upload/", "/upload/f_auto,q_auto/")
-                      : boulder.imagesUrl
-                  }
-                  alt={boulder.name}
-                  onClick={() => {
-                    if (isMobile) {
-                      setIsImageFullscreen(true);
-                    }
-                  }}
                   sx={{
+                    position: "relative",
                     width: "100%",
-                    height: "auto",
                     maxHeight: 250,
-                    objectFit: "cover",
-                    borderRadius: 2,
                     marginBottom: 2.5,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
-                    cursor: isMobile ? "pointer" : "default",
-                    transition: "opacity 0.2s ease",
-                    "&:hover": isMobile
-                      ? {
-                          opacity: 0.9,
-                        }
-                      : {},
                   }}
-                />
+                >
+                  <Box
+                    component="img"
+                    src={
+                      boulder.imagesUrl &&
+                      boulder.imagesUrl.includes("res.cloudinary.com")
+                        ? boulder.imagesUrl.replace(
+                            "/upload/",
+                            "/upload/f_auto,q_auto/",
+                          )
+                        : boulder.imagesUrl
+                    }
+                    alt={boulder.name}
+                    onClick={() => {
+                      if (isMobile) {
+                        setIsImageFullscreen(true);
+                      }
+                    }}
+                    sx={{
+                      width: "100%",
+                      height: "auto",
+                      maxHeight: 250,
+                      objectFit: "cover",
+                      borderRadius: 2,
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
+                      cursor: isMobile ? "pointer" : "default",
+                      transition: "opacity 0.2s ease",
+                      "&:hover": isMobile
+                        ? {
+                            opacity: 0.9,
+                          }
+                        : {},
+                    }}
+                  />
+                  {/* SVG-linje ovanpå bilden */}
+                  {absPoints.length > 1 && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      <svg
+                        width="100%"
+                        height="100%"
+                        viewBox={`0 0 1000 1000`}
+                        preserveAspectRatio="none"
+                        style={{ position: "absolute", inset: 0 }}
+                      >
+                        <polyline
+                          points={absPoints
+                            .map((pt) => `${pt.x},${pt.y}`)
+                            .join(" ")}
+                          fill="none"
+                          stroke="#e53935"
+                          strokeWidth="8"
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </Box>
+                  )}
+                </Box>
               )}
               <Box
                 sx={{
@@ -174,36 +244,6 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                 >
                   <CloseRoundedIcon />
                 </IconButton>
-              </Box>
-              <Typography color="textSecondary" gutterBottom>
-                {boulder.grade} - {boulder.location}
-              </Typography>
-
-              <Box
-                sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}
-              >
-                <Typography variant="h6">Log Climb</Typography>
-
-                <FormControl fullWidth>
-                  <InputLabel>Ascent</InputLabel>
-                  <Select
-                    value={ascentType}
-                    label="Ascent"
-                    onChange={(e) => setAscentType(e.target.value)}
-                  >
-                    <MenuItem value="flash">Flash</MenuItem>
-                    <MenuItem value="onsight">Onsight</MenuItem>
-                    <MenuItem value="redpoint">Redpoint</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  label="Attempts"
-                  type="number"
-                  value={attempts}
-                  onChange={(e) => setAttempts(Number(e.target.value))}
-                />
-
                 <TextField
                   label="Comment"
                   multiline
@@ -290,8 +330,12 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
           <Box
             component="img"
             src={
-              boulder?.imagesUrl && boulder?.imagesUrl.includes("res.cloudinary.com")
-                ? boulder.imagesUrl.replace("/upload/", "/upload/f_auto,q_auto/")
+              boulder?.imagesUrl &&
+              boulder?.imagesUrl.includes("res.cloudinary.com")
+                ? boulder.imagesUrl.replace(
+                    "/upload/",
+                    "/upload/f_auto,q_auto/",
+                  )
                 : boulder?.imagesUrl
             }
             alt={boulder?.name}

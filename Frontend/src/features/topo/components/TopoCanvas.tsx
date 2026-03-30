@@ -4,6 +4,7 @@ import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import { type ILinePoint } from "../../boulders/types/boulder.types";
 import { useTopoDrawing } from "../hooks/useTopoDrawing";
+import { toRelativePoints } from "../utils/topoLine";
 
 interface TopoCanvasProp {
   imageSrc: string;
@@ -21,9 +22,15 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
     handleUndo,
     handleReset,
     syncCanvasSizeToImage,
-  } = useTopoDrawing(onSavedPoints);
+  } = useTopoDrawing((pts) => {
+    const img = imageRef.current;
+    if (img && img.width && img.height) {
+      onSavedPoints(toRelativePoints(pts, img.width, img.height));
+    } else {
+      onSavedPoints([]);
+    }
+  });
 
-  // Lyssnar på fönsterändringar för att hålla canvas i sync med bilden
   useEffect(() => {
     syncCanvasSizeToImage();
 
@@ -41,14 +48,6 @@ const TopoCanvas: React.FC<TopoCanvasProp> = ({ imageSrc, onSavedPoints }) => {
         justifyContent="space-between"
         alignItems={{ xs: "flex-start", sm: "center" }}
       >
-        <Box>
-          <Typography variant="subtitle1" fontWeight={700}>
-            Topo Editor
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Draw directly on the wall image to mark the route path.
-          </Typography>
-        </Box>
         <Chip
           color={points.length > 0 ? "success" : "default"}
           label={
