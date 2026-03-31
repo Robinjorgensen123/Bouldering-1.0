@@ -55,7 +55,7 @@ export const useAddBoulder = () => {
     if (file) formData.append("image", file);
     formData.append(
       "topoData",
-      JSON.stringify({ linePoints: topoPoints, holds: [] }),
+      JSON.stringify({ linePoints: topoPoints }),
     );
 
     try {

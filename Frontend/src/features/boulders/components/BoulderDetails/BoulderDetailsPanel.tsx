@@ -45,24 +45,10 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
     Array.isArray(boulder.topoData.linePoints) &&
     boulder.topoData.linePoints.length > 1
   ) {
-    const img =
-      typeof window !== "undefined"
-        ? (document.querySelector(
-            '[alt="' + boulder.name + '"]',
-          ) as HTMLImageElement)
-        : null;
-    if (img && img.naturalWidth && img.naturalHeight) {
-      absPoints = toAbsolutePoints(
-        boulder.topoData.linePoints,
-        img.naturalWidth,
-        img.naturalHeight,
-      );
-    } else {
-      absPoints = boulder.topoData.linePoints.map((pt: any) => ({
-        x: pt.x * 1000,
-        y: pt.y * 1000,
-      }));
-    }
+    absPoints = boulder.topoData.linePoints.map((pt: any) => ({
+      x: pt.x * 1000,
+      y: pt.y * 1000,
+    }));
   }
 
   return (
