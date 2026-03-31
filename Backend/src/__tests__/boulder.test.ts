@@ -106,12 +106,6 @@ describe("Boulder API - Create", () => {
           { x: 10, y: 20 },
           { x: 30, y: 40 },
         ],
-        holds: [
-          { type: "start", position: { x: 10, y: 20 } },
-          { type: "finish", position: { x: 30, y: 40 } },
-          { type: "hand", position: { x: 12, y: 25 } },
-          { type: "foot", position: { x: 15, y: 30 } },
-        ],
       },
     };
 
@@ -122,7 +116,7 @@ describe("Boulder API - Create", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.data.coordinates.lat).toBe(59.3293);
-    expect(response.body.data.topoData.holds[0].type).toBe("start");
+    expect(response.body.data.topoData.linePoints).toHaveLength(2);
 
     const boulderInDb = await Boulder.findOne({ name: "The Highball" });
     expect(boulderInDb?.topoData?.linePoints).toHaveLength(2);

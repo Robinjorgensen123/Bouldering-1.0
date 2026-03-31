@@ -23,19 +23,6 @@ const BoulderSchema: Schema = new Schema(
           y: { type: Number },
         },
       ],
-      holds: [
-        {
-          type: {
-            type: String,
-            enum: ["start", "finish", "hand", "foot"],
-            required: true,
-          },
-          position: {
-            x: { type: Number, required: true },
-            y: { type: Number, required: true },
-          },
-        },
-      ],
     },
 
     author: {

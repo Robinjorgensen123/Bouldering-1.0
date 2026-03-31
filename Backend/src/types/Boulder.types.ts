@@ -3,19 +3,9 @@ export interface ICoordinates {
   lng: number;
 }
 
-export interface IHold {
-  type: "start" | "finish" | "hand" | "foot";
-  position: { x: number; y: number };
-}
-
 export interface ILinePoint {
   x: number;
   y: number;
-}
-
-export interface ITopoData {
-  linePoints: ILinePoint[];
-  holds: IHold[];
 }
 
 export interface IBoulder {
@@ -23,10 +13,12 @@ export interface IBoulder {
   name: string;
   grade: string;
   description?: string;
-  location: string; // name of location/block of boulders (Group boulders in the same location)
-  coordinates: ICoordinates; // Coordinates to the specifik boulder location
+  location: string;
+  coordinates: ICoordinates;
   imagesUrl?: string;
-  topoData?: ITopoData;
+  topoData?: {
+    linePoints: ILinePoint[];
+  };
   author: string;
   createdAt?: Date;
   updatedAt?: Date;
