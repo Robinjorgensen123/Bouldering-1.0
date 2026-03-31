@@ -161,7 +161,6 @@ describe("Boulder API - Get All", () => {
 
     expect(response.status).toBe(200);
 
-    // Verifiera att graden konverterats i svaret
     const found = response.body.data.find(
       (b: any) => b.name === "GET Test Boulder",
     );
