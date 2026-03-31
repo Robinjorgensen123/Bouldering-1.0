@@ -151,7 +151,7 @@ describe("Boulder API - Get All", () => {
       location: "Hönö",
       coordinates: { lat: 58.0, lng: 15.0 },
       author: currentUserId,
-      topoData: { linePoints: [], holds: [] },
+      topoData: { linePoints: [] },
     });
     await testBoulder.save();
 
