@@ -19,7 +19,7 @@ import type {
 } from "../../features/boulders/types/boulder.types";
 
 const HomePage: React.FC = () => {
-  const { allBoulders, groups, error } = useBoulders();
+  const { allBoulders, groups, error, refresh } = useBoulders();
   const [view, setView] = useState<"grid" | "map">("grid");
   const [selectedGroup, setSelectedGroup] = useState<LocationGroup | null>(
     null,
@@ -95,7 +95,10 @@ const HomePage: React.FC = () => {
       )}
 
       {view === "map" ? (
-        <BoulderMap boulders={allBoulders} />
+        <BoulderMap boulders={allBoulders} onDeleted={() => {
+          setSelectedBoulder(null);
+          refresh();
+        }} />
       ) : (
         <Box
           sx={{
@@ -165,6 +168,10 @@ const HomePage: React.FC = () => {
         boulder={selectedBoulder}
         isOpen={isDetailsPanelOpen}
         onClose={() => setIsDetailsPanelOpen(false)}
+        onDeleted={() => {
+          setSelectedBoulder(null);
+          refresh();
+        }}
       />
     </Box>
   );

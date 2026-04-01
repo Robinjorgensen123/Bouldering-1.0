@@ -25,19 +25,23 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useState } from "react";
 import { type IBoulder } from "../../types/boulder.types";
 import { useBoulderDetails } from "../../hooks/useBoulderDetails";
+import { useAuth } from "../../../auth/hooks/useAuth";
 
 interface Props {
   boulder: IBoulder | null;
   isOpen: boolean;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
-const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
+const BoulderDetailsPanel = ({ boulder, isOpen, onClose, onDeleted }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isImageFullscreen, setIsImageFullscreen] = useState(false);
 
   const { state, handlers } = useBoulderDetails(boulder?._id, isOpen);
+  const { user } = useAuth();
+  const isAuthor = !!(user && boulder?.author && user._id === boulder.author);
 
   let absPoints: { x: number; y: number }[] = [];
   if (
@@ -197,14 +201,32 @@ const BoulderDetailsPanel = ({ boulder, isOpen, onClose }: Props) => {
                   onChange={(e) => handlers.setComment(e.target.value)}
                 />
 
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={handlers.handleLogSubmit}
-                  sx={{ alignSelf: "flex-start", px: 3 }}
-                >
-                  Save
-                </Button>
+                <Box sx={{ display: "flex", gap: 1.5 }}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={handlers.handleLogSubmit}
+                    sx={{ px: 3 }}
+                  >
+                    Save
+                  </Button>
+                  {isAuthor && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={async () => {
+                        const ok = await handlers.handleDelete();
+                        if (ok) {
+                          onClose();
+                          onDeleted?.();
+                        }
+                      }}
+                      sx={{ px: 3 }}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </Box>
               </Box>
 
               <Divider sx={{ my: 4 }} />

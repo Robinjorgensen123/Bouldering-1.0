@@ -14,6 +14,7 @@ interface Props {
   isFullScreen?: boolean;
   focusBoulder?: IBoulder | null;
   focusLocation?: [number, number] | null;
+  onDeleted?: () => void;
 }
 
 const BoulderMap = ({
@@ -21,6 +22,7 @@ const BoulderMap = ({
   isFullScreen = false,
   focusBoulder = null,
   focusLocation = null,
+  onDeleted,
 }: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -175,6 +177,7 @@ const BoulderMap = ({
         boulder={selectedBoulder}
         isOpen={isDetailsPanelOpen}
         onClose={handleCloseDetailsPanel}
+        onDeleted={onDeleted}
       />
     </Box>
   );

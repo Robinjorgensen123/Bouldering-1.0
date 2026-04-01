@@ -26,8 +26,7 @@ const MapPageContent = () => {
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBoulders = async () => {
+  const fetchBoulders = async () => {
       try {
         setError(null);
         const response = await fetchBoulderList();
@@ -42,6 +41,7 @@ const MapPageContent = () => {
       }
     };
 
+  useEffect(() => {
     fetchBoulders();
   }, [user?.gradingSystem]);
 
@@ -166,6 +166,7 @@ const MapPageContent = () => {
         boulders={boulders}
         isFullScreen={true}
         focusLocation={focusLocation}
+        onDeleted={fetchBoulders}
       />
     </Box>
   );

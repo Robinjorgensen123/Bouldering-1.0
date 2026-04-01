@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { fetchBoulders as fetchBoulderList } from "../services/boulderApi";
 import { groupBouldersByLocation } from "../utils/boulderHelpers";
@@ -11,25 +11,26 @@ export const useBoulders = () => {
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
-  useEffect(() => {
-    const loadBoulders = async () => {
-      if (!token) return;
-      try {
-        setLoading(true);
-        const response = await fetchBoulderList();
-        const data = response.data;
-        if (Array.isArray(data)) {
-          setAllBoulders(data);
-          setGroups(groupBouldersByLocation(data));
-        }
-      } catch (err) {
-        setError("Could not load boulders.");
-      } finally {
-        setLoading(false);
+  const loadBoulders = useCallback(async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const response = await fetchBoulderList();
+      const data = response.data;
+      if (Array.isArray(data)) {
+        setAllBoulders(data);
+        setGroups(groupBouldersByLocation(data));
       }
-    };
-    loadBoulders();
+    } catch (err) {
+      setError("Could not load boulders.");
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
 
-  return { allBoulders, groups, loading, error };
+  useEffect(() => {
+    loadBoulders();
+  }, [loadBoulders]);
+
+  return { allBoulders, groups, loading, error, refresh: loadBoulders };
 };
