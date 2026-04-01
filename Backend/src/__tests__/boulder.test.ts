@@ -231,6 +231,7 @@ describe("Boulder API - Update", () => {
       .send({
         name: "Updated Name",
         grade: "6B",
+        location: "Kjugekull",
         coordinates: { lat: 57.0, lng: 12.0 },
       });
 
@@ -245,6 +246,7 @@ describe("Boulder API - Update", () => {
       .send({
         name: "INVALID Grade Update",
         grade: "INVALID",
+        location: "Kjugekull",
         coordinates: { lat: 57.0, lng: 12.0 },
       });
 

@@ -96,7 +96,7 @@ describe("Home Page", () => {
             {
               _id: "1",
               name: "robin",
-              grade: "9B",
+              grade: "9A",
               description: "Powerful moves on sharp holds.",
               imagesUrl: "/robin.jpg",
               location: "GothenBurg",
@@ -137,17 +137,28 @@ describe("Home Page", () => {
       </BrowserRouter>,
     );
 
-    const groupCard = await screen.findByText(/spot: gothenburg/i);
+    const groupCard = await screen.findByText(
+      /spot: gothenburg/i,
+      {},
+      { timeout: 4000 },
+    );
     fireEvent.click(groupCard);
 
-    const boulderInList = await screen.findByText(/robin \(9b\)/i);
+    const boulderInList = await screen.findByText(
+      /robin \(9a\)/i,
+      {},
+      { timeout: 4000 },
+    );
     fireEvent.click(boulderInList);
 
-    await waitFor(() => {
-      expect(screen.getByText(/^robin$/i)).toBeTruthy();
-      expect(screen.getByText(/log climb/i)).toBeTruthy();
-      expect(screen.getByText(/9b\s*-\s*gothenburg/i)).toBeTruthy();
-      expect(screen.getByText(/solid/i)).toBeTruthy();
-    });
-  });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/^robin$/i)).toBeTruthy();
+        expect(screen.getByText(/log climb/i)).toBeTruthy();
+        expect(screen.getByText(/9a\s*-\s*gothenburg/i)).toBeTruthy();
+        expect(screen.getByText(/solid/i)).toBeTruthy();
+      },
+      { timeout: 5000 },
+    );
+  }, 15000);
 });

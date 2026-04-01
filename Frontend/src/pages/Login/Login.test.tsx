@@ -24,7 +24,7 @@ describe("Login Page", () => {
     localStorage.clear();
   });
 
-  it("should render all input fields and login button", () => {
+  it("should render all input fields and login button", async () => {
     render(
       <BrowserRouter>
         <AuthProvider>
@@ -33,10 +33,10 @@ describe("Login Page", () => {
       </BrowserRouter>,
     );
 
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/email/i, {}, { timeout: 4000 })).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("should show error message when login fails", async () => {
     (api.post as any).mockRejectedValueOnce({

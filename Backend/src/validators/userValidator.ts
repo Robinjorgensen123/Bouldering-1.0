@@ -23,3 +23,7 @@ export const changePasswordSchema = Joi.object({
   currentPassword: Joi.string().required(),
   newPassword: Joi.string().min(6).required(),
 });
+
+export const settingsSchema = Joi.object({
+  gradingSystem: Joi.string().valid("font", "v-scale").required(),
+});
