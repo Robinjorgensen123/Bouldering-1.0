@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import BoulderMap from "../../features/map/components/BoulderMap";
 import type { IBoulder } from "../../features/boulders/types/boulder.types";
 import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "../../features/auth/context/AuthContext";
 
 const mockBoulders: IBoulder[] = [
   {
@@ -33,7 +34,9 @@ describe("BoulderMap Component", () => {
   it("should render the map container with leaflet classes", () => {
     render(
       <BrowserRouter>
-        <BoulderMap boulders={mockBoulders} />
+        <AuthProvider>
+          <BoulderMap boulders={mockBoulders} />
+        </AuthProvider>
       </BrowserRouter>,
     );
 
@@ -44,7 +47,9 @@ describe("BoulderMap Component", () => {
   it("should render the correct number of markers", () => {
     const { container } = render(
       <BrowserRouter>
-        <BoulderMap boulders={mockBoulders} />
+        <AuthProvider>
+          <BoulderMap boulders={mockBoulders} />
+        </AuthProvider>
       </BrowserRouter>,
     );
 
@@ -70,7 +75,9 @@ describe("BoulderMap Component", () => {
 
     const { container } = render(
       <BrowserRouter>
-        <BoulderMap boulders={groupedBoulders} />
+        <AuthProvider>
+          <BoulderMap boulders={groupedBoulders} />
+        </AuthProvider>
       </BrowserRouter>,
     );
 
@@ -81,7 +88,9 @@ describe("BoulderMap Component", () => {
   it("should have the correct wrapper class for styling", () => {
     render(
       <BrowserRouter>
-        <BoulderMap boulders={mockBoulders} />
+        <AuthProvider>
+          <BoulderMap boulders={mockBoulders} />
+        </AuthProvider>
       </BrowserRouter>,
     );
 

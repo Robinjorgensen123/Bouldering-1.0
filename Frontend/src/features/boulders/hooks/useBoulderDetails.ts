@@ -66,6 +66,27 @@ export const useBoulderDetails = (
     }
   };
 
+  const handleDelete = async () => {
+    if (!boulderId) return;
+    try {
+      await api.delete(`/boulders/${boulderId}`);
+      setFeedback({
+        open: true,
+        severity: "success",
+        message: "Boulder deleted successfully!",
+      });
+      return true;
+    } catch (err) {
+      console.error("Error deleting boulder:", err);
+      setFeedback({
+        open: true,
+        severity: "error",
+        message: "Failed to delete boulder.",
+      });
+      return false;
+    }
+  };
+
   const closeFeedback = () => setFeedback((prev) => ({ ...prev, open: false }));
 
   return {
@@ -82,6 +103,7 @@ export const useBoulderDetails = (
       setAttempts,
       setComment,
       handleLogSubmit,
+      handleDelete,
       closeFeedback,
     },
   };

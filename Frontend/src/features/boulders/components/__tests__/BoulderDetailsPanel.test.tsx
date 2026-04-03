@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import BoulderDetailsPanel from "../BoulderDetails/BoulderDetailsPanel";
 import api from "../../../../services/api";
 import { MemoryRouter } from "react-router-dom";
+import { AuthProvider } from "../../../auth/context/AuthContext";
 
 vi.mock("../../../../services/api", () => ({
   default: {
@@ -43,11 +44,13 @@ describe("BoulderDetailsPanel", () => {
   it("should render and submit log", async () => {
     render(
       <MemoryRouter>
-        <BoulderDetailsPanel
-          boulder={mockBoulder as any}
-          isOpen={true}
-          onClose={vi.fn()}
-        />
+        <AuthProvider>
+          <BoulderDetailsPanel
+            boulder={mockBoulder as any}
+            isOpen={true}
+            onClose={vi.fn()}
+          />
+        </AuthProvider>
       </MemoryRouter>,
     );
 
@@ -89,11 +92,13 @@ describe("BoulderDetailsPanel", () => {
 
     render(
       <MemoryRouter>
-        <BoulderDetailsPanel
-          boulder={mockBoulder as any}
-          isOpen={true}
-          onClose={handleClose}
-        />
+        <AuthProvider>
+          <BoulderDetailsPanel
+            boulder={mockBoulder as any}
+            isOpen={true}
+            onClose={handleClose}
+          />
+        </AuthProvider>
       </MemoryRouter>,
     );
 
@@ -114,11 +119,13 @@ describe("BoulderDetailsPanel", () => {
 
     render(
       <MemoryRouter>
-        <BoulderDetailsPanel
-          boulder={boulderWithImage as any}
-          isOpen={true}
-          onClose={vi.fn()}
-        />
+        <AuthProvider>
+          <BoulderDetailsPanel
+            boulder={boulderWithImage as any}
+            isOpen={true}
+            onClose={vi.fn()}
+          />
+        </AuthProvider>
       </MemoryRouter>,
     );
 
@@ -133,11 +140,13 @@ describe("BoulderDetailsPanel", () => {
   it("should not display image when imagesUrl is not provided", () => {
     render(
       <MemoryRouter>
-        <BoulderDetailsPanel
-          boulder={mockBoulder as any}
-          isOpen={true}
-          onClose={vi.fn()}
-        />
+        <AuthProvider>
+          <BoulderDetailsPanel
+            boulder={mockBoulder as any}
+            isOpen={true}
+            onClose={vi.fn()}
+          />
+        </AuthProvider>
       </MemoryRouter>,
     );
 
@@ -153,11 +162,13 @@ describe("BoulderDetailsPanel", () => {
 
     render(
       <MemoryRouter>
-        <BoulderDetailsPanel
-          boulder={boulderWithImage as any}
-          isOpen={true}
-          onClose={vi.fn()}
-        />
+        <AuthProvider>
+          <BoulderDetailsPanel
+            boulder={boulderWithImage as any}
+            isOpen={true}
+            onClose={vi.fn()}
+          />
+        </AuthProvider>
       </MemoryRouter>,
     );
 
@@ -178,11 +189,13 @@ describe("BoulderDetailsPanel", () => {
 
     render(
       <MemoryRouter>
-        <BoulderDetailsPanel
-          boulder={boulderWithImage as any}
-          isOpen={true}
-          onClose={vi.fn()}
-        />
+        <AuthProvider>
+          <BoulderDetailsPanel
+            boulder={boulderWithImage as any}
+            isOpen={true}
+            onClose={vi.fn()}
+          />
+        </AuthProvider>
       </MemoryRouter>,
     );
 
