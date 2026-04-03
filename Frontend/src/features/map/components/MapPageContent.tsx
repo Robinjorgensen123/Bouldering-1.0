@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import BoulderMap from "./BoulderMap";
 import { fetchBoulders as fetchBoulderList } from "../../boulders/services/boulderApi";
 import { type IBoulder } from "../../boulders/types/boulder.types";
@@ -26,24 +26,24 @@ const MapPageContent = () => {
   const [isInfoOpen, setIsInfoOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchBoulders = async () => {
-      try {
-        setError(null);
-        const response = await fetchBoulderList();
-        if (response.success) {
-          setBoulders(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching boulders for map", error);
-        setError("Could not load boulders right now. Please try again.");
-      } finally {
-        setLoading(false);
+  const fetchBoulders = useCallback(async () => {
+    try {
+      setError(null);
+      const response = await fetchBoulderList();
+      if (response.success) {
+        setBoulders(response.data);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching boulders for map", error);
+      setError("Could not load boulders right now. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchBoulders();
-  }, [user?.gradingSystem]);
+  }, [fetchBoulders, user?.gradingSystem]);
 
   if (loading) {
     return (
