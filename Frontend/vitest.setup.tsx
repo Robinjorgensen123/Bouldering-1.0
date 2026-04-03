@@ -1,8 +1,3 @@
-// Mocka heic2any globalt för tester
-vi.mock('heic2any', () => ({
-  __esModule: true,
-  default: async () => new Blob(["dummy"], { type: "image/jpeg" })
-}));
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 

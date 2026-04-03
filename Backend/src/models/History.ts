@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { type IHistory } from "../types/History.types.js";
 
 const HistorySchema: Schema<IHistory> = new mongoose.Schema(

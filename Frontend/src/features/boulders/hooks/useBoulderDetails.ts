@@ -47,7 +47,6 @@ export const useBoulderDetails = (
         ascentType,
         attempts,
         comment,
-        completedAt: new Date().toISOString(),
       });
       setFeedback({
         open: true,
