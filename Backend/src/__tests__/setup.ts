@@ -2,6 +2,8 @@ import { beforeAll, afterAll, afterEach } from "vitest";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
+process.env.JWT_SECRET ??= "test-secret";
+
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
