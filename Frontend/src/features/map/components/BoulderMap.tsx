@@ -45,8 +45,6 @@ const BoulderMap = ({
   const borderRadius = isFullScreen ? "0" : "10px";
   const markerClusters = groupNearbyBoulders(boulders);
 
-  // Hanteras nu av useMapState
-
   return (
     <Box
       className="boulder-map-wrapper"
