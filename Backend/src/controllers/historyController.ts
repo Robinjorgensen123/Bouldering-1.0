@@ -61,7 +61,6 @@ export const getHistoryByBoulder = async (req: AuthRequest, res: Response) => {
     const history = await History.find({
       boulder: new mongoose.Types.ObjectId(id),
     })
-      .populate("user", "email")
       .sort({ completedAt: -1 });
 
     return res.status(200).json({

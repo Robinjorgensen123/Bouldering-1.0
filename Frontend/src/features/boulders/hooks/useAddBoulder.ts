@@ -25,6 +25,7 @@ export const useAddBoulder = () => {
     if (e.target.files?.[0]) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
+      if (preview) URL.revokeObjectURL(preview);
       setPreview(URL.createObjectURL(selectedFile));
     }
   };

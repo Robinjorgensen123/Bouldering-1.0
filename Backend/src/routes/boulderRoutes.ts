@@ -28,6 +28,7 @@ router.put(
   protect,
   validateId,
   upload.single("image"),
+  parseFormData,
   validate(boulderSchema),
   updateBoulder
 );

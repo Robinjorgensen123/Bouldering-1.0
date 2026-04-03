@@ -149,8 +149,8 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     user.password = password;
-    delete user.passwordResetToken;
-    delete user.passwordResetExpires;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
     await user.save();
 
     return res.status(200).json({

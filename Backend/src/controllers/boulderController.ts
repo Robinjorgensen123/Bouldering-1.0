@@ -160,31 +160,36 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const updateFields: any = { ...req.body };
+    const { name, grade, description, location, coordinates, topoData } = req.body;
+    const updateFields: Record<string, unknown> = {};
+
+    if (name !== undefined) updateFields.name = name;
+    if (description !== undefined) updateFields.description = description;
+    if (location !== undefined) updateFields.location = location;
 
     if (req.file) {
       updateFields.imagesUrl = req.file.path;
     }
 
-    if (req.body.coordinates) {
+    if (coordinates) {
       updateFields.coordinates =
-        typeof req.body.coordinates === "string"
-          ? JSON.parse(req.body.coordinates)
-          : req.body.coordinates;
+        typeof coordinates === "string"
+          ? JSON.parse(coordinates)
+          : coordinates;
     }
 
-    if (req.body.location) {
-      updateFields.location = req.body.location;
+    if (topoData !== undefined) {
+      updateFields.topoData = topoData;
     }
 
-    if (req.body.grade) {
+    if (grade) {
       const user = await User.findById(userId);
       const gradingSystem =
         user?.gradingSystem?.toLowerCase() === "v-scale"
           ? "v-scale"
           : "font";
 
-      if (!isValidGradeForSystem(req.body.grade, gradingSystem)) {
+      if (!isValidGradeForSystem(grade, gradingSystem)) {
         const expectedFormat =
           gradingSystem === "v-scale"
             ? "Expected V-scale (e.g. V0-V17)."
@@ -192,14 +197,14 @@ export const updateBoulder = async (req: AuthRequest, res: Response) => {
 
         return res.status(400).json({
           success: false,
-          message: `Invalid grade \"${req.body.grade}\" for ${gradingSystem}. ${expectedFormat}`,
+          message: `Invalid grade \"${grade}\" for ${gradingSystem}. ${expectedFormat}`,
         });
       }
 
       if (gradingSystem === "v-scale") {
-        updateFields.grade = convertToFont(req.body.grade.toUpperCase());
+        updateFields.grade = convertToFont(grade.toUpperCase());
       } else {
-        updateFields.grade = req.body.grade.toUpperCase();
+        updateFields.grade = grade.toUpperCase();
       }
     }
 

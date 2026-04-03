@@ -10,5 +10,5 @@ export const boulderSchema = Joi.object({
     lng: Joi.number().required(),
   }).required(),
   imagesUrl: Joi.string().allow("", null).optional(),
-  topoData: Joi.object().optional().unknown(true),
-}).unknown(true);
+  topoData: Joi.object().optional(),
+});
