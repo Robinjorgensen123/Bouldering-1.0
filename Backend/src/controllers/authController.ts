@@ -25,11 +25,9 @@ export const login = async (req: Request, res: Response) => {
         success: false,
       });
     }
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET || "fallback_secret",
-      { expiresIn: "24h" },
-    );
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, {
+      expiresIn: "24h",
+    });
 
     const responseData: AuthResponse = {
       token,
@@ -55,6 +53,14 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = String(email).trim().toLowerCase();
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Email already in use",
+        success: false,
+      });
+    }
 
     const newuser = new User({ email: normalizedEmail, password });
     await newuser.save();

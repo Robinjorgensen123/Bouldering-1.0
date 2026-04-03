@@ -8,7 +8,7 @@ export interface AuthRequest extends Request {
 export const protect = async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   let token: string | undefined;
   if (
@@ -19,7 +19,7 @@ export const protect = async (
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(
         token!,
-        process.env.JWT_SECRET || "fallback_secret"
+        process.env.JWT_SECRET!,
       ) as unknown as { userId: string };
       req.userId = decoded.userId;
       return next();
