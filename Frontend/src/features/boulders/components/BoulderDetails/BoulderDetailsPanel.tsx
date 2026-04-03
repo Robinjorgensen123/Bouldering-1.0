@@ -1,4 +1,3 @@
-import { toAbsolutePoints } from "../../../topo/utils/topoLine";
 import {
   Drawer,
   Box,
@@ -34,7 +33,12 @@ interface Props {
   onDeleted?: () => void;
 }
 
-const BoulderDetailsPanel = ({ boulder, isOpen, onClose, onDeleted }: Props) => {
+const BoulderDetailsPanel = ({
+  boulder,
+  isOpen,
+  onClose,
+  onDeleted,
+}: Props) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isImageFullscreen, setIsImageFullscreen] = useState(false);
