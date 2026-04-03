@@ -1,4 +1,4 @@
-import express from "express";
+import { Router } from "express";
 import {
   createHistoryRecord,
   getUserHistory,
@@ -9,7 +9,7 @@ import { validate } from "../middleware/validate.js";
 import { historySchema } from "../validators/historyValidator.js";
 import { validateId } from "../middleware/validateId.js";
 
-const router = express.Router();
+const router = Router();
 
 router.post("/", protect, validate(historySchema), createHistoryRecord);
 router.get("/", protect, getUserHistory);

@@ -46,10 +46,10 @@ export const createHistoryRecord = async (req: AuthRequest, res: Response) => {
       message: "History record created successfully",
       data: newRecord,
     });
-  } catch (error: any) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Error creating history record",
+      message: "Server error",
     });
   }
 };
@@ -57,13 +57,6 @@ export const createHistoryRecord = async (req: AuthRequest, res: Response) => {
 export const getHistoryByBoulder = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid boulder id",
-      });
-    }
 
     const history = await History.find({
       boulder: new mongoose.Types.ObjectId(id),
@@ -75,10 +68,10 @@ export const getHistoryByBoulder = async (req: AuthRequest, res: Response) => {
       success: true,
       data: history,
     });
-  } catch (error: any) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Error fetching history for boulder",
+      message: "Server error",
     });
   }
 };
@@ -120,10 +113,10 @@ export const getUserHistory = async (req: AuthRequest, res: Response) => {
       success: true,
       data: formattedHistory,
     });
-  } catch (error: any) {
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Error fetching history",
+      message: "Server error",
     });
   }
 };

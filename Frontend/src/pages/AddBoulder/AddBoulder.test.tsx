@@ -90,9 +90,6 @@ describe("AddBoulder test", () => {
         timeout: 4000,
       });
     } catch (e) {
-      // Logga DOM för felsökning
-      // eslint-disable-next-line no-console
-      console.log(document.body.innerHTML);
       throw e;
     }
     expect(previews.length).toBeGreaterThan(0);

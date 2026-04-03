@@ -16,9 +16,11 @@ const fontToVScaleMap: Record<string, string> = {
   "7C+": "V10",
   "8A": "V11",
   "8A+": "V12",
-  "8B+": "V13",
-  "9A": "V15",
+  "8B": "V13",
+  "8B+": "V14",
+  "8C": "V15",
   "8C+": "V16",
+  "9A": "V17",
 };
 
 const vScaleToFontMap: Record<string, string> = {
@@ -35,9 +37,9 @@ const vScaleToFontMap: Record<string, string> = {
   V10: "7C+",
   V11: "8A",
   V12: "8A+",
-  V13: "8B+",
+  V13: "8B",
   V14: "8B+",
-  V15: "9A",
+  V15: "8C",
   V16: "8C+",
   V17: "9A",
 };

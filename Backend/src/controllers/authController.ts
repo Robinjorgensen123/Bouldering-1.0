@@ -81,13 +81,11 @@ const RESET_RESPONSE_MESSAGE =
 
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
-    console.log("===> forgotPassword endpoint called", req.body);
     const { email } = req.body;
     const normalizedEmail = String(email).trim().toLowerCase();
     const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
-      console.log("===> No user found for:", normalizedEmail);
       return res.status(200).json({
         success: true,
         message: RESET_RESPONSE_MESSAGE,
@@ -107,16 +105,13 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
     const resetUrl = `${frontendUrl}/reset-password/${rawResetToken}`;
 
-    console.log("===> Trying to send email to:", user.email, resetUrl);
     await sendPasswordResetEmail(user.email, resetUrl);
-    console.log("===> Mail function called");
 
     return res.status(200).json({
       success: true,
       message: RESET_RESPONSE_MESSAGE,
     });
   } catch (error) {
-    console.error("===> Error in forgotPassword:", error);
     return res.status(500).json({
       success: false,
       message: "Server error",
