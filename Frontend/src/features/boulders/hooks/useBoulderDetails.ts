@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../../services/api";
 import { type HistoryItem } from "../../history/types/history.types";
 
@@ -21,7 +21,7 @@ export const useBoulderDetails = (
     message: "",
   });
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     if (!boulderId) return;
     setLoadingHistory(true);
     try {
@@ -32,13 +32,13 @@ export const useBoulderDetails = (
     } finally {
       setLoadingHistory(false);
     }
-  };
+  }, [boulderId]);
 
   useEffect(() => {
     if (isOpen && boulderId) {
       fetchHistory();
     }
-  }, [isOpen, boulderId]);
+  }, [isOpen, boulderId, fetchHistory]);
 
   const handleLogSubmit = async () => {
     try {
